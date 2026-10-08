@@ -16,7 +16,7 @@ PNG_SCALE = "3"
 MERMAID_BLOCK = re.compile(
     r"(?ms)^[ \t]*```mermaid[^\r\n]*\r?\n(.*?)^[ \t]*```[ \t]*$"
 )
-ABSOLUTE_PATH_TO_MD = "/home/ubuntu/Workspace/Personal Projects/Viettel GD2/docs/gr2/week02-problem-and-current-solutions/report.md"
+ABSOLUTE_PATH_TO_MD = "/home/ubuntu/Workspace/Personal Projects/Viettel GD2/graduation-project/docs/week03-problem-and-current-solutions/report.md"
 
 
 def main() -> int:
@@ -70,6 +70,11 @@ def main() -> int:
     source_images = proposal_dir / "images"
     if source_images.is_dir():
         shutil.copytree(source_images, output_dir / "images", dirs_exist_ok=True)
+
+    # Copy the mock-UI sources and their rendered screenshots next to the exported report.
+    source_mock_ui = proposal_dir / "mock-ui"
+    if source_mock_ui.is_dir():
+        shutil.copytree(source_mock_ui, output_dir / "mock-ui", dirs_exist_ok=True)
 
     # Clean up stale diagrams if diagram count decreased
     valid_stems = {f"diagram-{i:02d}" for i in range(1, len(blocks) + 1)}

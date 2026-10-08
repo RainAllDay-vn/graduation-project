@@ -47,10 +47,28 @@ nêu trong nội dung thông báo. Sự cố không có mã và không có phân
 - `SW-HN-02`: switch khu vực, định danh quản lý `SW-HN-02`, vị trí lắp đặt *Khu vực
   Hà Nội*, hãng `Cisco`, dòng `Catalyst 9300`, model `C9300-48UXM`; trạng thái đang
   hoạt động trong 27 ngày 2 giờ, mức tải 41%, đã học 22 mạng con và đang dùng 19 mạng con.
+- Dashboard sự cố hiển thị nhóm định danh và nhóm trạng thái của **thiết bị phát
+  cảnh báo sớm nhất**, tức `SW-HN-02`, không phải `R-HN-01`.
 - Trang cảnh báo chỉ hiển thị mã cảnh báo, thiết bị, nội dung, thời điểm và mức độ;
-  không hiển thị đầu xa liên kết, trạng thái cổng hay thiết bị liên quan.
+  không hiển thị đầu xa liên kết, trạng thái liên kết hay thiết bị liên quan.
 
-## 6. Chỉ số giả định
+## 6. Thông tin liên kết giả định
+
+Liên kết giữa `R-HN-01:WAN-01` và `SW-HN-02:UPLINK-03`:
+
+| Nhóm | Trường | Giá trị |
+| --- | --- | --- |
+| Định danh | Hai đầu liên kết | `R-HN-01:WAN-01` ↔ `SW-HN-02:UPLINK-03` |
+| Định danh | Phương tiện truyền · dung lượng tối đa | quang · 10 G |
+| Trạng thái | Tải | 41% |
+| Trạng thái | Tỷ lệ lỗi | 0.5% |
+| Trạng thái | Trạng thái vận hành | đang hoạt động |
+| Trạng thái | Mốc thời điểm thu thập | 14:37:20 · 15/09/2026 |
+
+Các liên kết tới `Thiết bị A`–`Thiết bị E` trên đồ thị chỉ là minh họa khả năng mở
+rộng, không có dữ liệu định danh và trạng thái riêng.
+
+## 7. Chỉ số giả định
 
 - Cổng `R-HN-01:WAN-01`, chỉ số `packet-error / 5 phút`:
   - Trước `14:30`: dưới `10`.

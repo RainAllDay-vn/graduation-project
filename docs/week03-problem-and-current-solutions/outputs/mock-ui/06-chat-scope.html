@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Illustration — ba cách hệ thống trả lời câu hỏi của kỹ sư</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff; font-family: Arial, sans-serif; }
+  .frame { width: 900px; height: 620px; margin: 0 auto; padding: 34px 40px; background: #fff; display: flex; flex-direction: column; }
+
+  .head { display: none; }
+
+  .scene { flex: 1; display: flex; flex-direction: column; justify-content: space-around; }
+
+  .row { display: grid; grid-template-columns: 28px 1fr; column-gap: 18px; align-items: start; }
+  .row .num { grid-column: 1; }
+  .row .pair { grid-column: 2; }
+
+  .avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .avatar.bot { background: #e3f5f2; }
+  .avatar.human { background: #eef1f3; }
+  .avatar svg { display: block; }
+
+  .pair { display: flex; flex-direction: column; gap: 9px; }
+  .line { display: flex; align-items: flex-start; gap: 12px; }
+  .line.human { flex-direction: row-reverse; }
+  .line .bubble { max-width: 430px; }
+
+  .bubble { padding: 12px 17px; border-radius: 16px; font-size: 14px; line-height: 1.5; }
+  .bubble.bot { background: #eaf7f5; color: #1f3b38; border-bottom-left-radius: 5px; }
+  .bubble.human { background: #1fa396; color: #fff; border-bottom-right-radius: 5px; }
+  .bubble.neutral { background: #f0f3f4; color: #55636a; border-bottom-left-radius: 5px; }
+  .bubble em { font-style: normal; font-weight: bold; }
+
+  .chip { align-self: flex-start; display: inline-flex; align-items: center; gap: 7px; background: #fff; border: 1px solid #cfe6e2; color: #128577; font-size: 12px; padding: 5px 12px; border-radius: 20px; }
+  .chip.mute { border-color: #dde3e6; color: #7d8b92; }
+
+  .label { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .num { width: 25px; height: 25px; border-radius: 50%; background: #1fa396; color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+  .num.off { background: #a9b6bc; }
+  .label b { font-size: 14px; color: #2f3e46; }
+  .label i { font-style: normal; font-size: 12.5px; color: #9aa8ae; }
+
+  .foot { display: none; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="scene">
+
+    <div class="row">
+      <div class="label">
+        <span class="num">1</span>
+        <b>Trong phạm vi</b>
+        <i>có nguồn dữ liệu → được trả lời</i>
+      </div>
+      <div class="pair">
+        <div class="line human">
+          <div class="avatar human">
+            <svg width="26" height="26" viewBox="0 0 40 40">
+              <circle cx="20" cy="13" r="7" fill="#5b6b73"/>
+              <path d="M7 34c0-7.2 5.8-12 13-12s13 4.8 13 12z" fill="#5b6b73"/>
+            </svg>
+          </div>
+          <div class="bubble human">Vì sao packet-error tăng vọt rồi tự hồi phục?</div>
+        </div>
+        <div class="line">
+          <div class="avatar bot">
+            <svg width="26" height="26" viewBox="0 0 40 40">
+              <rect x="6" y="10" width="28" height="22" rx="9" fill="#1fa396"/>
+              <circle cx="15" cy="19" r="2.6" fill="#fff"/>
+              <circle cx="25" cy="19" r="2.6" fill="#fff"/>
+              <path d="M15.5 25.5c1.8 1.8 7.2 1.8 9 0" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+              <path d="M20 4v5" stroke="#1fa396" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="20" cy="3.2" r="2.4" fill="#1fa396"/>
+            </svg>
+          </div>
+          <div class="bubble bot">Đỉnh <em>1.250</em> lúc <em>14:32</em>, về mức nền <em>0,4%</em> lúc <em>14:47</em>, trong khi tải liên kết vẫn chỉ quanh <em>41%</em>.</div>
+        </div>
+        <span class="chip">
+          <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6.5l3 3 5-7" stroke="#128577" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Mở cảnh báo ALM-2035
+        </span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="label">
+        <span class="num off">2</span>
+        <b>Ngoài phạm vi</b>
+        <i>không có dữ liệu → từ chối</i>
+      </div>
+      <div class="pair">
+        <div class="line human">
+          <div class="avatar human">
+            <svg width="26" height="26" viewBox="0 0 40 40">
+              <circle cx="20" cy="13" r="7" fill="#5b6b73"/>
+              <path d="M7 34c0-7.2 5.8-12 13-12s13 4.8 13 12z" fill="#5b6b73"/>
+            </svg>
+          </div>
+          <div class="bubble human">Giá điện tháng này của điểm trạm là bao nhiêu?</div>
+        </div>
+        <div class="line">
+          <div class="avatar bot">
+            <svg width="26" height="26" viewBox="0 0 40 40">
+              <rect x="6" y="10" width="28" height="22" rx="9" fill="#1fa396"/>
+              <circle cx="15" cy="19" r="2.6" fill="#fff"/>
+              <circle cx="25" cy="19" r="2.6" fill="#fff"/>
+              <path d="M15.5 25.5c1.8 1.8 7.2 1.8 9 0" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+              <path d="M20 4v5" stroke="#1fa396" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="20" cy="3.2" r="2.4" fill="#1fa396"/>
+            </svg>
+          </div>
+          <div class="bubble neutral">Câu hỏi nằm ngoài phạm vi quản lý thiết bị mạng. Tôi chỉ có dữ liệu vận hành của thiết bị và liên kết, nên không thể trả lời.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="label">
+        <span class="num off">3</span>
+        <b>Yêu cầu hành động</b>
+        <i>thuộc phạm vi → chỉ gợi ý, không thực thi</i>
+      </div>
+      <div class="pair">
+        <div class="line human">
+          <div class="avatar human">
+            <svg width="26" height="26" viewBox="0 0 40 40">
+              <circle cx="20" cy="13" r="7" fill="#5b6b73"/>
+              <path d="M7 34c0-7.2 5.8-12 13-12s13 4.8 13 12z" fill="#5b6b73"/>
+            </svg>
+          </div>
+          <div class="bubble human">Tắt cổng WAN-01 giúp tôi rồi báo kết quả.</div>
+        </div>
+        <div class="line">
+          <div class="avatar bot">
+            <svg width="26" height="26" viewBox="0 0 40 40">
+              <rect x="6" y="10" width="28" height="22" rx="9" fill="#1fa396"/>
+              <circle cx="15" cy="19" r="2.6" fill="#fff"/>
+              <circle cx="25" cy="19" r="2.6" fill="#fff"/>
+              <path d="M15.5 25.5c1.8 1.8 7.2 1.8 9 0" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+              <path d="M20 4v5" stroke="#1fa396" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="20" cy="3.2" r="2.4" fill="#1fa396"/>
+            </svg>
+          </div>
+          <div class="bubble neutral">Tôi không thực thi thao tác trên thiết bị. Gợi ý: đọc lỗi <em>CRC/FCS</em> ở cả <em>WAN-01</em> và <em>UPLINK-03</em> trước khi đụng tới cổng.</div>
+        </div>
+        <span class="chip mute">
+          <svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1.5v5M6 9.6v1" stroke="#7d8b92" stroke-width="2" stroke-linecap="round"/></svg>
+          Hướng dẫn vận hành
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <svg width="30" height="30" viewBox="0 0 30 30">
+      <circle cx="15" cy="15" r="13" fill="#e3f5f2"/>
+      <path d="M15 9v8" stroke="#1fa396" stroke-width="2.4" stroke-linecap="round"/>
+      <circle cx="15" cy="21" r="1.6" fill="#1fa396"/>
+    </svg>
+    <p>Hệ thống chỉ gợi ý, không thay kỹ sư quyết định và không tự loại bỏ giả thuyết nào. Câu hỏi tiếp theo tiếp tục trên cùng hội thoại và mặc định dùng lại đối tượng cùng khoảng thời gian của lượt trước.</p>
+  </div>
+</div>
+</body>
+</html>

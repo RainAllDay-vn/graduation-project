@@ -171,7 +171,6 @@ flowchart LR
     SYSTEM --> HINT
 
     classDef planned fill:#F8FAFC,stroke:#94A3B8,stroke-dasharray:4 3,color:#475569;
-    class DOC planned;
 ```
 
 *Hình 8. Ranh giới đầu vào/đầu ra của bài toán.*
@@ -226,41 +225,50 @@ Tài liệu kỹ thuật mà hệ thống xử lý bao gồm **đặc tả kỹ 
 
 Câu hỏi của kỹ sư là đầu vào không có cấu trúc cố định. Vì mọi dữ liệu vận hành đều gắn với một thiết bị hoặc một liên kết, và với một khoảng thời gian, nên câu hỏi được tiếp nhận cùng với hai thông tin này: đối tượng mà câu hỏi nhắm tới và khoảng thời gian quan tâm, trong đó đối tượng mặc định là sự cố hoặc cảnh báo đang được mở trên giao diện và kỹ sư có thể chỉ định lại, còn khoảng thời gian mặc định lấy quanh thời điểm phát sinh của đối tượng đó. Câu hỏi của kỹ sư được lưu lại thành hội thoại và lượt hỏi sau được tiếp tục trên hội thoại đó, nên khi kỹ sư hỏi tiếp mà không nhắc lại đối tượng, hệ thống dùng lại đối tượng và khoảng thời gian của lượt trước.
 
-Câu hỏi của kỹ sư không phải là một dạng đầu ra riêng, mà là ngữ cảnh đầu vào mà hệ thống dùng để định hướng việc hiển thị: câu hỏi đang được xét chỉ hiện lên đầu màn hình, còn sự cố và cảnh báo được ghim trong cuộc hội thoại là bối cảnh mặc định cho các lượt hỏi sau.
+Câu hỏi của kỹ sư không phải là một dạng đầu ra riêng, mà là ngữ cảnh đầu vào mà hệ thống dùng để định hướng việc hiển thị: câu hỏi đang được xét chỉ hiện ở đầu màn hình, và toàn bộ lượt hỏi – đáp trong hội thoại được hiện thành một cột hội thoại bên cạnh màn hình giả thuyết. Sự cố và cảnh báo được ghim trong hội thoại làm bối cảnh mặc định cho các lượt hỏi sau.
 
 Hệ thống chỉ nhận câu hỏi về việc quản lý thiết bị mạng trong phạm vi nó quản lý, và ở mọi trường hợp hệ thống chỉ đưa ra gợi ý chứ không thực thi hành động. Vì vậy, một câu hỏi nằm ngoài phạm vi quản lý mạng sẽ không có nguồn dữ liệu để trả lời và hệ thống nói rõ giới hạn đó; còn một câu hỏi thuộc đúng phạm vi quản lý mạng nhưng yêu cầu thực thi thao tác vẫn được hệ thống gợi ý cách thực hiện, đồng thời nêu rõ rằng việc thực thi thuộc về kỹ sư chứ không phải hệ thống.
+
+![](./mock-ui/06-chat-scope.png)
+
+*Hình 10. Ba cách hệ thống trả lời câu hỏi của kỹ sư: trong phạm vi thì dẫn tới bằng chứng, ngoài phạm vi thì nói rõ giới hạn, và yêu cầu thao tác thì chỉ gợi ý.*
 
 ## 3. Đầu ra
 
 ### a. Dashboard sự cố kèm ngữ cảnh đầy đủ
 
-Với một sự cố đang được chọn, dashboard sẽ hiển thị:
-- Thông tin của sự cố: thời điểm mở và trạng thái hiện tại (ví dụ `13:58:44`, `PRIORITIZED`).
-- Danh sách các cảnh báo thuộc về sự cố, xếp cạnh nhau theo mốc thời gian, mỗi cảnh báo gồm mã lỗi, định danh thiết bị, thời điểm phát sinh, mức độ và nội dung thông báo (ví dụ `ALM-2035` trên `SW-HN-02` lúc `13:58:44` với mức độ `warning`; `ALM-2041` trên `R-HN-01` lúc `14:32:00` với mức độ `error` và nội dung nêu chỉ số `packet-error` tại cổng `WAN-01` đạt `1.250`).
-- Thông tin định danh của thiết bị phát cảnh báo sớm nhất, gồm loại thiết bị, định danh quản lý, vị trí lắp đặt, và thông số phần cứng gồm hãng sản xuất, dòng sản phẩm và model chính xác (ví dụ `switch khu vực`, `SW-HN-02`, hãng `Cisco`, dòng `Catalyst 9300`, model `C9300-48UXM`).
-- Trạng thái hiện tại của thiết bị đó, gồm trạng thái hoạt động, thời gian hoạt động liên tục kể từ lần khởi động gần nhất, mức độ tải và thông tin bảng định tuyến (ví dụ hoạt động trong `27 ngày 2 giờ`, tải `41%`, đã học `22` mạng con và đang dùng `19` mạng con).
-- Giá trị và lịch sử của chỉ số quanh thời điểm phát sinh, bao gồm giá trị tại thời điểm phát sinh, biên độ tăng và xu hướng trước, sau sự kiện.
-- Đồ thị liên kết của thiết bị đó với các thiết bị khác, có thể mở rộng dần theo thao tác. Mỗi cạnh là một liên kết và hiển thị hai thông tin nhóm: **thông tin định danh** gồm hai đầu liên kết, trong đó mỗi đầu là một thiết bị cùng cổng của thiết bị đó, cùng phương tiện truyền và dung lượng tối đa; **thông tin trạng thái** gồm tải, tỷ lệ lỗi và trạng thái vận hành, ghi kèm mốc thời điểm thu thập (ví dụ `SW-HN-02:UPLINK-03 ↔ R-HN-01:WAN-01`, quang `10 G`, tải `41%`, tỷ lệ lỗi `0.5%`, trạng thái vận hành `đang hoạt động`).
+Với một sự cố đang được chọn, dashboard hiển thị sáu nhóm thông tin, theo đúng thứ tự sau:
 
-Các thành phần này được gắn với nhau bằng liên kết có thể bấm: bấm vào một cảnh báo trong danh sách sẽ đưa cảnh báo đó vào ngữ cảnh điều tra, bấm vào mã lỗi sẽ mở đoạn tài liệu kỹ thuật mô tả mã lỗi đó, bấm vào thiết bị sẽ đổi sang khung thông tin của thiết bị đó ngay trên dashboard này, bấm vào nút lá của đồ thị để mở rộng thêm liên kết, và bấm vào mốc thời gian sẽ mở biểu đồ chỉ số tại đúng cửa sổ phát sinh. Như vậy, những thông tin vốn nằm rải rác ở các trang cảnh báo, thiết bị và giám sát được gom về một màn hình theo cùng một định danh tài nguyên, và việc xác định phạm vi ảnh hưởng của một sự cố được thực hiện ngay trên cùng một màn hình.
+1. Thông tin của sự cố: thời điểm mở và trạng thái hiện tại (ví dụ `13:58:44`, `PRIORITIZED`).
+2. Danh sách các cảnh báo thuộc về sự cố, xếp cạnh nhau theo trục thời gian, mỗi cảnh báo gồm mã lỗi, định danh thiết bị, thời điểm phát sinh, mức độ và nội dung thông báo (ví dụ `ALM-2035` trên `SW-HN-02` lúc `13:58:44` với mức độ `warning`; `ALM-2041` trên `R-HN-01` lúc `14:32:00` với mức độ `error` và nội dung nêu chỉ số `packet-error` tại cổng `WAN-01` đạt `1.250`).
+3. Thông tin định danh của thiết bị phát cảnh báo sớm nhất, gồm loại thiết bị, định danh quản lý, vị trí lắp đặt, và thông số phần cứng gồm hãng sản xuất, dòng sản phẩm và model chính xác (ví dụ `switch khu vực`, `SW-HN-02`, hãng `Cisco`, dòng `Catalyst 9300`, model `C9300-48UXM`).
+4. Trạng thái hiện tại của thiết bị đó, gồm trạng thái hoạt động, thời gian hoạt động liên tục kể từ lần khởi động gần nhất, mức độ tải và thông tin bảng định tuyến (ví dụ hoạt động trong `27 ngày 2 giờ`, tải `41%`, đã học `22` mạng con và đang dùng `19` mạng con).
+5. Giá trị và lịch sử của chỉ số quanh thời điểm phát sinh, bao gồm giá trị tại thời điểm phát sinh, biên độ tăng và xu hướng trước, sau sự kiện.
+6. Đồ thị liên kết của thiết bị đó với các thiết bị khác, có thể mở rộng dần theo thao tác. Mỗi cạnh là một liên kết và hiển thị hai thông tin nhóm: **thông tin định danh** gồm hai đầu liên kết, trong đó mỗi đầu là một thiết bị cùng cổng của thiết bị đó, cùng phương tiện truyền và dung lượng tối đa; **thông tin trạng thái** gồm tải, tỷ lệ lỗi và trạng thái vận hành, ghi kèm mốc thời điểm thu thập (ví dụ `SW-HN-02:UPLINK-03 ↔ R-HN-01:WAN-01`, quang `10 G`, tải `41%`, tỷ lệ lỗi `0.5%`, trạng thái vận hành `đang hoạt động`).
+
+Các thành phần này được gắn với nhau bằng liên kết có thể bấm: bấm vào một cảnh báo trong danh sách sẽ đưa cảnh báo đó vào ngữ cảnh điều tra, bấm vào mã lỗi sẽ mở đoạn tài liệu kỹ thuật mô tả mã lỗi đó, bấm vào thiết bị sẽ đổi sang khung thông tin của thiết bị đó ngay trên dashboard này, bấm vào một nút thiết bị trên đồ thị để mở rộng thêm liên kết, và bấm vào mốc thời gian sẽ mở biểu đồ chỉ số tại đúng cửa sổ phát sinh. Như vậy, những thông tin vốn nằm rải rác ở các trang cảnh báo, thiết bị và giám sát được gom về một màn hình theo cùng một định danh tài nguyên, và việc xác định phạm vi ảnh hưởng của một sự cố được thực hiện ngay trên cùng một màn hình.
 
 ![](./mock-ui/04-dashboard-wireframe.png)
 
-*Hình 10. Wireframe bố cục dashboard sự cố.*
+*Hình 11. Wireframe bố cục dashboard sự cố.*
 
 ### b. Giả thuyết và gợi ý cho các bước tiếp theo
 
-Trên cơ sở ngữ cảnh của sự cố đang được mở, hệ thống đề xuất một danh sách giả thuyết nguyên nhân được xếp hạng, kèm bằng chứng và phép kiểm tra tương ứng cho từng giả thuyết. Hệ thống chỉ gợi ý, không kết luận nguyên nhân; kỹ sư vẫn phải kiểm chứng trước khi quyết định biện pháp xử lý. Mỗi giả thuyết hiển thị:
-- Tên giả thuyết và thứ hạng, ví dụ lỗi vật lý hoặc lỗi tính hiệu trên liên kết `R-HN-01:WAN-01`.
+Trên cơ sở ngữ cảnh của sự cố đang được mở, hệ thống đề xuất một danh sách giả thuyết nguyên nhân được xếp hạng, kèm bằng chứng và phép kiểm tra tương ứng cho từng giả thuyết. Hệ thống chỉ gợi ý, không kết luận nguyên nhân; kỹ sư vẫn phải kiểm chứng trước khi quyết định biện pháp xử lý.
+
+Danh sách giả thuyết được chia làm hai phần. Phần **giả thuyết còn đang xét** xếp hạng các giả thuyết chưa bị kỹ sư bác bỏ. Phần **giả thuyết đã bị bác bỏ** do chính kỹ sư đánh dấu sau khi kiểm chứng, nhằm ghi lại những hướng đã thử và không đúng, kèm lý do bác bỏ, thay vì phải tự nhớ lại.
+
+Phần bên cạnh danh sách hiển thị chi tiết của **giả thuyết đang được chọn** trong danh sách, gồm năm mục: tên giả thuyết và thứ hạng, cơ sở xếp hạng, các bằng chứng ủng hộ, các bằng chứng không phù hợp, và phép kiểm tra đề xuất. Bấm một giả thuyết khác trong danh sách sẽ đổi nội dung của cả năm mục này. Cụ thể:
+- Tên giả thuyết và thứ hạng, ví dụ lỗi vật lý hoặc lỗi tín hiệu trên liên kết `R-HN-01:WAN-01`.
 - Cơ sở xếp hạng, nêu rõ tiêu chí như số bằng chứng độc lập, mức khớp với tài liệu và khoảng cách thời gian; đây là tín hiệu để đối chiếu chứ không phải xác suất tuyệt đối.
 - Các bằng chứng ủng hộ, mỗi bằng chứng kèm nguồn trích dẫn: giá trị chỉ số tại thời điểm phát sinh, cảnh báo khác thuộc cùng sự cố, quan hệ liên kết, hoặc đoạn tài liệu kỹ thuật mô tả mã lỗi.
-- Các bằng chứng không phù hợp đối với giả thuyết hiện tại.
-- Phép kiểm tra đề xuất cho từng giả thuyết: thao tác cụ thể, dữ liệu cần thu thập, và kết quả kỳ vọng nếu giả thuyết đúng hay sai.
+- Các bằng chứng không phù hợp với giả thuyết đó.
+- Phép kiểm tra đề xuất cho giả thuyết đó: thao tác cụ thể, dữ liệu cần thu thập, và kết quả kỳ vọng nếu giả thuyết đúng hay sai.
 
 Ví dụ, với sự cố mở lúc `13:58:44` mà cảnh báo `ALM-2035` trên `SW-HN-02` là dấu vết sớm nhất, hệ thống gợi ý kiểm tra thống kê lỗi `CRC/FCS` ở cả hai đầu liên kết (`UPLINK-03` trên `SW-HN-02` và `WAN-01` trên `R-HN-01`): nếu lỗi chỉ xuất hiện ở một đầu thì nghiêng về lỗi cổng, nếu xuất hiện ở cả hai đầu thì nghiêng về lỗi đường truyền, và kết quả thu được được ghi nhận lại làm bằng chứng cho vòng đánh giá tiếp theo.
 
-Mỗi bằng chứng và mỗi phép kiểm tra đều là liên kết có thể bấm, cho phép kỹ sư chuyển thẳng tới vị trí hiển thị bằng chứng đó trên dashboard hoặc chạy phép kiểm tra ngay tại đây. Nhờ vậy, việc hình thành và kiểm chứng giả thuyết được thực hiện có hệ thống thay vì phụ thuộc hoàn toàn vào kinh nghiệm cá nhân.
+Mỗi bằng chứng và mỗi phép kiểm tra đều là liên kết có thể bấm, cho phép kỹ sư chuyển thẳng tới vị trí hiển thị bằng chứng đó trên dashboard. Phép kiểm tra chỉ hiển thị hướng dẫn thao tác cụ thể để kỹ sư tự thực hiện trên thiết bị, vì hệ thống không thực thi hành động. Nhờ vậy, việc hình thành và kiểm chứng giả thuyết được thực hiện có hệ thống thay vì phụ thuộc hoàn toàn vào kinh nghiệm cá nhân.
 
 ![](./mock-ui/05-hypothesis-wireframe.png)
 
-*Hình 11. Wireframe danh sách giả thuyết và phép kiểm tra đề xuất.*
+*Hình 12. Wireframe danh sách giả thuyết và phép kiểm tra đề xuất.*

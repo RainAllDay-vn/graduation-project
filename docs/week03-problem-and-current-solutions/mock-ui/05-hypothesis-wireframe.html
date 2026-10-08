@@ -13,10 +13,12 @@
   .box { border: 1px dashed #888; }
   .box h4 { margin: 0; font-size: 11px; font-weight: bold; color: #555; padding: 5px 10px; border-bottom: 1px dashed #bbb; background: #fafafa; }
   .body { flex: 1; display: flex; min-height: 0; }
-  .col-left { width: 430px; border-right: 1px dashed #bbb; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
-  .col-mid { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .col-left { width: 400px; border-right: 1px dashed #bbb; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .col-mid { width: 470px; border-right: 1px dashed #bbb; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .col-right { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
   .grow { flex: 1; }
-  .row { margin: 6px 10px; padding: 6px 8px; border: 1px dashed #bbb; font-size: 11px; color: #555; line-height: 1.4; }
+  .row { margin: 5px 10px; padding: 5px 8px; border: 1px dashed #bbb; font-size: 11px; color: #555; line-height: 1.35; }
+  .row.tight { margin: 4px 10px; padding: 4px 8px; }
   .row .xlink { display: block; color: #555; font-size: 10px; margin-top: 3px; text-decoration: underline; }
   .rank { display: flex; gap: 9px; align-items: flex-start; padding: 7px 10px; font-size: 11px; color: #666; border-bottom: 1px dotted #ddd; line-height: 1.4; }
   .rank .n { color: #999; width: 18px; flex-shrink: 0; }
@@ -25,21 +27,31 @@
   .rank.sel { background: #efefef; color: #333; font-weight: bold; }
   .rank.drop { color: #999; font-style: italic; }
   .note { font-size: 10px; color: #888; padding: 6px 12px 8px; font-style: italic; line-height: 1.4; }
+  .chat { display: flex; flex-direction: column; gap: 8px; padding: 10px; }
+  .turn { max-width: 92%; font-size: 11px; line-height: 1.45; padding: 8px 10px; border-radius: 8px; }
+  .turn.user { align-self: flex-end; background: #efefef; color: #333; }
+  .turn.bot { align-self: flex-start; background: #fafafa; border: 1px dashed #bbb; color: #555; }
+  .turn .who { display: block; font-size: 9px; color: #999; margin-bottom: 3px; }
+  .turn .xlink { display: block; color: #555; font-size: 10px; margin-top: 4px; text-decoration: underline; }
+  .ask { display: flex; gap: 8px; border-top: 1px dashed #bbb; padding: 8px 10px; }
+  .ask input { flex: 1; border: 1px dashed #bbb; padding: 6px 8px; font-size: 11px; color: #555; background: #fff; }
+  .ask button { border: 1px dashed #999; background: #f4f4f4; padding: 6px 12px; font-size: 11px; color: #555; }
 </style>
 </head>
 <body>
 <div class="frame">
   <div class="bar">
     <span class="grp">Cảnh báo <b>ALM-2041</b></span>
-    <span class="grp">Đối tượng <b>R-HN-01 · cổng WAN-01</b></span>
+    <span class="grp">Đối tượng <b>R-HN-01</b></span>
+    <span class="grp">Tập trung cổng <b>WAN-01</b></span>
     <span class="grp">Thời điểm <b>14:32:00 · 15/09/2026</b></span>
-    <span class="grp">Hệ thống <b>chỉ gợi ý, không kết luận nguyên nhân</b></span>
+    <span class="grp">Câu hỏi đang xét <b>“Tại sao tăng lỗi rồi tự hồi phục?”</b></span>
   </div>
 
   <div class="body">
     <div class="col-left">
       <div class="box">
-        <h4>1 · Tên giả thuyết và thứ hạng</h4>
+        <h4>1 · Giả thuyết còn đang xét</h4>
         <div class="rank sel">
           <span class="n">#1</span>
           <span class="t">Lỗi vật lý hoặc lỗi tín hiệu trên liên kết <b>R-HN-01:WAN-01</b>
@@ -55,21 +67,28 @@
         <div class="rank">
           <span class="n">#3</span>
           <span class="t">Lỗi phần cứng tại đầu xa <b>SW-HN-02</b>
-            <span class="xlink">↗ Mở dashboard của SW-HN-02</span>
+            <span class="xlink">↗ Mở khung thông tin của SW-HN-02 trên dashboard</span>
           </span>
         </div>
         <div class="rank">
           <span class="n">#4</span>
           <span class="t">Lỗi tăng lưu lưu lượng do nghẽn cổng</span>
         </div>
+      </div>
+
+      <div class="box">
+        <h4>2 · Giả thuyết đã bị kỹ sư bác bỏ</h4>
         <div class="rank drop">
           <span class="n">#5</span>
-          <span class="t">Lỗi cấu hình tăng lưu lưu lượng — bị loại</span>
+          <span class="t">Lỗi cấu hình tăng lưu lưu lượng
+            <span class="xlink">↗ Mở tại thông tin của liên kết trên đồ thị liên kết</span>
+          </span>
         </div>
+        <div class="note">Kỹ sư đánh dấu sai vào 14:47: liên kết vẫn ở trạng thái vận hành <b>đang hoạt động</b> tại mốc thu thập 14:37:20 và tải chỉ ở mức 41%, không thấy dấu hiệu thay đổi cấu hình.</div>
       </div>
 
       <div class="box grow">
-        <h4>2 · Cơ sở xếp hạng — giả thuyết #1</h4>
+        <h4>3 · Cơ sở xếp hạng — giả thuyết #1</h4>
         <div class="row">Số bằng chứng độc lập: <b>4 nguồn</b> — chỉ số, cảnh báo, quan hệ liên kết, tài liệu</div>
         <div class="row">Mức khớp với tài liệu kỹ thuật: <b>cao</b>
           <span class="xlink">↗ Mở tài liệu kỹ thuật</span>
@@ -82,41 +101,83 @@
 
     <div class="col-mid">
       <div class="box">
-        <h4>3 · Bằng chứng ủng hộ</h4>
+        <h4>4 · Bằng chứng ủng hộ — giả thuyết #1</h4>
         <div class="row">Chỉ số <b>packet-error</b> đạt đỉnh <b>1.250</b> trong khoảng 14:32–14:37 rồi tự hồi phục
-          <span class="xlink">↗ Nguồn: biểu đồ chỉ số R-HN-01:WAN-01 — mở tại mốc 14:32</span>
+          <span class="xlink">↗ Biểu đồ chỉ số — mốc 14:32</span>
         </div>
         <div class="row">Cảnh báo <b>ALM-2038</b> trên <b>R-HN-07</b> cùng khung thời gian
-          <span class="xlink">↗ Nguồn: trục thời gian cảnh báo — mở tại dòng ALM-2038</span>
+          <span class="xlink">↗ Trục thời gian cảnh báo — dòng ALM-2038</span>
         </div>
         <div class="row">Liên kết trực tiếp <b>WAN-01</b> ↔ <b>UPLINK-03</b> trên <b>SW-HN-02</b>
-          <span class="xlink">↗ Nguồn: đồ thị liên kết — mở tại nút SW-HN-02</span>
+          <span class="xlink">↗ Đồ thị liên kết — nút SW-HN-02</span>
         </div>
         <div class="row">Dạng lỗi tăng vọt rồi tự hồi phục khớp với mô tả trong tài liệu
-          <span class="xlink">↗ Nguồn: tài liệu kỹ thuật — mở đoạn tham chiếu</span>
+          <span class="xlink">↗ Tài liệu kỹ thuật — đoạn tham chiếu</span>
         </div>
       </div>
 
       <div class="box">
-        <h4>4 · Bằng chứng không phù hợp</h4>
-        <div class="row">Cổng <b>WAN-01</b> vẫn ở trạng thái <b>up</b>, không có sự kiện flap — loại trừ giả thuyết ngắt tín hiệu hoàn toàn
-          <span class="xlink">↗ Mở tại khối trạng thái thiết bị</span>
+        <h4>5 · Bằng chứng không phù hợp — giả thuyết #1</h4>
+        <div class="row">Liên kết <b>WAN-01</b> vẫn ở trạng thái vận hành <b>đang hoạt động</b> tại mốc thu thập 14:37:20, không có sự kiện ngắt liên kết
+          <span class="xlink">↗ Đồ thị liên kết — thông tin liên kết đang chọn</span>
         </div>
-        <div class="row">Lưu lượng qua cổng không vượt ngưỡng cấu hình — loại trừ giả thuyết nghẽn do tải #4
-          <span class="xlink">↗ Mở tại biểu đồ chỉ số</span>
+        <div class="row">Tỷ lệ lỗi trên liên kết chỉ <b>0.5%</b>, thấp hơn nhiều mức mà lỗi vật lý thường gây ra
+          <span class="xlink">↗ Đồ thị liên kết — thông tin liên kết đang chọn</span>
         </div>
-        <div class="row">Không có thay đổi cấu hình nào trước 14:32 — loại trừ giả thuyết lỗi cấu hình #5</div>
+        <div class="row">Cảnh báo sớm nhất của sự cố lại phát ra trên <b>SW-HN-02</b> chứ không phải trên đầu R-HN-01
+          <span class="xlink">↗ Trục thời gian cảnh báo — dòng ALM-2035</span>
+        </div>
       </div>
 
       <div class="box grow">
-        <h4>5 · Phép kiểm tra đề xuất</h4>
+        <h4>6 · Phép kiểm tra đề xuất — giả thuyết #1</h4>
         <div class="row">Thao tác: đọc thống kê lỗi <b>CRC/FCS</b> trên <b>WAN-01</b> và <b>UPLINK-03</b>
-          <span class="xlink">↗ Chạy tại thiết bị R-HN-01</span>
+          <span class="xlink">↗ Xem hướng dẫn thao tác — kỹ sư tự thực hiện</span>
         </div>
         <div class="row">Dữ liệu cần thu thập: số lỗi CRC/FCS ở hai đầu trong cửa sổ 14:30–14:45</div>
         <div class="row">Kết quả kỳ vọng: lỗi chỉ ở một đầu → lỗi cổng; lỗi ở cả hai đầu → lỗi đường truyền
-          <span class="xlink">↗ Ghi nhận kết quả thành bằng chứng mới cho vòng đánh giá sau</span>
+          <span class="xlink">↗ Ghi nhận làm bằng chứng cho vòng sau</span>
         </div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="box grow">
+        <h4>7 · Hội thoại với hệ thống</h4>
+        <div class="chat">
+          <div class="turn user">
+            <span class="who">Kỹ sư vận hành · 14:40</span>
+            Sự cố này bắt nguồn từ đâu?
+          </div>
+          <div class="turn bot">
+            <span class="who">Hệ thống · 14:40</span>
+            Cảnh báo sớm nhất là <b>ALM-2035</b> trên <b>SW-HN-02</b> lúc 13:58:44, đây là dấu vết sớm nhất. Chỉ số <b>packet-error</b> trên <b>R-HN-01:WAN-01</b> đạt đỉnh 1.250 lúc 14:32.
+            <span class="xlink">↗ Mở dòng ALM-2035 trên trục thời gian</span>
+          </div>
+          <div class="turn user">
+            <span class="who">Kỹ sư vận hành · 14:41</span>
+            Vậy có phải do nghẽn cổng không?
+          </div>
+          <div class="turn bot">
+            <span class="who">Hệ thống · 14:41</span>
+            Không nhiều khả năng. Tải trên liên kết chỉ ở mức 41% và trạng thái vận hành vẫn là <b>đang hoạt động</b> tại mốc 14:37:20, nên bằng chứng cho giả thuyết này rất yếu. Hai hướng có nhiều bằng chứng hơn là lỗi tín hiệu trên liên kết và suy hao đường truyền. Bạn có thể đánh dấu giả thuyết này là sai sau khi kiểm chứng.
+            <span class="xlink">↗ Mở giả thuyết #4 để xem chi tiết</span>
+          </div>
+          <div class="turn user">
+            <span class="who">Kỹ sư vận hành · 14:42</span>
+            So với tuần trước, lỗi trên liên kết này có tăng không?
+          </div>
+          <div class="turn bot">
+            <span class="who">Hệ thống · 14:42</span>
+            Trong 7 ngày trước, chỉ số <b>packet-error</b> trên <b>R-HN-01:WAN-01</b> dao động quanh 0,3%–0,6%. Trong 60 phút trước thời điểm 14:32 có 2 lần vượt mốc 1.000, tức là bất thường so với chính mốc nền của liên kết.
+            <span class="xlink">↗ Mở biểu đồ packet-error tại cửa sổ phát sinh</span>
+          </div>
+        </div>
+        <div class="ask">
+          <input value="Còn cách nào nữa không?" readonly>
+          <button>Gửi</button>
+        </div>
+        <div class="note">Lượt hỏi sau được tiếp tục trên cùng hội thoại này và mặc định dùng lại đối tượng R-HN-01 cùng khoảng thời gian quanh 14:32. Hệ thống chỉ nhận câu hỏi về quản lý thiết bị mạng và chỉ đưa ra gợi ý, không thực thi hành động.</div>
       </div>
     </div>
   </div>
