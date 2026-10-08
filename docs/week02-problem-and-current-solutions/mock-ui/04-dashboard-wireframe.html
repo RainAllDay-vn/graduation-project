@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Wireframe dashboard — bố cục</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f5f5f5; color: #333; font-family: Arial, sans-serif; }
+  .frame { width: 1280px; height: 800px; background: #fff; border: 1px solid #bbb; margin: 0 auto; display: flex; flex-direction: column; }
+  .bar { border-bottom: 1px dashed #999; padding: 9px 16px; font-size: 12px; color: #666; display: flex; gap: 28px; align-items: center; }
+  .bar b { color: #333; }
+  .bar .grp { display: flex; gap: 8px; align-items: center; }
+  .box { border: 1px dashed #888; }
+  .box h4 { margin: 0; font-size: 11px; font-weight: bold; color: #555; padding: 6px 10px; border-bottom: 1px dashed #bbb; background: #fafafa; }
+  .body { flex: 1; display: flex; min-height: 0; }
+  .col-left { width: 340px; border-right: 1px dashed #bbb; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .col-mid { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .col-right { width: 310px; border-left: 1px dashed #bbb; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .slot { border: 1px dashed #bbb; margin: 8px 10px; padding: 5px 8px; font-size: 11px; color: #777; }
+  .slot.short { height: 25px; }
+  .grow { flex: 1; }
+  .placeholder { color: #999; font-style: italic; }
+  ul.plain { list-style: none; margin: 0; padding: 6px 10px 2px; font-size: 11px; color: #666; }
+  ul.plain li { padding: 4px 0; border-bottom: 1px dotted #ddd; }
+  .subhead { font-size: 10px; color: #888; padding: 8px 10px 0; text-transform: uppercase; letter-spacing: .4px; }
+  .chart { position: relative; margin: 6px 10px 0; }
+  .chart svg { width: 100%; height: auto; }
+  .graph { height: 470px; position: relative; margin: 10px; }
+  .node { position: absolute; border: 1px solid #666; background: #fff; font-size: 11px; text-align: center; padding: 6px 4px; width: 120px; }
+  .node.root { border-width: 2px; font-weight: bold; }
+  .node .sub { display: block; color: #888; font-weight: normal; font-size: 9px; margin-top: 3px; }
+  .graph svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .legend { font-size: 10px; color: #888; padding: 6px 10px; border-top: 1px dashed #bbb; }
+  .foot { border-top: 1px dashed #999; padding: 8px 16px; font-size: 11px; color: #666; display: flex; gap: 24px; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="bar">
+    <span class="grp">Cảnh báo <b>ALM-2041</b></span>
+    <span class="grp">Thời điểm <b>14:32:00 · 15/09/2026</b></span>
+    <span class="grp">Mức độ <b>Major</b></span>
+    <span class="grp">Đối tượng <b>R-HN-01 · cổng WAN-01 · packet-error</b></span>
+  </div>
+
+  <div class="body">
+    <div class="col-left">
+      <div class="box">
+        <h4>1 · Thông tin tổng quát và trạng thái thiết bị</h4>
+        <div class="slot short">Tên, loại, địa chỉ quản lý</div>
+        <div class="slot short">Vị trí trong cây phân cấp quản lý</div>
+        <div class="slot short">Trạng thái hiện tại + thời điểm cập nhật gần nhất</div>
+      </div>
+      <div class="box grow">
+        <h4>2 · Chỉ số quanh thời điểm phát sinh</h4>
+        <div class="chart">
+          <svg viewBox="0 0 300 200">
+            <line x1="20" y1="170" x2="292" y2="170" stroke="#bbb"/>
+            <line x1="20" y1="30" x2="20" y2="170" stroke="#bbb"/>
+            <line x1="166" y1="26" x2="166" y2="170" stroke="#999" stroke-dasharray="4 3"/>
+            <text x="170" y="20" font-size="9" fill="#888">14:32 phát sinh</text>
+            <polyline fill="none" stroke="#666" stroke-width="1.4"
+              points="20,169 85,169 141,169 166,41 175,35 188,105 201,168 246,169 292,169"/>
+            <circle cx="175" cy="35" r="2.5" fill="#333"/>
+            <text x="183" y="44" font-size="9" fill="#555">đỉnh 1.250</text>
+            <text x="20" y="184" font-size="9" fill="#999">14:00</text>
+            <text x="292" y="184" font-size="9" fill="#999" text-anchor="end">15:00</text>
+          </svg>
+        </div>
+        <div class="slot short">Ngưỡng cảnh báo và cửa sổ quan sát được áp dụng</div>
+        <div class="slot short">Giá trị tại thời điểm phát sinh</div>
+      </div>
+    </div>
+
+    <div class="col-mid">
+      <div class="box grow">
+        <h4>3 · Đồ thị liên kết — mở rộng dần theo thao tác</h4>
+        <div class="graph">
+          <svg>
+            <line x1="291" y1="235" x2="116" y2="235" stroke="#999"/>
+            <line x1="291" y1="235" x2="201" y2="128" stroke="#999"/>
+            <line x1="291" y1="235" x2="381" y2="128" stroke="#999"/>
+            <line x1="291" y1="235" x2="466" y2="235" stroke="#999"/>
+            <line x1="291" y1="235" x2="381" y2="342" stroke="#999"/>
+            <line x1="291" y1="235" x2="201" y2="342" stroke="#999"/>
+            <path d="M116 235 Q141 320 201 342" fill="none" stroke="#bbb" stroke-dasharray="5 4"/>
+          </svg>
+          <div class="node root" style="left:231px; top:217px;">R-HN-01<span class="sub">phát cảnh báo</span></div>
+          <div class="node" style="left:56px;  top:217px;">Thiết bị A<span class="sub">WAN-01 ↔ UPLINK-03</span></div>
+          <div class="node" style="left:141px; top:110px;">Thiết bị B<span class="sub">đầu xa liên kết</span></div>
+          <div class="node" style="left:321px; top:110px;">Thiết bị C<span class="sub">đầu xa liên kết</span></div>
+          <div class="node" style="left:406px; top:217px;">Thiết bị D<span class="sub">đầu xa liên kết</span></div>
+          <div class="node" style="left:321px; top:324px;">Thiết bị E<span class="sub">đầu xa liên kết</span></div>
+          <div class="node" style="left:141px; top:324px;">Thiết bị F<span class="sub">đầu xa liên kết</span></div>
+        </div>
+        <div class="legend">Mỗi nút lá hiển thị tên đầu xa và cổng đối tác; bấm vào nút lá để mở rộng tiếp.</div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="box grow">
+        <h4>4 · Cảnh báo theo trục thời gian</h4>
+        <div class="subhead">Của chính thiết bị này</div>
+        <ul class="plain">
+          <li>ALM-2041 · packet-error · 14:32:00</li>
+          <li>ALM-2031 · CPU cao · 11:20:05</li>
+        </ul>
+        <div class="subhead">Của thiết bị khác, cùng khung giờ</div>
+        <ul class="plain">
+          <li>ALM-2038 · R-HN-07 · 14:33:10</li>
+          <li>ALM-2035 · SW-HN-02 · 13:58:44</li>
+          <li class="placeholder">ALM-2029 · SW-HN-09 · 09:41:33 — ngoài khung giờ</li>
+        </ul>
+        <div class="slot">Cảnh báo liên quan được đánh dấu theo quan hệ liên kết và khoảng thời gian</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>Bấm cảnh báo để đưa vào ngữ cảnh điều tra</span>
+    <span>Bấm thiết bị hoặc cổng để mở dashboard của tài nguyên</span>
+    <span>Bấm mốc thời gian để mở biểu đồ tại đúng cửa sổ phát sinh</span>
+  </div>
+</div>
+</body>
+</html>

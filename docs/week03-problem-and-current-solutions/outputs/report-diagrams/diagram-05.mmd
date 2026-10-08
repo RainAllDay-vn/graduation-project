@@ -1,0 +1,17 @@
+flowchart BT
+    A1["<b>Tầng 4</b><br/>Tầng truy cập"]
+    A2["<b>Tầng 3</b><br/>Tầng định tuyến<br/>(Thuộc phạm vi quản lý)"]
+    A3["<b>Tầng 2</b><br/>Tầng liên kết dữ liệu"]
+    A4["<b>Tầng 1</b><br/>Tầng vật lý"]
+
+    A1 --> A2
+    A2 --> A3
+    A3 --> A4
+    A4 -.-> A3
+    A3 -.-> A2
+    A2 -.-> A1
+
+    classDef scope fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#14532D;
+    classDef outside fill:#F8FAFC,stroke:#94A3B8,color:#475569;
+    class A2 scope;
+    class A1,A3,A4 outside;

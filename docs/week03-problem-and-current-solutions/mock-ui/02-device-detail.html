@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Chi tiết thiết bị — Mock-UI minh họa</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { font-family: Arial, sans-serif; margin: 0; color: #1e293b; }
+  .app { display: flex; height: 100vh; }
+  .sidebar { width: 224px; background: #0f172a; color: #cbd5e1; display: flex; flex-direction: column; }
+  .logo { padding: 16px; color: #fff; font-weight: bold; font-size: 14px; border-bottom: 1px solid #1e293b; }
+  .logo small { display: block; font-weight: normal; color: #94a3b8; font-size: 11px; margin-top: 4px; }
+  .nav { padding: 10px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+  .nav a { color: #cbd5e1; text-decoration: none; font-size: 13px; padding: 9px 12px; border-radius: 6px; }
+  .nav a.active { background: #1e40af; color: #fff; }
+  .side-foot { padding: 12px; font-size: 11px; color: #94a3b8; border-top: 1px solid #1e293b; }
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .topbar { height: 56px; background: #fff; border-bottom: 1px solid #e2e8f0; display: flex;
+    align-items: center; gap: 12px; padding: 0 20px; }
+  .topbar .title { font-size: 15px; font-weight: bold; }
+  .search { flex: 1; max-width: 360px; background: #f1f5f9; border: 1px solid #e2e8f0;
+    border-radius: 6px; padding: 7px 10px; font-size: 13px; color: #64748b; }
+  .user { margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: #2563eb; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+  .content { flex: 1; overflow: auto; background: #f1f5f9; padding: 20px; }
+  .mock { background: #fef9c3; border: 1px solid #facc15; color: #854d0e; font-size: 12px;
+    border-radius: 6px; padding: 8px 12px; margin-bottom: 14px; }
+  .layout { display: grid; grid-template-columns: 300px 1fr; gap: 12px; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+  .card h2 { font-size: 14px; margin: 0; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; }
+  .tree { font-size: 13px; padding: 12px 14px; }
+  .tree ul { list-style: none; padding-left: 16px; margin: 6px 0; }
+  .tree li { padding: 3px 0; }
+  .selected { background: #dbeafe; border-radius: 4px; padding: 2px 6px; font-weight: bold; }
+  .crumb { font-size: 12px; color: #64748b; margin-bottom: 8px; }
+  .pad { padding: 14px 16px; font-size: 13px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px solid #f1f5f9; }
+  .tabs { display: flex; gap: 4px; padding: 10px 16px 0; font-size: 13px; }
+  .tabs span { padding: 8px 12px; border: 1px solid #e2e8f0; border-bottom: none; border-radius: 6px 6px 0 0; background: #f8fafc; }
+  .tabs .on { background: #fff; font-weight: bold; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #f1f5f9; }
+  th { background: #f8fafc; color: #64748b; font-size: 12px; }
+  .unknown { color: #b45309; }
+  .guide-box { position: relative; border: 2px dashed #dc2626; border-radius: 6px; margin: 12px; }
+  .guide-tag { position: absolute; top: -13px; left: 12px; background: #dc2626; color: #fff;
+    font-size: 11px; font-weight: bold; padding: 3px 10px; border-radius: 4px; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="logo">NOC Monitor<small>Bản minh họa giao diện</small></div>
+    <div class="nav">
+      <a href="#">Tổng quan</a>
+      <a href="#">Cảnh báo</a>
+      <a href="#" class="active">Thiết bị</a>
+      <a href="#">Giám sát</a>
+      <a href="#">Topology</a>
+      <a href="#">Báo cáo</a>
+      <a href="#">Cài đặt</a>
+    </div>
+    <div class="side-foot">Mock-UI tự vẽ · v0.2 · dữ liệu giả</div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="title">Thiết bị</div>
+      <div class="search">Tìm thiết bị theo mã, IP, vị trí… (minh họa)</div>
+      <div class="user"><span>🔔 5</span><div class="avatar">KS</div><span>Kỹ sư vận hành<br><small style="color:#64748b">Ca ngày · Hà Nội</small></span></div>
+    </div>
+    <div class="content">
+      <div class="mock">Mock-UI do nhóm tự vẽ — mọi tên thiết bị, số liệu và thời điểm đều là dữ liệu giả.</div>
+      <div class="layout">
+        <div class="card">
+          <h2>Cây phân cấp tài nguyên</h2>
+          <div class="guide-box">
+            <div class="guide-tag">2 · Hai thiết bị liên quan nằm ở hai nhánh khác nhau</div>
+          <div class="tree">
+            Khu vực Hà Nội
+            <ul>
+              <li>Nhóm Router
+                <ul>
+                  <li><span class="selected">R-HN-01</span></li>
+                  <li>R-HN-07</li>
+                  <li>R-HN-12</li>
+                </ul>
+              </li>
+              <li>Nhóm Switch
+                <ul>
+                  <li>SW-HN-02</li>
+                  <li>SW-HN-09</li>
+                </ul>
+              </li>
+              <li>Nhóm Truyền dẫn
+                <ul><li>OPT-HN-05</li></ul>
+              </li>
+            </ul>
+          </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="pad">
+            <div class="crumb">Khu vực Hà Nội / Nhóm Router / R-HN-01</div>
+            <h2 style="border:none;padding:0">R-HN-01 — Router biên · Đang hoạt động</h2>
+          </div>
+          <div class="tabs"><span class="on">Thông tin</span><span>Cổng / Interface</span><span>Cảnh báo liên quan</span><span>Lịch sử thay đổi</span></div>
+          <div class="pad">
+            <div class="row"><span>Mã thiết bị</span><strong>R-HN-01</strong></div>
+            <div class="row"><span>Địa chỉ quản lý</span><span>10.10.1.1</span></div>
+            <div class="row"><span>Vị trí lắp đặt</span><span>Trạm HN-01 · Tủ R2-U10</span></div>
+            <div class="row"><span>Firmware</span><span>VRP-8.2-giả-định</span></div>
+            <div class="row"><span>Uptime</span><span>142 ngày</span></div>
+            <div class="row"><span>Nhóm quản lý</span><span>Khu vực Hà Nội / Nhóm Router</span></div>
+          </div>
+          <h2>Danh sách cổng</h2>
+          <div class="guide-box">
+            <div class="guide-tag">3 · Cột đầu xa trống: quan hệ liên kết không hiển thị</div>
+          <table>
+            <tr><th>Cổng</th><th>Trạng thái</th><th>Thiết bị đầu xa</th><th>Cổng đầu xa</th></tr>
+            <tr><td>WAN-01</td><td>Up · packet-error cao</td><td class="unknown">— (không hiển thị)</td><td class="unknown">—</td></tr>
+            <tr><td>WAN-02</td><td>Up</td><td class="unknown">— (không hiển thị)</td><td class="unknown">—</td></tr>
+            <tr><td>LAN-01</td><td>Up</td><td class="unknown">— (không hiển thị)</td><td class="unknown">—</td></tr>
+          </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

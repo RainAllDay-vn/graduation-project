@@ -1,0 +1,17 @@
+flowchart TB
+    ALERT["1. Nhận cảnh báo"]
+    LOCATE["2. Xác định thiết bị<br/>liên quan"]
+    PATCH["3. Xử lý tạm thời<br/>để giảm ảnh hưởng"]
+    CHECK["4. Đối chiếu trạng thái, chỉ số<br/>với tài liệu chẩn đoán"]
+    ASSESS["5. Đề xuất giả thuyết<br/>về nguyên nhân"]
+    VERIFY["6. Kiểm chứng giả thuyết<br/>và xác định nguyên nhân"]
+    ACT["7. Áp dụng biện pháp<br/>xử lý lâu dài"]
+    RECORD["8. Ghi biên bản<br/>sự cố"]
+
+    ALERT --> LOCATE
+    LOCATE --> CHECK
+    LOCATE --> PATCH
+    CHECK --> ASSESS
+    ASSESS --> VERIFY
+    VERIFY --> ACT
+    VERIFY --> RECORD

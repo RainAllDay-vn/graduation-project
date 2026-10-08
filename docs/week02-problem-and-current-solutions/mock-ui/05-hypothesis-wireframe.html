@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Wireframe giả thuyết — bố cục</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f5f5f5; color: #333; font-family: Arial, sans-serif; }
+  .frame { width: 1280px; height: 800px; background: #fff; border: 1px solid #bbb; margin: 0 auto; display: flex; flex-direction: column; overflow: hidden; }
+  .bar { border-bottom: 1px dashed #999; padding: 9px 16px; font-size: 12px; color: #666; display: flex; gap: 28px; align-items: center; }
+  .bar b { color: #333; }
+  .bar .grp { display: flex; gap: 8px; align-items: center; }
+  .box { border: 1px dashed #888; }
+  .box h4 { margin: 0; font-size: 11px; font-weight: bold; color: #555; padding: 5px 10px; border-bottom: 1px dashed #bbb; background: #fafafa; }
+  .body { flex: 1; display: flex; min-height: 0; }
+  .col-left { width: 430px; border-right: 1px dashed #bbb; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .col-mid { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .grow { flex: 1; }
+  .row { margin: 6px 10px; padding: 6px 8px; border: 1px dashed #bbb; font-size: 11px; color: #555; line-height: 1.4; }
+  .row .xlink { display: block; color: #555; font-size: 10px; margin-top: 3px; text-decoration: underline; }
+  .rank { display: flex; gap: 9px; align-items: flex-start; padding: 7px 10px; font-size: 11px; color: #666; border-bottom: 1px dotted #ddd; line-height: 1.4; }
+  .rank .n { color: #999; width: 18px; flex-shrink: 0; }
+  .rank .t { flex: 1; }
+  .rank .xlink { display: block; color: #555; font-size: 10px; margin-top: 3px; text-decoration: underline; }
+  .rank.sel { background: #efefef; color: #333; font-weight: bold; }
+  .rank.drop { color: #999; font-style: italic; }
+  .note { font-size: 10px; color: #888; padding: 6px 12px 8px; font-style: italic; line-height: 1.4; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="bar">
+    <span class="grp">Cảnh báo <b>ALM-2041</b></span>
+    <span class="grp">Đối tượng <b>R-HN-01 · cổng WAN-01</b></span>
+    <span class="grp">Thời điểm <b>14:32:00 · 15/09/2026</b></span>
+    <span class="grp">Hệ thống <b>chỉ gợi ý, không kết luận nguyên nhân</b></span>
+  </div>
+
+  <div class="body">
+    <div class="col-left">
+      <div class="box">
+        <h4>1 · Tên giả thuyết và thứ hạng</h4>
+        <div class="rank sel">
+          <span class="n">#1</span>
+          <span class="t">Lỗi vật lý hoặc lỗi tín hiệu trên liên kết <b>R-HN-01:WAN-01</b>
+            <span class="xlink">↗ Mở tại nút R-HN-01 trên đồ thị liên kết</span>
+          </span>
+        </div>
+        <div class="rank">
+          <span class="n">#2</span>
+          <span class="t">Suy hao chất lượng đường truyền diện rộng
+            <span class="xlink">↗ Mở tại dòng ALM-2038 trên trục thời gian</span>
+          </span>
+        </div>
+        <div class="rank">
+          <span class="n">#3</span>
+          <span class="t">Lỗi phần cứng tại đầu xa <b>SW-HN-02</b>
+            <span class="xlink">↗ Mở dashboard của SW-HN-02</span>
+          </span>
+        </div>
+        <div class="rank">
+          <span class="n">#4</span>
+          <span class="t">Lỗi tăng lưu lưu lượng do nghẽn cổng</span>
+        </div>
+        <div class="rank drop">
+          <span class="n">#5</span>
+          <span class="t">Lỗi cấu hình tăng lưu lưu lượng — bị loại</span>
+        </div>
+      </div>
+
+      <div class="box grow">
+        <h4>2 · Cơ sở xếp hạng — giả thuyết #1</h4>
+        <div class="row">Số bằng chứng độc lập: <b>4 nguồn</b> — chỉ số, cảnh báo, quan hệ liên kết, tài liệu</div>
+        <div class="row">Mức khớp với tài liệu kỹ thuật: <b>cao</b>
+          <span class="xlink">↗ Mở tài liệu kỹ thuật</span>
+        </div>
+        <div class="row">Khoảng cách thời gian cảnh báo – chỉ số: <b>0 phút</b></div>
+        <div class="row">Mức độ khớp giữa hai đầu liên kết: <b>chưa có dữ liệu, cần thu thập</b></div>
+        <div class="note">Giá trị xếp hạng là tín hiệu để đối chiếu, không phải xác suất tuyệt đối.</div>
+      </div>
+    </div>
+
+    <div class="col-mid">
+      <div class="box">
+        <h4>3 · Bằng chứng ủng hộ</h4>
+        <div class="row">Chỉ số <b>packet-error</b> đạt đỉnh <b>1.250</b> trong khoảng 14:32–14:37 rồi tự hồi phục
+          <span class="xlink">↗ Nguồn: biểu đồ chỉ số R-HN-01:WAN-01 — mở tại mốc 14:32</span>
+        </div>
+        <div class="row">Cảnh báo <b>ALM-2038</b> trên <b>R-HN-07</b> cùng khung thời gian
+          <span class="xlink">↗ Nguồn: trục thời gian cảnh báo — mở tại dòng ALM-2038</span>
+        </div>
+        <div class="row">Liên kết trực tiếp <b>WAN-01</b> ↔ <b>UPLINK-03</b> trên <b>SW-HN-02</b>
+          <span class="xlink">↗ Nguồn: đồ thị liên kết — mở tại nút SW-HN-02</span>
+        </div>
+        <div class="row">Dạng lỗi tăng vọt rồi tự hồi phục khớp với mô tả trong tài liệu
+          <span class="xlink">↗ Nguồn: tài liệu kỹ thuật — mở đoạn tham chiếu</span>
+        </div>
+      </div>
+
+      <div class="box">
+        <h4>4 · Bằng chứng không phù hợp</h4>
+        <div class="row">Cổng <b>WAN-01</b> vẫn ở trạng thái <b>up</b>, không có sự kiện flap — loại trừ giả thuyết ngắt tín hiệu hoàn toàn
+          <span class="xlink">↗ Mở tại khối trạng thái thiết bị</span>
+        </div>
+        <div class="row">Lưu lượng qua cổng không vượt ngưỡng cấu hình — loại trừ giả thuyết nghẽn do tải #4
+          <span class="xlink">↗ Mở tại biểu đồ chỉ số</span>
+        </div>
+        <div class="row">Không có thay đổi cấu hình nào trước 14:32 — loại trừ giả thuyết lỗi cấu hình #5</div>
+      </div>
+
+      <div class="box grow">
+        <h4>5 · Phép kiểm tra đề xuất</h4>
+        <div class="row">Thao tác: đọc thống kê lỗi <b>CRC/FCS</b> trên <b>WAN-01</b> và <b>UPLINK-03</b>
+          <span class="xlink">↗ Chạy tại thiết bị R-HN-01</span>
+        </div>
+        <div class="row">Dữ liệu cần thu thập: số lỗi CRC/FCS ở hai đầu trong cửa sổ 14:30–14:45</div>
+        <div class="row">Kết quả kỳ vọng: lỗi chỉ ở một đầu → lỗi cổng; lỗi ở cả hai đầu → lỗi đường truyền
+          <span class="xlink">↗ Ghi nhận kết quả thành bằng chứng mới cho vòng đánh giá sau</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

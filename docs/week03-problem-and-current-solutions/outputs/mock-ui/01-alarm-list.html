@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Danh sách cảnh báo — Mock-UI minh họa</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { font-family: Arial, sans-serif; margin: 0; color: #1e293b; }
+  .app { display: flex; height: 100vh; }
+  .sidebar { width: 224px; background: #0f172a; color: #cbd5e1; display: flex; flex-direction: column; }
+  .logo { padding: 16px; color: #fff; font-weight: bold; font-size: 14px; border-bottom: 1px solid #1e293b; }
+  .logo small { display: block; font-weight: normal; color: #94a3b8; font-size: 11px; margin-top: 4px; }
+  .nav { padding: 10px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+  .nav a { color: #cbd5e1; text-decoration: none; font-size: 13px; padding: 9px 12px; border-radius: 6px; }
+  .nav a.active { background: #1e40af; color: #fff; }
+  .side-foot { padding: 12px; font-size: 11px; color: #94a3b8; border-top: 1px solid #1e293b; }
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .topbar { height: 56px; background: #fff; border-bottom: 1px solid #e2e8f0; display: flex;
+    align-items: center; gap: 12px; padding: 0 20px; }
+  .topbar .title { font-size: 15px; font-weight: bold; }
+  .search { flex: 1; max-width: 360px; background: #f1f5f9; border: 1px solid #e2e8f0;
+    border-radius: 6px; padding: 7px 10px; font-size: 13px; color: #64748b; }
+  .user { margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: #2563eb; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+  .content { flex: 1; overflow: auto; background: #f1f5f9; padding: 20px; }
+  .mock { background: #fef9c3; border: 1px solid #facc15; color: #854d0e; font-size: 12px;
+    border-radius: 6px; padding: 8px 12px; margin-bottom: 14px; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+  .stat { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; }
+  .stat small { color: #64748b; font-size: 12px; }
+  .stat strong { display: block; font-size: 22px; margin-top: 4px; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 14px; overflow: hidden; }
+  .card h2 { font-size: 14px; margin: 0; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; }
+  .filters { display: flex; gap: 8px; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; font-size: 12px; flex-wrap: wrap; }
+  .filters span { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid #f1f5f9; }
+  th { background: #f8fafc; color: #64748b; font-size: 12px; }
+  tr.target { background: #fef3c7; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; }
+  .major { background: #fee2e2; color: #991b1b; } .minor { background: #fef9c3; color: #854d0e; }
+  .critical { background: #dc2626; color: #fff; } .open { background: #dbeafe; color: #1e40af; }
+  .ack { background: #f1f5f9; color: #475569; }
+  .guide-box { position: relative; border: 2px dashed #dc2626; border-radius: 6px; margin: 12px 16px 16px; }
+  .guide-tag { position: absolute; top: -13px; left: 12px; background: #dc2626; color: #fff;
+    font-size: 11px; font-weight: bold; padding: 3px 10px; border-radius: 4px; white-space: nowrap; }
+  tr.target { outline: 2px dashed #dc2626; outline-offset: -2px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="logo">NOC Monitor<small>Bản minh họa giao diện</small></div>
+    <div class="nav">
+      <a href="#">Tổng quan</a>
+      <a href="#" class="active">Cảnh báo</a>
+      <a href="#">Thiết bị</a>
+      <a href="#">Giám sát</a>
+      <a href="#">Topology</a>
+      <a href="#">Báo cáo</a>
+      <a href="#">Cài đặt</a>
+    </div>
+    <div class="side-foot">Mock-UI tự vẽ · v0.2 · dữ liệu giả</div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="title">Cảnh báo</div>
+      <div class="search">Tìm theo mã cảnh báo, thiết bị… (minh họa)</div>
+      <div class="user"><span>🔔 5</span><div class="avatar">KS</div><span>Kỹ sư vận hành<br><small style="color:#64748b">Ca ngày · Hà Nội</small></span></div>
+    </div>
+    <div class="content">
+      <div class="mock">Mock-UI do nhóm tự vẽ — mọi tên thiết bị, số liệu và thời điểm đều là dữ liệu giả.</div>
+      <div class="stats">
+        <div class="stat"><small>Cảnh báo hôm nay</small><strong>27</strong></div>
+        <div class="stat"><small>Critical</small><strong>2</strong></div>
+        <div class="stat"><small>Major</small><strong>6</strong></div>
+        <div class="stat"><small>Đang mở</small><strong>11</strong></div>
+      </div>
+      <div class="card">
+        <h2>Cảnh báo đang mở</h2>
+        <div class="filters"><span>Mức: Tất cả</span><span>Trạng thái: Đang mở</span><span>15/09/2026</span><span>Nguồn: Tất cả</span></div>
+        <div class="guide-box">
+          <div class="guide-tag">1 · Điểm bắt đầu: cảnh báo chỉ có thiết bị + thời điểm, thiếu ngữ cảnh liên quan</div>
+        <table>
+          <tr><th></th><th>Mã</th><th>Thiết bị</th><th>Nội dung</th><th>Thời điểm</th><th>Mức</th><th>Trạng thái</th></tr>
+          <tr class="target"><td>☑</td><td>ALM-2041</td><td>R-HN-01</td><td>Packet-error cao trên WAN-01</td><td>14:32:00</td><td><span class="badge major">Major</span></td><td><span class="badge open">Đang mở</span></td></tr>
+          <tr><td>☐</td><td>ALM-2038</td><td>R-HN-07</td><td>Packet-error cao trên WAN-02</td><td>14:33:10</td><td><span class="badge major">Major</span></td><td><span class="badge open">Đang mở</span></td></tr>
+          <tr><td>☐</td><td>ALM-2035</td><td>SW-HN-02</td><td>Nhiệt độ cao</td><td>13:58:44</td><td><span class="badge minor">Minor</span></td><td><span class="badge ack">Đã xác nhận</span></td></tr>
+          <tr><td>☐</td><td>ALM-2031</td><td>R-HN-01</td><td>CPU cao</td><td>11:20:05</td><td><span class="badge minor">Minor</span></td><td><span class="badge ack">Đã xác nhận</span></td></tr>
+          <tr><td>☐</td><td>ALM-2029</td><td>SW-HN-09</td><td>Mất kết nối quản trị</td><td>09:41:33</td><td><span class="badge critical">Critical</span></td><td><span class="badge open">Đang mở</span></td></tr>
+        </table>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Lịch sử cảnh báo (past alarms)</h2>
+        <table>
+          <tr><th>Mã</th><th>Thiết bị</th><th>Nội dung</th><th>Thời điểm</th><th>Mức</th><th>Trạng thái</th></tr>
+          <tr><td>ALM-2014</td><td>R-HN-01</td><td>Packet-error cao trên WAN-01</td><td>02/09/2026 03:12</td><td><span class="badge minor">Minor</span></td><td><span class="badge ack">Đã đóng</span></td></tr>
+          <tr><td>ALM-1988</td><td>SW-HN-02</td><td>Cổng UPLINK-03 chập chờn</td><td>28/08/2026 22:05</td><td><span class="badge minor">Minor</span></td><td><span class="badge ack">Đã đóng</span></td></tr>
+          <tr><td>ALM-1960</td><td>R-HN-07</td><td>Mất gói định kỳ</td><td>21/08/2026 10:44</td><td><span class="badge minor">Minor</span></td><td><span class="badge ack">Đã đóng</span></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

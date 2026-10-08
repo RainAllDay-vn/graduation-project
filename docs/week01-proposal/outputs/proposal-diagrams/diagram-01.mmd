@@ -1,0 +1,35 @@
+flowchart TB
+    classDef module fill:#2563EB,stroke:#1D4ED8,stroke-width:2px,color:#FFFFFF;
+    classDef datastore fill:#059669,stroke:#047857,stroke-width:2px,color:#FFFFFF;
+    classDef external fill:#64748B,stroke:#475569,stroke-width:1px,color:#FFFFFF;
+
+    Sources[Hệ thống nguồn]
+    User[Người dùng]
+
+    subgraph Platform[Hệ thống]
+        SYNC[Integration Module]
+        subgraph Database[Context Module]
+            GRAPH[(Topology & Dependency Graph)]
+            TELEMETRY[(Telemetry & Alarm Store)]
+            DOCS[(Document Store)]
+        end
+        AI[AI Module]
+        VIEW[Web Module]
+    end
+
+    User -->|Cung cấp tài liệu| DOCS
+    Sources -->|Đồng bộ một chiều| SYNC
+
+    SYNC -->|Topology và quan hệ phụ thuộc| GRAPH
+    SYNC -->|Chỉ số đo lường, cảnh báo và sự kiện| TELEMETRY
+    Database -->|Cung cấp thông tin| VIEW
+    Database -->|Cung cấp ngữ cảnh| AI
+    DOCS -->|Cung cấp trích đoạn tài liệu| AI
+    AI -->|Gợi ý và bằng chứng| VIEW
+
+    class SYNC,AI,VIEW module
+    class GRAPH,TELEMETRY,DOCS datastore
+    class Sources,User external
+
+    style Platform fill:#F8FAFC,stroke:#CBD5E1,stroke-width:1px,color:#334155
+    style Database fill:#F8FAFC,stroke:#CBD5E1,stroke-width:1px,color:#334155

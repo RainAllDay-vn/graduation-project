@@ -1,0 +1,24 @@
+flowchart LR
+    subgraph SRC["Đầu vào"]
+        TOPO["Topology và trạng thái<br/>thiết bị, liên kết"]
+        DOC["Tài liệu kỹ thuật"]
+        ALERT["Cảnh báo và sự cố"]
+        ASK["Câu hỏi của kỹ sư"]
+    end
+
+    SYSTEM["Hệ thống hỗ trợ điều tra"]
+
+    subgraph OUT["Đầu ra"]
+        VIEW["Dashboard sự cố<br/> kèm ngữ cảnh đầy đủ"]
+        HINT["Giả thuyết và gợi ý<br/> cho các bước tiếp theo"]
+    end
+
+    TOPO --> SYSTEM
+    DOC --> SYSTEM
+    ALERT --> SYSTEM
+    ASK --> SYSTEM
+    SYSTEM --> VIEW
+    SYSTEM --> HINT
+
+    classDef planned fill:#F8FAFC,stroke:#94A3B8,stroke-dasharray:4 3,color:#475569;
+    class DOC planned;
