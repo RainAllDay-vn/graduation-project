@@ -13,10 +13,39 @@ from pathlib import Path
 
 MERMAID_CLI_VERSION = "11.17.0"
 PNG_SCALE = "3"
+# Một sơ đồ được nhúng bằng PNG thay vì SVG khi khối mermaid của nó chứa marker
+# "%% export: png %%". Marker nằm ngay trong từng file nên không ảnh hưởng sơ đồ
+# cùng vị trí ở file khác.
+PNG_EXPORT_MARKER = re.compile(
+    r"(?im)^[ \t]*%%[ \t]*export:[ \t]*png[ \t]*%%[ \t]*$"
+)
 MERMAID_BLOCK = re.compile(
     r"(?ms)^[ \t]*```mermaid[^\r\n]*\r?\n(.*?)^[ \t]*```[ \t]*$"
 )
 ABSOLUTE_PATH_TO_MD = "/home/ubuntu/Workspace/Personal Projects/Viettel GD2/graduation-project/docs/week03-problem-and-current-solutions/report.md"
+
+
+def pad_png_to_square(png_path: Path) -> bool:
+    """Canh PNG về chính giữa một khung vuông nền trong suốt.
+
+    Khung vuông khiến trình hiển thị giới hạn theo chiều cao phải co cả chiều rộng,
+    nhờ đó phần sơ đồ nằm trong khung bị thu nhỏ lại.
+    """
+    from PIL import Image
+
+    with Image.open(png_path) as image:
+        if image.mode != "RGBA":
+            image = image.convert("RGBA")
+        side = max(image.width, image.height)
+        if (image.width, image.height) == (side, side):
+            return False
+        canvas = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+        canvas.alpha_composite(
+            image, ((side - image.width) // 2, (side - image.height) // 2)
+        )
+        canvas.save(png_path)
+
+    return True
 
 
 def main() -> int:
@@ -97,7 +126,10 @@ def main() -> int:
         if source_changed:
             diagram_source.write_text(diagram_content, encoding="utf-8")
 
-        for diagram_image in (diagram_svg, diagram_png):
+        png_only = bool(PNG_EXPORT_MARKER.search(diagram_content))
+        targets = (diagram_png,) if png_only else (diagram_svg, diagram_png)
+
+        for diagram_image in targets:
             if (
                 not source_changed
                 and diagram_image.is_file()
@@ -128,7 +160,18 @@ def main() -> int:
                 print(f"Failed to render {diagram_image.name}", file=sys.stderr)
                 return error.returncode
 
-        replacement = f"![Mermaid diagram {index}](diagrams/{diagram_name}.svg)"
+        if png_only:
+            if diagram_svg.is_file():
+                diagram_svg.unlink()
+                print(
+                    f"Removed {diagram_svg.name} (diagram is embedded as PNG)",
+                    flush=True,
+                )
+            if pad_png_to_square(diagram_png):
+                print(f"Padded {diagram_png.name} to a square canvas", flush=True)
+
+        suffix = ".png" if png_only else ".svg"
+        replacement = f"![Mermaid diagram {index}](diagrams/{diagram_name}{suffix})"
         replacements.append((block.start(), block.end(), replacement))
 
     rendered_markdown = source
