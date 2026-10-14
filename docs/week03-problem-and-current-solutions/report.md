@@ -152,7 +152,7 @@ flowchart LR
     subgraph SRC["Đầu vào"]
         TOPO["Topology và trạng thái<br/>thiết bị, liên kết"]
         DOC["Tài liệu kỹ thuật"]
-        ALERT["Cảnh báo và sự cố"]
+        ALERT["Sự cố"]
         ASK["Câu hỏi của kỹ sư"]
     end
 
@@ -179,7 +179,7 @@ flowchart LR
 
 ### a. Topology hệ thống
 
-Trong hệ thống này, mỗi node của topology là một thiết bị đang được quản lý. Đây là đơn vị nhỏ nhất mà hệ thống theo dõi được trạng thái, chỉ số và phát sinh cảnh báo. Vì mỗi cảnh báo và mỗi chuỗi chỉ số đều gắn với đúng một thiết bị, hoặc với đúng một liên kết giữa hai thiết bị, nên khi điều tra sự cố, hệ thống không phải suy ra thiết bị nào từ một vị trí địa lý. Phạm vi của loại thiết bị được giới hạn ở tầng Internet theo quy ước TCP/IP, tức tầng định tuyến.
+Trong hệ thống này, mỗi node của topology là một thiết bị đang được quản lý. Đây là đơn vị nhỏ nhất mà hệ thống theo dõi được trạng thái, chỉ số và phát sinh cảnh báo. Phạm vi của loại thiết bị được giới hạn ở tầng Internet theo quy ước TCP/IP, tức tầng định tuyến.
 
 ```mermaid
 %% export: png %%
@@ -230,11 +230,11 @@ Tài liệu kỹ thuật mà hệ thống xử lý chia thành ba loại:
 
 Trước khi được hệ thống sử dụng, các tài liệu trên được coi là đã được tiền xử lý thành tài liệu dạng chữ.
 
-### c. Cảnh báo
+### c. Sự cố
 
-Đầu vào cảnh báo trong hệ thống được tổ chức theo hai cấp. Cấp dưới là cảnh báo, là đơn vị nhỏ nhất mà hệ thống tiếp nhận, mỗi cảnh báo gắn với đúng một thiết bị và gồm các thông tin định danh là mã lỗi, định danh thiết bị, thời điểm phát sinh, mức độ thuộc một trong hai mức warning và error, và nội dung thông báo. Cấp trên là sự cố, là bản ghi công việc gom nhiều cảnh báo lại, thời điểm mở, trạng thái hiện tại và danh sách các cảnh báo thuộc về nó. Vì các cảnh báo trong cùng một sự cố có thể phát sinh ở những thời điểm khác nhau và trên những thiết bị khác nhau, nên sự cố mang ý nghĩa một vấn đề đang diễn ra, còn cảnh báo chỉ là một dấu vết đơn lẻ của vấn đề đó. Việc gộp và chống lặp cảnh báo được thực hiện bởi hệ thống giám sát bên ngoài trước khi chuyển giao, nên không thuộc phạm vi của dự án; đầu vào mà hệ thống tiếp nhận đã qua bước này.
+Đầu vào sự cố trong hệ thống được tổ chức theo hai cấp. Cấp dưới là cảnh báo, là đơn vị nhỏ nhất mà hệ thống tiếp nhận, mỗi cảnh báo gắn với đúng một thiết bị và gồm các thông tin định danh là mã lỗi, định danh thiết bị, thời điểm phát sinh, mức độ thuộc một trong hai mức warning và error, và nội dung thông báo. Cấp trên là sự cố, là bản ghi công việc gom nhiều cảnh báo lại, thời điểm mở, trạng thái hiện tại và danh sách các cảnh báo thuộc về nó. Vì các cảnh báo trong cùng một sự cố có thể phát sinh ở những thời điểm khác nhau và trên những thiết bị khác nhau, nên sự cố mang ý nghĩa một vấn đề đang diễn ra, còn cảnh báo chỉ là một dấu vết đơn lẻ của vấn đề đó. Việc gộp và chống lặp cảnh báo được thực hiện bởi hệ thống giám sát bên ngoài trước khi chuyển giao, nên không thuộc phạm vi của dự án; đầu vào mà hệ thống tiếp nhận đã qua bước này.
 
-Đầu vàu cảnh báo thuộc một trong hai loại. Loại thứ nhất là cảnh báo theo mã lỗu, được tạo ra khi thiết bị gặp lỗi và phát ra mã lỗi kèm theo, nên mã lỗi mang ý nghĩa do nhà sản xuất quy định và cần tra trong tài liệu mã lỗi do nhà sản xuất ban hành. Loại thứ hai là cảnh báo theo định nghĩa, không đến từ thiết bị, mà do các kỹ sư viết ra các phép kiểm tra dựa trên trạng thái và chỉ số của thiết bị; khi một phép kiểm tra không đạt thì hệ thống giám sát bên ngoài tạo ra cảnh báo rồi chuyển giao, và mã lỗi lúc này là mã theo quy ước nội bộ nên cần tra trong tài liệu wiki nội bộ.
+Các cảnh báo trong sự cố thuộc một trong hai loại. Loại thứ nhất là cảnh báo theo mã lỗi, được tạo ra khi thiết bị gặp lỗi và phát ra mã lỗi kèm theo, nên mã lỗi mang ý nghĩa do nhà sản xuất quy định và cần tra trong tài liệu mã lỗi do nhà sản xuất ban hành. Loại thứ hai là cảnh báo theo định nghĩa, không đến từ thiết bị, mà do các kỹ sư viết ra các phép kiểm tra dựa trên trạng thái và chỉ số của thiết bị; khi một phép kiểm tra không đạt thì hệ thống giám sát bên ngoài tạo ra cảnh báo rồi chuyển giao, và mã lỗi lúc này là mã theo quy ước nội bộ nên cần tra trong tài liệu wiki nội bộ.
 
 ### d. Câu hỏi của kỹ sư
 
