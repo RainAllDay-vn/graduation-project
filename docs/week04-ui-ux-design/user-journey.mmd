@@ -1,0 +1,20 @@
+flowchart TD
+    S1["<b>Giai đoạn 1: Tiếp nhận sự cố (Default Landing)</b><br/><i>File: 01-overview.html</i><br/>• Kỹ sư mở sự cố INC-2026-0915<br/>• Nhìn thấy 3 cảnh báo & Top 3 giả thuyết AI<br/>• Topology hiển thị tổng quan vùng ảnh hưởng"]
+
+    S2["<b>Giai đoạn 2: Điều tra giả thuyết #1 (Hypothesis Focus)</b><br/><i>File: 02-theory-focus.html</i><br/>• Topology phóng to, highlight đỏ pulsing link SW02 ↔ R01<br/>• Làm mờ các node ngoại vi để cô lập điểm nghi ngờ<br/>• Inspector hiện đỉnh lỗi CRC 1.250 tại WAN-01"]
+
+    S3["<b>Giai đoạn 3: Soi chi tiết thiết bị & Cổng quang (Deep Inspect)</b><br/><i>File: 03-node-inspect.html</i><br/>• Kỹ sư nhấp vào Node SW-HN-02<br/>• Inspector chuyển sang thông số switch & transceiver quang<br/>• Phát hiện Rx Power suy giảm (-18.4 dBm) & SFP quá nhiệt"]
+
+    S4["<b>Giai đoạn 4: Đánh giá diện ảnh hưởng L3 (Service Impact)</b><br/><i>File: 04-service-impact.html</i><br/>• Kỹ sư bật lớp 'L3 Luồng dịch vụ'<br/>• Topology hiện luồng lưu lượng bị rẽ tiếp sang R-HN-07<br/>• Giải thích lý do cảnh báo thứ cấp ALM-2038 phát sinh"]
+
+    S5["<b>Giai đoạn 5: Xác nhận nguyên nhân & Khắc phục (Resolution)</b><br/><i>File: 05-resolved.html</i><br/>• Kỹ sư copy lệnh CLI kiểm tra, bấm 'Xác nhận nguyên nhân'<br/>• Hệ thống cập nhật trạng thái sự cố sang MITIGATED<br/>• Lưu biên bản chẩn đoán vào hồ sơ sự cố"]
+
+    S1 -->|"1. Click Giả thuyết #1"| S2
+    S2 -->|"2. Click Node SW-HN-02"| S3
+    S3 -->|"3. Bật tầng 'L3 Service Flow'"| S4
+    S4 -->|"4. Bấm 'Xác nhận nguyên nhân'"| S5
+
+    classDef step fill:#f8fafc,stroke:#0284c7,stroke-width:2px,color:#0f172a;
+    classDef action fill:#ecfdf5,stroke:#10b981,stroke-width:2px,color:#065f46;
+    class S1,S2,S3,S4 step;
+    class S5 action;

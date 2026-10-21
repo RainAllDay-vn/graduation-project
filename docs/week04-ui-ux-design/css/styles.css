@@ -1,0 +1,175 @@
+/* Production custom extensions complementing Tailwind CSS */
+
+/* Smooth custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Pulsing fault animation for root cause links */
+@keyframes fault-pulse {
+  0% {
+    stroke-width: 3.5px;
+    stroke: #ef4444;
+    filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.4));
+  }
+  50% {
+    stroke-width: 5.5px;
+    stroke: #dc2626;
+    filter: drop-shadow(0 0 8px rgba(220, 38, 38, 0.7));
+  }
+  100% {
+    stroke-width: 3.5px;
+    stroke: #ef4444;
+    filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.4));
+  }
+}
+.pulsing-fault-line {
+  animation: fault-pulse 1.8s infinite ease-in-out;
+}
+
+/* Flowing packet traffic dash animation */
+@keyframes traffic-dash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+.flowing-traffic {
+  stroke-dasharray: 6 4;
+  animation: traffic-dash 1.2s linear infinite;
+}
+
+/* Active node selection highlight ring */
+.node-active-ring {
+  stroke: #0284c7 !important;
+  stroke-width: 3.5px !important;
+  filter: drop-shadow(0 0 6px rgba(2, 132, 199, 0.5)) !important;
+}
+
+/* Topology node hover and dragging transitions */
+.topo-node {
+  cursor: grab;
+  transition: opacity 0.2s ease;
+}
+.topo-node:active {
+  cursor: grabbing;
+}
+.topo-node:hover circle {
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
+}
+
+/* Smooth opacity transition for sub-graph filtering */
+.topo-edge, .topo-badge {
+  transition: opacity 0.25s ease, stroke 0.25s ease, stroke-width 0.25s ease;
+}
+
+/* Floating Hover Tooltip */
+#topo-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 50;
+  display: none;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 260px;
+  line-height: 1.4;
+  transition: opacity 0.15s ease;
+}
+
+/* Toast Notification */
+#toast-notification {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  border: 1px solid #334155;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+  pointer-events: none;
+}
+#toast-notification.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Accordion chevron animation */
+.acc-chevron {
+  transition: transform 0.2s ease;
+}
+.acc-chevron.open {
+  transform: rotate(90deg);
+}
+
+/* Sidebar Collapse Transitions */
+.sidebar-collapsible {
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease, opacity 0.2s ease;
+}
+.sidebar-collapsible.collapsed {
+  width: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  border-width: 0 !important;
+}
+
+/* Collapse Toggle Button Bars */
+.sidebar-toggle-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 30;
+  width: 18px;
+  height: 48px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  font-size: 9px;
+  color: #64748b;
+  transition: all 0.15s ease;
+}
+.sidebar-toggle-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  width: 22px;
+}
+.toggle-left {
+  left: 0;
+  border-radius: 0 6px 6px 0;
+  border-left: none;
+}
+.toggle-right {
+  right: 0;
+  border-radius: 6px 0 0 6px;
+  border-right: none;
+}
