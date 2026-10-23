@@ -3,14 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Viettel NOC — Incident Topology Radar (INC-2026-0915)</title>
+  <title>NOC Command Center — Incident Topology Radar (INC-2026-0915)</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
+          colors: {
+            slate: {
+              850: '#151e2e',
+              950: '#070a10',
+            }
+          },
           fontFamily: {
             sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
             mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
@@ -23,94 +30,69 @@
   <!-- Production Modular Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="w-screen h-screen m-0 p-0 overflow-hidden bg-slate-100 text-slate-800 antialiased select-none flex flex-col font-sans">
+<body class="w-screen h-screen m-0 p-0 overflow-hidden bg-[#0B0F17] text-slate-200 antialiased select-none flex flex-col font-sans">
 
-  <!-- FULL-WIDTH PRODUCTION TOP NAVBAR -->
-  <header class="w-full h-14 bg-white border-b border-slate-200 px-5 flex items-center justify-between shrink-0 z-30 shadow-xs">
+  <!-- FULL-WIDTH PRODUCTION TOP NAVBAR (NOC COMMAND BAR) -->
+  <header class="w-full h-16 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/90 px-10 flex items-center justify-between shrink-0 z-30 shadow-lg">
     
     <!-- Left: Brand & Incident Status -->
-    <div class="flex items-center gap-3.5">
-      <!-- Viettel Brand Chip -->
-      <div class="flex items-center gap-2.5 pr-4 border-r border-slate-200">
-        <div class="w-8 h-8 rounded-lg bg-rose-600 text-white font-black flex items-center justify-center text-xs tracking-tighter shadow-sm">
-          VT
+    <div class="flex items-center gap-4">
+      <!-- Operations Brand Chip -->
+      <div class="flex items-center gap-3 pr-6 border-r border-slate-800">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-600 to-blue-700 text-white font-black flex items-center justify-center text-xs tracking-tighter shadow-md shadow-cyan-950/50">
+          NOC
         </div>
         <div>
-          <div class="text-[11px] font-extrabold tracking-tight text-slate-900 uppercase leading-tight flex items-center gap-1.5">
-            Viettel NOC
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <div class="text-xs font-black tracking-tight text-white uppercase leading-tight flex items-center gap-2">
+            NOC COMMAND
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           </div>
-          <div class="text-[9.5px] text-slate-400 font-medium tracking-wide">Incident Radar</div>
+          <div class="text-[10px] text-slate-400 font-mono tracking-wider mt-0.5">TOPOLOGY RADAR</div>
         </div>
       </div>
 
       <!-- Incident Meta Badges -->
-      <div class="flex items-center gap-2">
-        <h1 class="font-extrabold text-sm tracking-tight text-slate-900">INC-2026-0915</h1>
-        <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-100 text-rose-700 border border-rose-300 flex items-center gap-1 shadow-xs">
-          <span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>
-          CRITICAL
+      <div class="flex items-center gap-3">
+        <h1 class="font-black text-sm tracking-tight text-white font-mono">INC-2026-0915</h1>
+        <span class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-rose-950/80 text-rose-400 border border-rose-800 flex items-center gap-1.5 shadow-sm">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
+          P1 CRITICAL
         </span>
-        <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+        <span class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-950/80 text-amber-300 border border-amber-800">
           ĐANG ĐIỀU TRA
         </span>
-        <span class="hidden sm:inline-flex px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
-          Khởi phát: 13:58:44
-        </span>
-        <span class="hidden md:inline-flex px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
-          3 cảnh báo
+        <span class="hidden sm:inline-flex px-2.5 py-1 rounded-md text-[11px] font-mono text-slate-400 bg-slate-800/60 border border-slate-700/60">
+          Khởi phát: 13:58:44 (T+34m)
         </span>
       </div>
     </div>
 
-    <!-- Right Controls: Layer & Scope Switchers & Shortcuts -->
-    <div class="flex items-center gap-4 text-xs text-slate-500">
+    <!-- Right Controls: Quick Hotkeys & Duty Shift -->
+    <div class="flex items-center gap-4 text-xs">
       
-      <!-- Layer Switcher -->
-      <div class="flex items-center gap-2">
-        <span class="font-semibold text-slate-600 text-[11px]">Tầng mạng:</span>
-        <div class="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200 gap-0.5 shadow-inner">
-          <button id="btn-layer-l2" onclick="window.app.setLayer('l2')" class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-white text-slate-900 shadow-xs transition cursor-pointer">
-            L2 Vật lý (Quang)
-          </button>
-          <button id="btn-layer-l3" onclick="window.app.setLayer('l3')" class="px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-600 hover:text-slate-900 transition cursor-pointer">
-            L3 Luồng dịch vụ
-          </button>
-        </div>
-      </div>
+      <!-- Link to Provincial Router Prototypes -->
+      <a href="prototypes/index.html" class="px-3 py-1.5 bg-cyan-950/90 hover:bg-cyan-900 text-cyan-300 border border-cyan-700/80 rounded-xl text-xs font-semibold shadow-md flex items-center gap-1.5 transition">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+        554-Device Prototypes ➔
+      </a>
 
-      <!-- Scope Switcher -->
-      <div class="flex items-center gap-2">
-        <span class="font-semibold text-slate-600 text-[11px]">Phạm vi:</span>
-        <div class="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200 gap-0.5 shadow-inner">
-          <button id="btn-scope-sub" onclick="window.app.setScope('sub')" class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-white text-slate-900 shadow-xs transition cursor-pointer">
-            Khu vực ảnh hưởng
-          </button>
-          <button id="btn-scope-1hop" onclick="window.app.setScope('1hop')" class="px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-600 hover:text-slate-900 transition cursor-pointer">
-            +1 Hop
-          </button>
-          <button id="btn-scope-ring" onclick="window.app.setScope('ring')" class="px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-600 hover:text-slate-900 transition cursor-pointer">
-            Toàn Ring
-          </button>
-        </div>
-      </div>
-
-      <!-- Keyboard Shortcuts Tooltip Chip -->
-      <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-md text-[10.5px] text-slate-500 font-medium" title="Phím tắt nhanh">
-        <span class="font-mono bg-slate-200 text-slate-700 px-1 py-0.2 rounded font-bold">F</span> Fit
-        <span class="font-mono bg-slate-200 text-slate-700 px-1 py-0.2 rounded font-bold ml-1">1-3</span> Theory
-        <span class="font-mono bg-slate-200 text-slate-700 px-1 py-0.2 rounded font-bold ml-1">ESC</span> Hủy
+      <!-- Quick Keyboard Shortcuts Pill -->
+      <div class="hidden md:flex items-center gap-2 px-4 py-1.5 bg-slate-800/70 border border-slate-700/70 rounded-xl text-[11px] text-slate-300 shadow-sm" title="Phím tắt nhanh">
+        <span class="font-mono bg-slate-900 border border-slate-700 text-cyan-400 px-1.5 py-0.5 rounded font-bold">F</span> Fit
+        <span class="font-mono bg-slate-900 border border-slate-700 text-cyan-400 px-1.5 py-0.5 rounded font-bold ml-1.5">1-3</span> Theory
+        <span class="font-mono bg-slate-900 border border-slate-700 text-cyan-400 px-1.5 py-0.5 rounded font-bold ml-1.5">[ / ]</span> Sidebars
+        <span class="font-mono bg-slate-900 border border-slate-700 text-cyan-400 px-1.5 py-0.5 rounded font-bold ml-1.5">ESC</span> Hủy
       </div>
 
       <!-- User / Shift Badge -->
-      <div class="flex items-center gap-2 pl-3 border-l border-slate-200">
-        <div class="w-7 h-7 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center font-bold text-slate-700 text-[10px]">
+      <div class="flex items-center gap-3 pl-5 border-l border-slate-800">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 border border-slate-700 flex items-center justify-center font-bold text-cyan-400 text-[11px] shadow-sm">
           NOC
         </div>
         <div class="hidden sm:block text-left">
-          <div class="text-[10.5px] font-bold text-slate-800 leading-tight">Ca trực HN-01</div>
-          <div class="text-[9px] text-emerald-600 font-semibold leading-tight flex items-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Online
+          <div class="text-xs font-bold text-slate-200 leading-tight">Ca trực HN-01</div>
+          <div class="text-[10px] text-emerald-400 font-medium leading-tight flex items-center gap-1.5 mt-0.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Live Telemetry
           </div>
         </div>
       </div>
@@ -119,215 +101,311 @@
   </header>
 
   <!-- MAIN FULL-VIEWPORT 3-COLUMN WORKSPACE -->
-  <div class="flex-1 flex min-h-0 w-full relative overflow-hidden bg-slate-50">
+  <div class="flex-1 flex min-h-0 w-full relative overflow-hidden bg-[#070a10]">
 
     <!-- LEFT SIDEBAR: ALARMS & THEORIES (NAVIGATOR) -->
-    <aside id="sidebar-left" class="sidebar-collapsible w-80 bg-white border-r border-slate-200 flex flex-col p-3.5 gap-4 overflow-y-auto shrink-0 shadow-xs z-20">
+    <aside id="sidebar-left" class="sidebar-collapsible w-88 bg-slate-900/95 border-r border-slate-800 flex flex-col p-6 gap-6 overflow-y-auto shrink-0 shadow-xl z-20">
       
       <!-- 1. Alarms Section -->
       <div>
-        <div class="flex justify-between items-center text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">
-          <span>1. Cảnh báo phát sinh</span>
-          <span class="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px] font-bold">3 sự kiện</span>
+        <div class="flex justify-between items-center text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2.5">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+            1. Cảnh báo phát sinh
+          </span>
+          <span class="bg-slate-800 text-slate-300 border border-slate-700 px-2 py-0.5 rounded-md text-[10px] font-mono">3 SỰ KIỆN</span>
         </div>
-        <div class="space-y-1.5">
-          <div class="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 text-xs hover:bg-slate-100 transition cursor-pointer" onclick="window.app.handleNodeSelect('SW-HN-02')">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span>
-            <span class="font-mono text-[11px] text-slate-500">13:58</span>
-            <span class="font-bold text-slate-900">SW-HN-02</span>
-            <span class="text-[10px] text-slate-500 ml-auto truncate max-w-[95px]" title="Nhiệt độ cao">Nhiệt độ cao</span>
+        <div class="space-y-2">
+          <!-- Alarm 1 -->
+          <div class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 text-xs hover:bg-slate-800 hover:border-slate-600 transition cursor-pointer shadow-sm" onclick="window.app.handleNodeSelect('SW-HN-02')">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0"></span>
+            <span class="font-mono text-[11.5px] text-slate-400">13:58</span>
+            <span class="font-bold text-slate-100">SW-HN-02</span>
+            <span class="text-[10.5px] text-amber-300 ml-auto truncate max-w-[105px] font-medium" title="Nhiệt độ cao">Nhiệt độ cao</span>
           </div>
-          <div class="flex items-center gap-2 p-2.5 rounded-lg bg-rose-50 border border-rose-300 text-xs shadow-xs cursor-pointer" onclick="window.app.handleNodeSelect('R-HN-01')">
-            <span class="w-2.5 h-2.5 rounded-full bg-rose-600 shrink-0 animate-ping"></span>
-            <span class="font-mono text-[11px] text-rose-700 font-bold">14:32</span>
-            <span class="font-bold text-rose-950">R-HN-01</span>
-            <span class="text-[10px] text-rose-700 ml-auto font-bold truncate max-w-[95px]" title="Lỗi CRC WAN-01">Lỗi CRC WAN-01</span>
+          <!-- Alarm 2 (Root) -->
+          <div class="flex items-center gap-2.5 p-3 rounded-xl bg-rose-950/40 border border-rose-800 text-xs shadow-md shadow-rose-950/40 cursor-pointer" onclick="window.app.handleNodeSelect('R-HN-01')">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0 animate-ping"></span>
+            <span class="font-mono text-[11.5px] text-rose-400 font-bold">14:32</span>
+            <span class="font-bold text-white">R-HN-01</span>
+            <span class="text-[10.5px] text-rose-300 ml-auto font-bold truncate max-w-[105px]" title="Lỗi CRC WAN-01">Lỗi CRC WAN-01</span>
           </div>
-          <div class="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 text-xs hover:bg-slate-100 transition cursor-pointer" onclick="window.app.handleNodeSelect('R-HN-07')">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span>
-            <span class="font-mono text-[11px] text-slate-500">14:33</span>
-            <span class="font-bold text-slate-900">R-HN-07</span>
-            <span class="text-[10px] text-slate-500 ml-auto truncate max-w-[95px]" title="Tái định tuyến">Tái định tuyến</span>
+          <!-- Alarm 3 -->
+          <div class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 text-xs hover:bg-slate-800 hover:border-slate-600 transition cursor-pointer shadow-sm" onclick="window.app.handleNodeSelect('R-HN-07')">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0"></span>
+            <span class="font-mono text-[11.5px] text-slate-400">14:33</span>
+            <span class="font-bold text-slate-100">R-HN-07</span>
+            <span class="text-[10.5px] text-amber-300 ml-auto truncate max-w-[105px] font-medium" title="Tái định tuyến">Tái định tuyến</span>
           </div>
         </div>
       </div>
 
       <!-- 2. AI Theories Section -->
       <div class="flex-1 flex flex-col">
-        <div class="flex justify-between items-center text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">
-          <span>2. Giả thuyết AI đề xuất</span>
-          <span class="text-sky-600 font-bold">3 giả thuyết</span>
+        <div class="flex justify-between items-center text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2.5">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+            2. Giả thuyết AI đề xuất
+          </span>
+          <span class="text-sky-400 font-bold font-mono text-[10.5px]">TOP 3</span>
         </div>
 
         <!-- Theory Cards Stack -->
-        <div class="space-y-2.5">
-          <!-- Theory 1 (Click to focus on canvas) -->
-          <div id="theory-card-1" class="theory-card block p-3 rounded-xl border-2 border-dashed border-sky-500 bg-sky-50/70 hover:bg-sky-100/70 transition shadow-xs group cursor-pointer" onclick="window.app.selectTheory(1)">
-            <div class="flex justify-between items-center mb-1.5">
-              <span class="text-[11px] font-extrabold text-sky-900 group-hover:text-sky-950">GIẢ THUYẾT #1</span>
-              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-200 text-sky-900 shadow-xs">88% Match</span>
+        <div class="space-y-3">
+          <!-- Theory 1 (Hero Actionable Micro-Card) -->
+          <div id="theory-card-1" class="theory-card block p-4 rounded-xl border border-sky-500/80 bg-gradient-to-br from-sky-950/60 to-slate-900/90 hover:from-sky-900/60 hover:to-slate-850 transition shadow-lg shadow-sky-950/40 group cursor-pointer" onclick="window.app.selectTheory(1)">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-[11.5px] font-black text-sky-300 group-hover:text-sky-200 tracking-wide">GIẢ THUYẾT #1</span>
+              <span class="px-2 py-0.5 rounded-md text-[10.5px] font-black bg-sky-500 text-slate-950 shadow-sm font-mono">88% Match</span>
             </div>
-            <p class="text-xs font-bold text-slate-900 leading-snug mb-2">Suy hao tín hiệu cáp quang SW-HN-02 ↔ R-HN-01</p>
-            <div class="inline-flex items-center gap-1.5 bg-sky-600 group-hover:bg-sky-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg transition shadow-sm">
-              <span>Khoanh vùng giả thuyết này</span>
+            <p class="text-xs font-bold text-white leading-snug mb-3">Suy hao tín hiệu cáp quang SW-HN-02 ↔ R-HN-01</p>
+            <div class="inline-flex items-center gap-2 bg-sky-600 group-hover:bg-sky-500 text-white text-[11px] font-bold px-3.5 py-2 rounded-lg transition shadow-md shadow-sky-950/50">
+              <span>Khoanh vùng trên Topology</span>
               <span class="text-xs font-bold">➔</span>
             </div>
           </div>
 
           <!-- Theory 2 -->
-          <div id="theory-card-2" class="theory-card p-3 rounded-xl border border-slate-200 bg-white hover:border-sky-300 hover:bg-slate-50 transition cursor-pointer shadow-xs" onclick="window.app.selectTheory(2)">
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-[11px] font-bold text-slate-600">GIẢ THUYẾT #2</span>
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700">62% Match</span>
+          <div id="theory-card-2" class="theory-card p-3.5 rounded-xl border border-slate-800 bg-slate-850 hover:border-slate-700 hover:bg-slate-800 transition cursor-pointer shadow-sm" onclick="window.app.selectTheory(2)">
+            <div class="flex justify-between items-center mb-1.5">
+              <span class="text-[11px] font-bold text-slate-400">GIẢ THUYẾT #2</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700 font-mono">62% Match</span>
             </div>
-            <p class="text-xs font-semibold text-slate-800 leading-snug">Nghẽn lưu lượng luồng rẽ tiếp qua WAN-02</p>
+            <p class="text-xs font-semibold text-slate-200 leading-snug">Nghẽn lưu lượng luồng rẽ tiếp qua WAN-02</p>
           </div>
 
           <!-- Theory 3 -->
-          <div id="theory-card-3" class="theory-card p-3 rounded-xl border border-slate-200 bg-white hover:border-sky-300 hover:bg-slate-50 transition cursor-pointer shadow-xs" onclick="window.app.selectTheory(3)">
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-[11px] font-bold text-slate-600">GIẢ THUYẾT #3</span>
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700">41% Match</span>
+          <div id="theory-card-3" class="theory-card p-3.5 rounded-xl border border-slate-800 bg-slate-850 hover:border-slate-700 hover:bg-slate-800 transition cursor-pointer shadow-sm" onclick="window.app.selectTheory(3)">
+            <div class="flex justify-between items-center mb-1.5">
+              <span class="text-[11px] font-bold text-slate-400">GIẢ THUYẾT #3</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700 font-mono">41% Match</span>
             </div>
-            <p class="text-xs font-semibold text-slate-800 leading-snug">Lỗi module quang SFP cổng UPLINK-03 tại SW-HN-02</p>
+            <p class="text-xs font-semibold text-slate-200 leading-snug">Lỗi module quang SFP cổng UPLINK-03 tại SW-HN-02</p>
           </div>
         </div>
       </div>
     </aside>
 
     <!-- LEFT SIDEBAR COLLAPSE TOGGLE BUTTON -->
-    <button id="toggle-left-btn" onclick="window.app.toggleLeftSidebar()" class="sidebar-toggle-btn toggle-left" title="Thu gọn / Mở rộng Sidebar Trái">
+    <button id="toggle-left-btn" onclick="window.app.toggleLeftSidebar()" class="sidebar-toggle-btn toggle-left" title="Thu gọn / Mở rộng Sidebar Trái ([)">
       ◀
     </button>
 
-    <!-- CENTER HERO CANVAS: TOPOLOGY GRAPH (FULL-VIEWPORT STRETCH) -->
-    <section class="flex-1 h-full relative bg-slate-50/70 overflow-hidden flex flex-col select-none" aria-label="Network Topology Viewport">
+    <!-- CENTER HERO CANVAS: TOPOLOGY GRAPH (FULL-VIEWPORT STRETCH WITH DARK TECH GRID) -->
+    <section class="flex-1 h-full relative bg-[#0B0F17] overflow-hidden flex flex-col select-none" aria-label="Network Topology Viewport">
       
-      <!-- Context Banner Overlay -->
-      <div class="absolute top-4 left-5 z-20 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-lg px-3.5 py-2 text-xs text-slate-600 shadow-md flex items-center gap-2.5">
-        <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
-        <span id="canvas-banner-text">Chế độ: <b>Tổng quan khu vực sự cố (Chưa chọn đối tượng khoanh vùng)</b></span>
+      <!-- FLOATING ISLAND CONTROLS OVERLAY (TOP-LEFT OF CANVAS) -->
+      <div class="absolute top-8 left-8 z-20 flex flex-wrap items-center gap-3">
+        
+        <!-- Layer & Scope Floating Pill Bar -->
+        <div class="bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-xl p-1.5 shadow-2xl flex items-center gap-2">
+          <!-- Layer Switcher -->
+          <div class="flex bg-slate-950/80 p-0.5 rounded-lg border border-slate-800 gap-0.5">
+            <button id="btn-layer-l2" onclick="window.app.setLayer('l2')" class="px-3 py-1.5 rounded-md text-[11px] font-bold bg-sky-600 text-white shadow-sm transition cursor-pointer">
+              L2 Cáp quang
+            </button>
+            <button id="btn-layer-l3" onclick="window.app.setLayer('l3')" class="px-3 py-1.5 rounded-md text-[11px] font-medium text-slate-400 hover:text-white transition cursor-pointer">
+              L3 Luồng dịch vụ
+            </button>
+          </div>
+
+          <!-- Divider -->
+          <div class="h-4 w-px bg-slate-800"></div>
+
+          <!-- Scope Switcher -->
+          <div class="flex bg-slate-950/80 p-0.5 rounded-lg border border-slate-800 gap-0.5">
+            <button id="btn-scope-sub" onclick="window.app.setScope('sub')" class="px-3 py-1.5 rounded-md text-[11px] font-bold bg-slate-800 text-cyan-300 shadow-sm transition cursor-pointer">
+              Vùng sự cố
+            </button>
+            <button id="btn-scope-1hop" onclick="window.app.setScope('1hop')" class="px-3 py-1.5 rounded-md text-[11px] font-medium text-slate-400 hover:text-white transition cursor-pointer">
+              +1 Hop
+            </button>
+            <button id="btn-scope-ring" onclick="window.app.setScope('ring')" class="px-3 py-1.5 rounded-md text-[11px] font-medium text-slate-400 hover:text-white transition cursor-pointer">
+              Toàn Ring
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode Status Pill -->
+        <div class="bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-xl px-4 py-2 text-xs text-slate-300 shadow-2xl flex items-center gap-2.5">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span id="canvas-banner-text">Tổng quan khu vực sự cố · Click đối tượng để điều tra</span>
+        </div>
+
       </div>
 
-      <!-- Quick Zoom Tools Overlay -->
-      <div class="absolute top-4 right-5 z-20 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-lg p-1 shadow-md flex items-center gap-0.5">
-        <button onclick="window.topology.resetView()" class="px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-100 rounded-md font-semibold transition cursor-pointer" title="Căn giữa sơ đồ (Phím F)">Fit View</button>
-        <button onclick="window.topology.zoom(0.85)" class="px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-100 rounded-md font-extrabold transition cursor-pointer" title="Phóng to">+</button>
-        <button onclick="window.topology.zoom(1.15)" class="px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-100 rounded-md font-extrabold transition cursor-pointer" title="Thu nhỏ">-</button>
+      <!-- Floating Zoom Controls (Top-Right of Canvas) -->
+      <div class="absolute top-8 right-8 z-20 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-xl p-1.5 shadow-2xl flex items-center gap-1.5">
+        <button onclick="window.topology.resetView()" class="px-3 py-1.5 text-xs text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg font-semibold transition cursor-pointer flex items-center gap-1.5" title="Căn giữa sơ đồ (Phím F)">
+          <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+          Fit View
+        </button>
+        <button onclick="window.topology.zoom(0.85)" class="w-8 h-8 text-xs text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg font-extrabold transition cursor-pointer flex items-center justify-center" title="Phóng to">+</button>
+        <button onclick="window.topology.zoom(1.15)" class="w-8 h-8 text-xs text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg font-extrabold transition cursor-pointer flex items-center justify-center" title="Thu nhỏ">-</button>
       </div>
 
       <!-- SVG Topology Canvas (Naturally stretched across all remaining viewport) -->
       <div id="topo-viewport" class="w-full h-full relative cursor-grab active:cursor-grabbing">
         <svg viewBox="0 0 760 690" id="topo-svg" preserveAspectRatio="xMidYMid meet" class="w-full h-full block">
           <defs>
-            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-opacity="0.08" />
+            <!-- Technical Dot Matrix Grid Background Pattern -->
+            <pattern id="dot-grid" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1.2" fill="#334155" opacity="0.3" />
+            </pattern>
+
+            <!-- Glow Filters for Alarms and Selections -->
+            <filter id="glow-red" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
             </filter>
+
             <!-- Arrow marker for L3 service flow -->
             <marker id="flow-arrow" viewBox="0 0 10 10" refX="16" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-              <path d="M 0 0 L 10 5 L 0 10 z" fill="#0284c7"/>
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8"/>
             </marker>
           </defs>
 
+          <!-- BLUEPRINT TECH GRID BACKGROUND -->
+          <rect width="100%" height="100%" fill="url(#dot-grid)" pointer-events="none" />
+
+          <!-- RADAR BEACON AURA FOR CRITICAL ROOT NODE (R-HN-01) -->
+          <circle cx="470" cy="280" class="radar-beacon-ring" fill="none" stroke="#ef4444" stroke-width="2" />
+          <circle cx="180" cy="280" class="radar-beacon-ring" fill="none" stroke="#f59e0b" stroke-width="1.5" />
+
           <!-- GROUP: EDGES -->
           <g id="edges-layer">
-            <line id="edge-dist03" class="topo-edge cursor-pointer" x1="470" y1="280" x2="630" y2="180" stroke="#cbd5e1" stroke-width="2" />
-            <line id="edge-hosta" class="topo-edge cursor-pointer" x1="180" y1="280" x2="90" y2="430" stroke="#e2e8f0" stroke-width="1.5" />
-            <line id="edge-hostb" class="topo-edge cursor-pointer" x1="180" y1="280" x2="250" y2="430" stroke="#e2e8f0" stroke-width="1.5" />
+            <line id="edge-dist03" class="topo-edge cursor-pointer" x1="470" y1="280" x2="630" y2="180" stroke="#334155" stroke-width="2" />
+            <line id="edge-hosta" class="topo-edge cursor-pointer" x1="180" y1="280" x2="90" y2="430" stroke="#1e293b" stroke-width="1.8" />
+            <line id="edge-hostb" class="topo-edge cursor-pointer" x1="180" y1="280" x2="250" y2="430" stroke="#1e293b" stroke-width="1.8" />
 
-            <line id="edge-impact" class="topo-edge cursor-pointer" x1="470" y1="280" x2="620" y2="390" stroke="#cbd5e1" stroke-width="2" />
+            <line id="edge-impact" class="topo-edge cursor-pointer" x1="470" y1="280" x2="620" y2="390" stroke="#334155" stroke-width="2" />
             <line id="edge-fault" class="topo-edge cursor-pointer" x1="180" y1="280" x2="470" y2="280" stroke="#f87171" stroke-width="3.5" />
 
             <!-- L3 Service Flow Path -->
-            <path id="service-path" d="M 90 430 L 180 280 L 470 280 L 620 390" fill="none" stroke="#0284c7" stroke-width="3.5" class="flowing-traffic" marker-end="url(#flow-arrow)" style="display:none;"/>
+            <path id="service-path" d="M 90 430 L 180 280 L 470 280 L 620 390" fill="none" stroke="#38bdf8" stroke-width="3.5" class="flowing-traffic" marker-end="url(#flow-arrow)" style="display:none;"/>
           </g>
 
           <!-- GROUP: BADGES & LABELS -->
           <g id="badges-layer">
-            <g id="fault-badge" class="topo-badge cursor-pointer" transform="translate(265, 266)">
-              <rect x="0" y="0" width="120" height="20" rx="4" fill="#ffffff" stroke="#f87171" stroke-width="1.2" filter="url(#shadow)"/>
-              <text x="60" y="14" font-size="9.5" fill="#dc2626" font-weight="600" text-anchor="middle">UPLINK-03 ↔ WAN-01</text>
+            <g id="fault-badge" class="topo-badge cursor-pointer" transform="translate(265, 265)">
+              <rect x="0" y="0" width="120" height="22" rx="6" fill="#0f172a" stroke="#ef4444" stroke-width="1.5" filter="url(#glow-red)"/>
+              <text x="60" y="15" font-size="9.5" fill="#fca5a5" font-weight="700" text-anchor="middle" font-family="monospace">UPLINK-03 ↔ WAN-01</text>
             </g>
 
-            <g id="impact-badge" class="topo-badge cursor-pointer" transform="translate(515, 340)" style="display:none;">
-              <rect x="0" y="0" width="86" height="18" rx="3" fill="#ffffff" stroke="#f59e0b" stroke-width="1.2"/>
-              <text x="43" y="12.5" font-size="8.5" fill="#d97706" font-weight="600" text-anchor="middle">Rớt gói 1.8%</text>
+            <g id="impact-badge" class="topo-badge cursor-pointer" transform="translate(515, 338)" style="display:none;">
+              <rect x="0" y="0" width="90" height="20" rx="5" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
+              <text x="45" y="14" font-size="9" fill="#fcd34d" font-weight="700" text-anchor="middle" font-family="monospace">Rớt gói 1.8%</text>
             </g>
 
             <g id="l2-labels">
-              <text x="220" y="272" font-size="8.5" fill="#64748b" font-family="monospace">UPLINK-03</text>
-              <text x="400" y="272" font-size="8.5" fill="#64748b" font-family="monospace">WAN-01</text>
-              <text x="545" y="325" font-size="8.5" fill="#64748b" font-family="monospace">WAN-02</text>
+              <text x="220" y="270" font-size="9" fill="#94a3b8" font-family="monospace">UPLINK-03</text>
+              <text x="395" y="270" font-size="9" fill="#94a3b8" font-family="monospace">WAN-01</text>
+              <text x="545" y="325" font-size="9" fill="#94a3b8" font-family="monospace">WAN-02</text>
             </g>
 
             <g id="l3-labels" style="display:none;">
-              <text x="300" y="250" font-size="9" fill="#0284c7" font-weight="bold">10.244.12.0/30 (BGP Peer)</text>
-              <text x="510" y="315" font-size="9" fill="#0284c7" font-weight="bold">10.244.18.0/30 (OSPF Weight 50)</text>
+              <text x="300" y="248" font-size="9.5" fill="#38bdf8" font-weight="bold" font-family="monospace">10.244.12.0/30 (BGP Peer)</text>
+              <text x="510" y="315" font-size="9.5" fill="#38bdf8" font-weight="bold" font-family="monospace">10.244.18.0/30 (OSPF W:50)</text>
             </g>
           </g>
 
-          <!-- GROUP: NODES (Draggable & Hoverable) -->
+          <!-- GROUP: TELECOM HARDWARE NODES (Authentic Icons & Dark Cyber Look) -->
           <g id="nodes-layer">
-            <!-- Node SW-HN-02 -->
+            
+            <!-- Node SW-HN-02 (Switch - Amber Warning) -->
             <g id="node-swhn02" class="topo-node" transform="translate(180, 280)">
-              <circle id="circle-swhn02" r="30" fill="#ffffff" stroke="#f59e0b" stroke-width="2.5" filter="url(#shadow)" />
-              <text y="-4" font-size="11.5" font-weight="700" fill="#0f172a" text-anchor="middle">SW-HN-02</text>
-              <text y="10" font-size="8.5" fill="#64748b" text-anchor="middle">Access Switch</text>
-              <circle cx="21" cy="-21" r="5.5" fill="#f59e0b" />
+              <circle id="circle-swhn02" r="32" fill="#0f172a" stroke="#f59e0b" stroke-width="2.5" />
+              <!-- Switch Icon (4 arrows opposing) -->
+              <g stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" fill="none">
+                <line x1="-12" y1="-8" x2="12" y2="-8" />
+                <polyline points="7,-11 12,-8 7,-5" />
+                <line x1="12" y1="0" x2="-12" y2="0" />
+                <polyline points="-7,-3 -12,0 -7,3" />
+                <line x1="-12" y1="8" x2="12" y2="8" />
+                <polyline points="7,5 12,8 7,11" />
+              </g>
+              <text y="20" font-size="10.5" font-weight="800" fill="#ffffff" text-anchor="middle" font-family="monospace">SW-HN-02</text>
+              <circle cx="23" cy="-23" r="5" fill="#f59e0b" />
             </g>
 
-            <!-- Node R-HN-01 -->
+            <!-- Node R-HN-01 (Core Router - Critical Root Alarm) -->
             <g id="node-rhn01" class="topo-node" transform="translate(470, 280)">
-              <circle id="circle-rhn01" r="32" fill="#ffffff" stroke="#ef4444" stroke-width="3" filter="url(#shadow)" />
-              <text y="-4" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">R-HN-01</text>
-              <text y="10" font-size="8.5" fill="#64748b" text-anchor="middle">Core Router</text>
-              <circle cx="23" cy="-23" r="6" fill="#ef4444" />
+              <circle id="circle-rhn01" r="34" fill="#0f172a" stroke="#ef4444" stroke-width="3" filter="url(#glow-red)" />
+              <!-- Router Icon (4 directional arrows radiating outward/inward) -->
+              <g stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" fill="none">
+                <line x1="-8" y1="-8" x2="8" y2="8" />
+                <polyline points="3,8 8,8 8,3" />
+                <polyline points="-3,-8 -8,-8 -8,-3" />
+                <line x1="8" y1="-8" x2="-8" y2="8" />
+                <polyline points="-8,3 -8,8 -3,8" />
+                <polyline points="8,-3 8,-8 3,-8" />
+              </g>
+              <text y="21" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle" font-family="monospace">R-HN-01</text>
+              <circle cx="24" cy="-24" r="6" fill="#ef4444" />
             </g>
 
-            <!-- Node R-HN-07 -->
+            <!-- Node R-HN-07 (Egress Router - Warning) -->
             <g id="node-rhn07" class="topo-node" transform="translate(620, 390)">
-              <circle id="circle-rhn07" r="25" fill="#ffffff" stroke="#f59e0b" stroke-width="2" filter="url(#shadow)" />
-              <text y="-3" font-size="10.5" font-weight="700" fill="#0f172a" text-anchor="middle">R-HN-07</text>
-              <text y="9" font-size="8" fill="#64748b" text-anchor="middle">Egress L3</text>
-              <circle cx="17" cy="-17" r="4.5" fill="#f59e0b" />
+              <circle id="circle-rhn07" r="28" fill="#0f172a" stroke="#f59e0b" stroke-width="2" />
+              <!-- Mini Router Icon -->
+              <g stroke="#f59e0b" stroke-width="1.3" stroke-linecap="round" fill="none">
+                <line x1="-6" y1="-6" x2="6" y2="6" />
+                <line x1="6" y1="-6" x2="-6" y2="6" />
+              </g>
+              <text y="18" font-size="10" font-weight="700" fill="#ffffff" text-anchor="middle" font-family="monospace">R-HN-07</text>
+              <circle cx="20" cy="-20" r="4.5" fill="#f59e0b" />
             </g>
 
-            <!-- Node Dist-03 -->
+            <!-- Node Dist-03 (Normal Switch) -->
             <g id="node-dist03" class="topo-node" transform="translate(630, 180)">
-              <circle id="circle-dist03" r="23" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" />
-              <text y="-2" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">Dist-03</text>
-              <text y="9" font-size="7.5" fill="#94a3b8" text-anchor="middle">Normal</text>
+              <circle id="circle-dist03" r="26" fill="#0f172a" stroke="#475569" stroke-width="1.8" />
+              <g stroke="#64748b" stroke-width="1.2" stroke-linecap="round" fill="none">
+                <line x1="-8" y1="-5" x2="8" y2="-5" />
+                <line x1="8" y1="5" x2="-8" y2="5" />
+              </g>
+              <text y="17" font-size="9.5" font-weight="700" fill="#94a3b8" text-anchor="middle" font-family="monospace">Dist-03</text>
             </g>
 
-            <!-- Hosts -->
+            <!-- Hosts (Blade Server Racks) -->
             <g id="node-srva" class="topo-node" transform="translate(90, 430)">
-              <rect x="-20" y="-12" width="40" height="24" rx="3" fill="#ffffff" stroke="#94a3b8" />
-              <text y="4" font-size="8" fill="#64748b" text-anchor="middle">Srv-A</text>
+              <rect x="-24" y="-14" width="48" height="28" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1.5" />
+              <circle cx="-16" cy="0" r="2" fill="#10b981" />
+              <line x1="-8" y1="-5" x2="16" y2="-5" stroke="#334155" stroke-width="2" />
+              <line x1="-8" y1="5" x2="16" y2="5" stroke="#334155" stroke-width="2" />
+              <text y="4" font-size="8.5" fill="#94a3b8" font-weight="bold" text-anchor="middle" font-family="monospace">Srv-A</text>
             </g>
             <g id="node-srvb" class="topo-node" transform="translate(250, 430)">
-              <rect x="-20" y="-12" width="40" height="24" rx="3" fill="#ffffff" stroke="#94a3b8" />
-              <text y="4" font-size="8" fill="#64748b" text-anchor="middle">Srv-B</text>
+              <rect x="-24" y="-14" width="48" height="28" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1.5" />
+              <circle cx="-16" cy="0" r="2" fill="#10b981" />
+              <line x1="-8" y1="-5" x2="16" y2="-5" stroke="#334155" stroke-width="2" />
+              <line x1="-8" y1="5" x2="16" y2="5" stroke="#334155" stroke-width="2" />
+              <text y="4" font-size="8.5" fill="#94a3b8" font-weight="bold" text-anchor="middle" font-family="monospace">Srv-B</text>
             </g>
+
           </g>
         </svg>
       </div>
 
-      <!-- Legend Overlay in Bottom Corner -->
-      <div class="absolute bottom-4 left-5 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-lg px-3.5 py-2 text-[10px] text-slate-600 shadow-md flex items-center gap-4 z-20">
-        <div class="flex items-center gap-1.5"><span class="w-3 h-0.5 bg-rose-500 rounded"></span><span>Thiết bị cảnh báo lỗi</span></div>
-        <div class="flex items-center gap-1.5"><span class="w-3 h-0.5 bg-amber-500 rounded"></span><span>Cảnh báo thứ cấp</span></div>
-        <div class="flex items-center gap-1.5"><span class="w-3 h-0.5 bg-slate-300 rounded"></span><span>Bình thường</span></div>
+      <!-- Legend Overlay in Bottom Corner (Obsidian Glass) -->
+      <div class="absolute bottom-8 left-8 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-xl px-4 py-2.5 text-[11px] text-slate-300 shadow-2xl flex items-center gap-5 z-20">
+        <div class="flex items-center gap-2"><span class="w-3.5 h-1 bg-rose-500 rounded"></span><span>Nghi ngờ gốc</span></div>
+        <div class="flex items-center gap-2"><span class="w-3.5 h-1 bg-amber-400 rounded"></span><span>Cảnh báo thứ cấp</span></div>
+        <div class="flex items-center gap-2"><span class="w-3.5 h-1 bg-slate-600 rounded"></span><span>Bình thường</span></div>
+        <div class="flex items-center gap-2"><span class="w-3.5 h-1 bg-sky-400 rounded"></span><span>Luồng dịch vụ L3</span></div>
       </div>
     </section>
 
     <!-- RIGHT SIDEBAR COLLAPSE TOGGLE BUTTON -->
-    <button id="toggle-right-btn" onclick="window.app.toggleRightSidebar()" class="sidebar-toggle-btn toggle-right" title="Thu gọn / Mở rộng Inspector">
+    <button id="toggle-right-btn" onclick="window.app.toggleRightSidebar()" class="sidebar-toggle-btn toggle-right" title="Thu gọn / Mở rộng Inspector (])">
       ▶
     </button>
 
     <!-- RIGHT SIDEBAR: CONTEXTUAL INSPECTOR (MODULAR CONTAINER) -->
-    <aside id="sidebar-right" class="sidebar-collapsible w-84 bg-white border-l border-slate-200 flex flex-col shrink-0 shadow-xs z-20">
-      <div id="inspector-container" class="flex-1 flex flex-col p-4 gap-4 overflow-y-auto">
+    <aside id="sidebar-right" class="sidebar-collapsible w-96 bg-slate-900/95 border-l border-slate-800 flex flex-col shrink-0 shadow-xl z-20">
+      <div id="inspector-container" class="flex-1 flex flex-col p-6 gap-6 overflow-y-auto">
         <!-- Rendered dynamically by js/inspector.js -->
       </div>
     </aside>
@@ -335,36 +413,38 @@
   </div>
 
   <!-- FULL-WIDTH BOTTOM TIMELINE SCRUBBER -->
-  <footer class="w-full h-12 bg-white border-t border-slate-200 px-6 flex items-center gap-5 text-xs shrink-0 select-none z-30 shadow-xs">
-    <div class="flex items-center gap-2.5 shrink-0">
-      <button id="timeline-play-btn" onclick="window.app.togglePlayTimeline()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs transition cursor-pointer shadow-xs" title="Tự động phát tua diễn tiến sự cố">
-        ▶
-      </button>
-      <span class="font-extrabold text-slate-700 tracking-wider text-[10.5px] uppercase">Dòng sự kiện:</span>
-    </div>
+  <footer class="w-full h-20 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-10 flex flex-col justify-center shrink-0 select-none z-30 shadow-2xl">
+    <div class="flex items-center gap-6">
+      <div class="flex items-center gap-2.5 shrink-0">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+        <span class="font-extrabold text-slate-300 tracking-wider text-[11px] uppercase font-mono">Diễn tiến sự cố:</span>
+      </div>
 
-    <div class="flex-1 h-1.5 bg-slate-200 rounded-full relative flex items-center cursor-pointer">
-      <div id="timeline-progress" class="absolute left-0 h-full bg-rose-400 rounded-full transition-all duration-300" style="width: 10%;"></div>
-      
-      <!-- Keyframe Pin 1: 13:58 -->
-      <button id="pin-1" onclick="window.app.replayTimeline(1)" class="absolute w-2.5 h-2.5 rounded-full bg-slate-400 -translate-x-1/2 hover:scale-125 transition cursor-pointer" style="left: 10%;" title="13:58 ALM-2035">
-        <span class="absolute top-3 -translate-x-1/2 font-mono text-[9px] text-slate-500 whitespace-nowrap">13:58 ALM-2035</span>
-      </button>
+      <div class="flex-1 relative flex items-center cursor-pointer py-3">
+        <div class="w-full h-2 bg-slate-800/80 rounded-full relative flex items-center">
+          <div id="timeline-progress" class="absolute left-0 h-full bg-gradient-to-r from-amber-500 to-rose-500 rounded-full transition-all duration-300 shadow-sm" style="width: 10%;"></div>
+          
+          <!-- Keyframe Pin 1: 13:58 -->
+          <button id="pin-1" onclick="window.app.replayTimeline(1)" class="absolute w-3.5 h-3.5 rounded-full bg-amber-400 ring-2 ring-amber-950 -translate-x-1/2 hover:scale-125 transition cursor-pointer" style="left: 10%;" title="13:58 ALM-2035">
+            <span class="absolute -top-6 -translate-x-1/2 font-mono text-[10px] text-slate-400 whitespace-nowrap">13:58 ALM-2035</span>
+          </button>
 
-      <!-- Keyframe Pin 2: 14:32 (Root) -->
-      <button id="pin-2" onclick="window.app.replayTimeline(2)" class="absolute w-3 h-3 rounded-full bg-rose-600 ring-2 ring-rose-200 -translate-x-1/2 hover:scale-125 transition cursor-pointer" style="left: 62%;" title="14:32 ALM-2041 (Gốc)">
-        <span class="absolute top-3 -translate-x-1/2 font-mono text-[9px] text-rose-700 font-bold whitespace-nowrap">14:32 ALM-2041 (Gốc)</span>
-      </button>
+          <!-- Keyframe Pin 2: 14:32 (Root) -->
+          <button id="pin-2" onclick="window.app.replayTimeline(2)" class="absolute w-4 h-4 rounded-full bg-rose-500 ring-2 ring-rose-950 -translate-x-1/2 hover:scale-125 transition cursor-pointer" style="left: 62%;" title="14:32 ALM-2041 (Gốc)">
+            <span class="absolute -top-6 -translate-x-1/2 font-mono text-[10.5px] text-rose-400 font-bold whitespace-nowrap">14:32 ALM-2041 (Gốc)</span>
+          </button>
 
-      <!-- Keyframe Pin 3: 14:33 -->
-      <button id="pin-3" onclick="window.app.replayTimeline(3)" class="absolute w-3 h-3 rounded-full bg-rose-600 ring-2 ring-rose-200 -translate-x-1/2 hover:scale-125 transition cursor-pointer" style="left: 72%;" title="14:33 ALM-2038">
-        <span class="absolute top-3 -translate-x-1/2 font-mono text-[9px] text-slate-500 whitespace-nowrap">14:33 ALM-2038</span>
-      </button>
+          <!-- Keyframe Pin 3: 14:33 -->
+          <button id="pin-3" onclick="window.app.replayTimeline(3)" class="absolute w-3.5 h-3.5 rounded-full bg-amber-400 ring-2 ring-amber-950 -translate-x-1/2 hover:scale-125 transition cursor-pointer" style="left: 72%;" title="14:33 ALM-2038">
+            <span class="absolute -top-6 -translate-x-1/2 font-mono text-[10px] text-slate-400 whitespace-nowrap">14:33 ALM-2038</span>
+          </button>
 
-      <!-- Keyframe Pin 4: Current -->
-      <button id="pin-4" onclick="window.app.replayTimeline(4)" class="absolute w-3.5 h-3.5 rounded-full bg-sky-600 ring-2 ring-sky-200 -translate-x-1/2 hover:scale-125 transition cursor-pointer" style="left: 95%;" title="Hiện tại">
-        <span class="absolute top-3 -translate-x-1/2 font-mono text-[9px] text-slate-700 font-bold whitespace-nowrap">Hiện tại</span>
-      </button>
+          <!-- Keyframe Pin 4: Current -->
+          <button id="pin-4" onclick="window.app.replayTimeline(4)" class="absolute w-4 h-4 rounded-full bg-sky-400 ring-2 ring-sky-950 -translate-x-1/2 hover:scale-125 transition cursor-pointer" style="left: 95%;" title="Hiện tại">
+            <span class="absolute -top-6 -translate-x-1/2 font-mono text-[10.5px] text-sky-400 font-bold whitespace-nowrap">Hiện tại</span>
+          </button>
+        </div>
+      </div>
     </div>
   </footer>
 

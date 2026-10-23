@@ -68,6 +68,7 @@ const THEORIES_DATA = [
       sfpTemp: "58.2°C (Vượt ngưỡng 50°C)"
     },
     cliCommand: "show interfaces wan-01 controllers | inc CRC",
+    verificationCmd: "show interfaces wan-01 controllers | inc CRC",
     secondaryCli: "show interfaces transceiver detail"
   },
   {
@@ -97,6 +98,7 @@ const THEORIES_DATA = [
       sfpTemp: "41.5°C (Bình thường)"
     },
     cliCommand: "show ip route summary | inc WAN-02",
+    verificationCmd: "show ip route summary | inc WAN-02",
     secondaryCli: "show interface wan-02 stats"
   },
   {
@@ -121,6 +123,7 @@ const THEORIES_DATA = [
       sfpTemp: "58.2°C"
     },
     cliCommand: "show environment temperature | inc Transceiver",
+    verificationCmd: "show environment temperature | inc Transceiver",
     secondaryCli: "show inventory | inc SFP"
   }
 ];
@@ -130,6 +133,7 @@ const TOPOLOGY_DATA = {
     {
       id: "SW-HN-02",
       label: "SW-HN-02",
+      ip: "10.244.1.2",
       type: "Access Switch",
       model: "Cisco Catalyst 9300",
       x: 180,
@@ -145,6 +149,7 @@ const TOPOLOGY_DATA = {
     {
       id: "R-HN-01",
       label: "R-HN-01",
+      ip: "10.244.1.1",
       type: "Core Router",
       model: "Cisco ASR 9000",
       x: 470,
@@ -160,6 +165,7 @@ const TOPOLOGY_DATA = {
     {
       id: "R-HN-07",
       label: "R-HN-07",
+      ip: "10.244.1.7",
       type: "Egress L3 Router",
       model: "Juniper MX480",
       x: 620,
@@ -175,6 +181,7 @@ const TOPOLOGY_DATA = {
     {
       id: "Dist-03",
       label: "Dist-03",
+      ip: "10.244.1.3",
       type: "Distribution Switch",
       model: "Cisco Catalyst 9500",
       x: 630,
@@ -190,6 +197,7 @@ const TOPOLOGY_DATA = {
     {
       id: "Srv-A",
       label: "Srv-A",
+      ip: "10.244.10.11",
       type: "Application Server",
       model: "Dell PowerEdge R750",
       x: 90,
@@ -202,6 +210,7 @@ const TOPOLOGY_DATA = {
     {
       id: "Srv-B",
       label: "Srv-B",
+      ip: "10.244.10.12",
       type: "Database Host",
       model: "Dell PowerEdge R750",
       x: 250,

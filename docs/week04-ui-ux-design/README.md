@@ -12,6 +12,11 @@ week04-ui-ux-design/
 │   ├── topology.js             # SVG Topology Controller (Render, Zoom/Pan, Scope & Layer Filter)
 │   ├── inspector.js            # Contextual Inspector (Telemetry, Accordions, Sparklines, CLI Actions)
 │   └── app.js                  # Application State Manager & Event Binder
+├── prototypes/                 # PROTOTYPES TRỰC QUAN HÓA TOPOLOGY 554 THIẾT BỊ (MOCK-DATA WEEK 03)
+│   ├── index.html              # Trang tổng hợp & Bảng ma trận so sánh UX (lưu trữ kết quả đánh giá 3 cách)
+│   ├── data.json               # Dữ liệu 78 routers + 480 access switches + 152 backbone links
+│   ├── data.js                 # Script nạp window.NETWORK_DATA độc lập không phụ thuộc web server
+│   └── 01-tiered-stratified.html  # Cách 1 (ĐƯỢC CHỌN): Stratified Tiered Canvas (Băng tầng phân cấp + k-hop)
 ├── 01-overview.html            # Giai đoạn 1: Tiếp nhận sự cố (Default Landing)
 ├── 02-theory-focus.html        # Giai đoạn 2: Điều tra giả thuyết #1 (Hypothesis Focus)
 ├── 03-node-inspect.html        # Giai đoạn 3: Soi thiết bị & Cổng quang (Deep Inspect)

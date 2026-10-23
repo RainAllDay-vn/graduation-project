@@ -120,14 +120,12 @@ class IncidentApp {
     this.activeTheoryId = theoryId;
 
     document.querySelectorAll('.theory-card').forEach(card => {
-      card.classList.remove('active', 'border-sky-500', 'bg-sky-50', 'shadow-sm');
-      card.classList.add('border-slate-200', 'bg-white');
+      card.className = "theory-card p-3 rounded-xl border border-slate-800 bg-slate-850 hover:border-slate-700 hover:bg-slate-800 transition cursor-pointer shadow-sm";
     });
 
     const activeCard = document.getElementById(`theory-card-${theoryId}`);
     if (activeCard) {
-      activeCard.classList.remove('border-slate-200', 'bg-white');
-      activeCard.classList.add('active', 'border-sky-500', 'bg-sky-50', 'shadow-sm');
+      activeCard.className = "theory-card block p-3.5 rounded-xl border border-sky-500/80 bg-gradient-to-br from-sky-950/60 to-slate-900/90 hover:from-sky-900/60 hover:to-slate-850 transition shadow-lg shadow-sky-950/40 cursor-pointer active";
     }
 
     const theory = THEORIES_DATA.find(t => t.id === theoryId);
@@ -146,7 +144,8 @@ class IncidentApp {
   handleNodeSelect(nodeId) {
     this.updateBanner(`Đang kiểm tra thiết bị: <b>${nodeId}</b>`);
     this.topology.selectNode(nodeId);
-    this.inspector.showNode(nodeId);
+    const nodeObj = typeof TOPOLOGY_DATA !== 'undefined' ? TOPOLOGY_DATA.nodes.find(n => n.id === nodeId) : null;
+    this.inspector.showNode(nodeObj || nodeId);
 
     if (this.isRightCollapsed) {
       this.toggleRightSidebar();
@@ -251,13 +250,20 @@ class IncidentApp {
   // --- LAYER & SCOPE SWITCHING ---
   setLayer(layer) {
     this.activeLayer = layer;
-    document.getElementById('btn-layer-l2')?.classList.toggle('bg-white', layer === 'l2');
-    document.getElementById('btn-layer-l2')?.classList.toggle('text-slate-900', layer === 'l2');
-    document.getElementById('btn-layer-l2')?.classList.toggle('shadow-sm', layer === 'l2');
+    const btnL2 = document.getElementById('btn-layer-l2');
+    const btnL3 = document.getElementById('btn-layer-l3');
 
-    document.getElementById('btn-layer-l3')?.classList.toggle('bg-white', layer === 'l3');
-    document.getElementById('btn-layer-l3')?.classList.toggle('text-slate-900', layer === 'l3');
-    document.getElementById('btn-layer-l3')?.classList.toggle('shadow-sm', layer === 'l3');
+    if (btnL2) {
+      btnL2.className = layer === 'l2'
+        ? "px-2.5 py-1 rounded-md text-[11px] font-bold bg-sky-600 text-white shadow-sm transition cursor-pointer"
+        : "px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-white transition cursor-pointer";
+    }
+
+    if (btnL3) {
+      btnL3.className = layer === 'l3'
+        ? "px-2.5 py-1 rounded-md text-[11px] font-bold bg-sky-600 text-white shadow-sm transition cursor-pointer"
+        : "px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-white transition cursor-pointer";
+    }
 
     this.topology.setLayer(layer);
     this.showToast(layer === 'l3' ? "Đã bật tầng L3 Luồng dịch vụ" : "Đã bật tầng L2 Cáp quang vật lý");
@@ -269,9 +275,9 @@ class IncidentApp {
       const btn = document.getElementById(`btn-scope-${s}`);
       const isActive = s === scope;
       if (btn) {
-        btn.classList.toggle('bg-white', isActive);
-        btn.classList.toggle('text-slate-900', isActive);
-        btn.classList.toggle('shadow-sm', isActive);
+        btn.className = isActive
+          ? "px-2.5 py-1 rounded-md text-[11px] font-bold bg-slate-800 text-cyan-300 shadow-sm transition cursor-pointer"
+          : "px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-white transition cursor-pointer";
       }
     });
 
@@ -331,6 +337,49 @@ class IncidentApp {
     }
   }
 
+  // --- CLI EXECUTION & ACTION HANDLERS ---
+  copyCliCommand(cmd) {
+    if (!cmd) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(cmd).then(() => {
+        this.showToast(`✓ Đã sao chép: ${cmd}`);
+      }).catch(() => {
+        this.fallbackCopy(cmd);
+      });
+    } else {
+      this.fallbackCopy(cmd);
+    }
+  }
+
+  fallbackCopy(cmd) {
+    const textarea = document.createElement('textarea');
+    textarea.value = cmd;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      this.showToast(`✓ Đã sao chép: ${cmd}`);
+    } catch (e) {
+      this.showToast(`Lệnh: ${cmd}`);
+    }
+    document.body.removeChild(textarea);
+  }
+
+  confirmTheory(theoryId) {
+    this.confirmDiagnosis();
+  }
+
+  dismissTheory(theoryId) {
+    this.dismissDiagnosis();
+  }
+
+  resetInspect() {
+    this.setJourneyStage(1);
+    this.showToast("Đã quay lại chế độ tổng quan");
+  }
+
   confirmDiagnosis() {
     this.setJourneyStage(5);
     this.showToast("✓ Đã xác nhận nguyên nhân gốc và lập phiếu khắc phục!");
@@ -358,37 +407,40 @@ class IncidentApp {
     const container = document.getElementById('inspector-container');
     if (container) {
       container.innerHTML = `
-        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 shadow-sm">
+        <div class="bg-emerald-950/40 border border-emerald-800 rounded-xl p-3.5 shadow-lg">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-emerald-950">Biên bản xử lý sự cố</span>
-            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-200 text-emerald-900">HOÀN TẤT</span>
+            <span class="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              Biên bản khắc phục sự cố
+            </span>
+            <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-emerald-900 text-emerald-300 border border-emerald-700 font-mono">HOÀN TẤT</span>
           </div>
-          <div class="text-[11px] text-emerald-800 mt-1">Mã phiếu điều tra: <b>#TKT-2026-0915-01</b></div>
+          <div class="text-[11px] text-emerald-400/90 mt-1.5">Mã phiếu điều tra: <b class="font-mono text-emerald-300">#TKT-2026-0915-01</b></div>
         </div>
 
-        <div class="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm">
-          <div class="bg-slate-50 px-3 py-2 border-b border-slate-100">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Nhật ký hành động (Actions Taken)</span>
+        <div class="border border-slate-800 rounded-xl overflow-hidden bg-slate-900/90 shadow-md">
+          <div class="bg-slate-850 px-3.5 py-2.5 border-b border-slate-800">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-300">Nhật ký hành động (Actions Taken)</span>
           </div>
-          <div class="p-3 text-[11px] space-y-2.5">
+          <div class="p-3.5 text-[11px] space-y-2.5">
             <div class="flex items-start gap-2">
-              <span class="text-emerald-600 font-bold">✓</span>
-              <div><b class="text-slate-800">14:48:</b> Cô lập cổng <code>UPLINK-03</code> tại switch <code>SW-HN-02</code>.</div>
+              <span class="text-emerald-400 font-bold">✓</span>
+              <div><b class="text-slate-200">14:48:</b> Cô lập cổng <code>UPLINK-03</code> tại switch <code>SW-HN-02</code>.</div>
             </div>
             <div class="flex items-start gap-2">
-              <span class="text-emerald-600 font-bold">✓</span>
-              <div><b class="text-slate-800">14:50:</b> Chuyển tiếp sạch lưu lượng sang luồng phụ qua <code>WAN-02</code>.</div>
+              <span class="text-emerald-400 font-bold">✓</span>
+              <div><b class="text-slate-200">14:50:</b> Chuyển tiếp sạch lưu lượng sang luồng phụ qua <code>WAN-02</code>.</div>
             </div>
             <div class="flex items-start gap-2">
-              <span class="text-emerald-600 font-bold">✓</span>
-              <div><b class="text-slate-800">14:52:</b> Đã lập ticket bảo trì tại chỗ thay module SFP và đo suy hao cáp quang.</div>
+              <span class="text-emerald-400 font-bold">✓</span>
+              <div><b class="text-slate-200">14:52:</b> Đã lập ticket bảo trì tại chỗ thay module SFP và đo suy hao cáp quang.</div>
             </div>
           </div>
         </div>
 
         <div class="mt-auto pt-2">
-          <button onclick="window.app.setJourneyStage(1)" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 px-3 rounded-md transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button onclick="window.app.setJourneyStage(1)" class="w-full bg-slate-850 hover:bg-slate-800 text-slate-200 font-bold text-xs py-2.5 px-3 rounded-xl transition border border-slate-700 shadow-lg flex items-center justify-center gap-1.5 cursor-pointer">
+            <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
             </svg>
             Tua lại từ đầu (Reset Journey)

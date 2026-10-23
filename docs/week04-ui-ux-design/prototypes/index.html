@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi" class="w-full h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOC Router Topology Prototypes — Design Showcase & UX Evaluation</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            slate: {
+              850: '#151e2e',
+              950: '#070a10',
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #070a10; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    .glow-cyan {
+      box-shadow: 0 0 30px -5px rgba(6, 182, 212, 0.25);
+    }
+    .glow-purple {
+      box-shadow: 0 0 30px -5px rgba(168, 85, 247, 0.25);
+    }
+    .glow-emerald {
+      box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.25);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#070a10] text-slate-200 font-sans antialiased selection:bg-cyan-500 selection:text-black">
+
+  <!-- TOP BRAND HEADER -->
+  <header class="w-full h-16 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-8 flex items-center justify-between sticky top-0 z-40 shadow-xl">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-600 to-blue-700 text-white font-black flex items-center justify-center text-sm shadow-md shadow-cyan-950/50">
+        NOC
+      </div>
+      <div>
+        <div class="text-xs font-black tracking-wider text-white uppercase flex items-center gap-2">
+          VIETTEL NETWORK TOPOLOGY PROTOTYPES
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        </div>
+        <div class="text-[10px] text-slate-400 font-mono">554/558 DEVICES · 78 ROUTERS · 480 ACCESS NODES · 152 ROUTER LINKS</div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3 text-xs font-mono">
+      <a href="../01-overview.html" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-1.5">
+        ← Return to Incident Overview
+      </a>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <main class="max-w-7xl mx-auto px-8 py-10 space-y-12">
+    
+    <div class="space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-bold bg-cyan-950/80 text-cyan-300 border border-cyan-800">
+        <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+        WEEK 04 UI/UX DESIGN EXPLORATION
+      </div>
+      <h1 class="text-3xl lg:text-4xl font-black text-white tracking-tight">
+        Telecom Router Topology Visualizations
+      </h1>
+      <p class="text-sm lg:text-base text-slate-400 max-w-3xl leading-relaxed">
+        To address the visual clutter of 554 telecom devices (Peering, National Border, Core, Edge Aggregation, Metro Exchange, and 480 Access Switches) without losing hierarchical context, we engineered and evaluated three interactive NOC visualization paradigms. After the UX trade-off review, <span class="text-cyan-400 font-semibold">Approach 01 — Stratified Tiered Canvas</span> was selected as the primary architecture (Approaches 02 &amp; 03 were evaluated and removed). It implements <span class="text-cyan-400 font-semibold">k-hop ego-network focus</span>, <span class="text-emerald-400 font-semibold">expandable access leaf badges</span>, and <span class="text-white font-semibold">dynamic sub-graph pruning</span> on strict fixed tier bands.
+      </p>
+    </div>
+
+    <!-- PROTOTYPE SHOWCASE CARD -->
+    <div class="max-w-xl">
+      <div class="bg-slate-900/90 rounded-2xl border border-slate-800 p-6 flex flex-col justify-between hover:border-cyan-500/60 transition-all group glow-cyan">
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-mono font-bold px-2.5 py-1 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
+              APPROACH 01 · SELECTED
+            </span>
+            <span class="text-[11px] font-mono text-slate-400">Layered Bands</span>
+          </div>
+
+          <h2 class="text-lg font-black text-white group-hover:text-cyan-300 transition">
+            Stratified Tiered Canvas
+          </h2>
+
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Strict top-to-bottom tier bands (Peering → Border → Core → Aggregation → Exchange → Access). When focusing on a router, visible nodes maintain horizontal tier rows while distant nodes smoothly dim or prune. Access nodes are summarized as leaf badges (+14 ACC) with 1-click blooming.
+          </p>
+
+          <div class="space-y-1.5 font-mono text-[11px] text-slate-300 pt-2 border-t border-slate-800">
+            <div class="flex items-center gap-1.5 text-cyan-400">
+              <span>✓</span> 100% hierarchy preservation (REQ-01 / REQ-06)
+            </div>
+            <div class="flex items-center gap-1.5 text-emerald-400">
+              <span>✓</span> Fast search & breadcrumbs
+            </div>
+            <div class="flex items-center gap-1.5 text-slate-400">
+              <span>✓</span> Expandable access leaves
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-6">
+          <a href="01-tiered-stratified.html" class="w-full py-2.5 px-4 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs tracking-wider uppercase text-center block shadow-lg shadow-cyan-950/50 transition flex items-center justify-center gap-2">
+            Launch Prototype 01 ➔
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- UX COMPARISON & TRADEOFF MATRIX -->
+    <div class="bg-slate-900/80 rounded-2xl border border-slate-800 p-8 space-y-6">
+      <div>
+        <h3 class="text-xl font-bold text-white tracking-tight">
+          UX Evaluation &amp; Trade-off Matrix
+          <span class="ml-2 align-middle text-[11px] font-mono font-normal px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">ARCHIVAL</span>
+        </h3>
+        <p class="text-xs text-slate-400 mt-1">
+          Quantitative and qualitative comparison across critical NOC operational metrics, recorded during the Week 04 exploration. Approach 01 was selected as primary; the Approaches 02 &amp; 03 prototype files were removed afterwards.
+        </p>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-slate-800 text-slate-400 font-mono uppercase text-[10px]">
+              <th class="py-3 px-4">Evaluation Criteria</th>
+              <th class="py-3 px-4 text-cyan-300">01 · Stratified Tiered Canvas ✓ Selected</th>
+              <th class="py-3 px-4 text-slate-600">02 · Radial Concentric Ego-Net (removed)</th>
+              <th class="py-3 px-4 text-slate-600">03 · Site Compound Clustered (removed)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 font-sans text-slate-300">
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-white">Hierarchical Mental Model</td>
+              <td class="py-3.5 px-4 text-emerald-400 font-bold">★★★★★ (Highest, strict top-to-bottom tiers)</td>
+              <td class="py-3.5 px-4 text-amber-400">★★★☆☆ (Concentric, relative upstream/downstream)</td>
+              <td class="py-3.5 px-4 text-cyan-400 font-bold">★★★★☆ (Intra-site mini-tiers)</td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-white">Ego-Network & k-Hop Focus</td>
+              <td class="py-3.5 px-4 text-cyan-400">★★★★☆ (Preserves row, dims distant nodes)</td>
+              <td class="py-3.5 px-4 text-emerald-400 font-bold">★★★★★ (Flawless polar ego focus, zero clutter)</td>
+              <td class="py-3.5 px-4 text-cyan-400">★★★★☆ (Highlights cross-site affected paths)</td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-white">Edge Density & Line Crossing</td>
+              <td class="py-3.5 px-4 text-amber-400">★★★☆☆ (Moderate crossing in full mesh, solved via k-hop)</td>
+              <td class="py-3.5 px-4 text-emerald-400 font-bold">★★★★★ (Radial tree projection eliminates crossing)</td>
+              <td class="py-3.5 px-4 text-cyan-400 font-bold">★★★★☆ (Trunk bundles reduce inter-site clutter)</td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-white">Physical Location / DC Mapping</td>
+              <td class="py-3.5 px-4 text-slate-400">★★☆☆☆ (Site shown as node badge)</td>
+              <td class="py-3.5 px-4 text-slate-400">★★☆☆☆ (Logical topological distance only)</td>
+              <td class="py-3.5 px-4 text-emerald-400 font-bold">★★★★★ (Physical 4-DC compound containment)</td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-white">Root-Cause Blast Radius Tracing</td>
+              <td class="py-3.5 px-4 text-cyan-400">★★★★☆ (Traces uplink/downlink cascade)</td>
+              <td class="py-3.5 px-4 text-emerald-400 font-bold">★★★★★ (Instant visual radius on radar rings)</td>
+              <td class="py-3.5 px-4 text-emerald-400 font-bold">★★★★★ (Shows inter-DC transmission risk)</td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-white">Scalability to 1,000+ Nodes</td>
+              <td class="py-3.5 px-4 text-emerald-400 font-bold">★★★★★ (Access leaf aggregation scales to 10k+)</td>
+              <td class="py-3.5 px-4 text-emerald-400 font-bold">★★★★★ (Strict k-hop pruning scales infinitely)</td>
+              <td class="py-3.5 px-4 text-cyan-400">★★★★☆ (Collapsible site cards scale well)</td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-white">Recommended Viettel NOC Use Case</td>
+              <td class="py-3.5 px-4 text-cyan-300 font-mono text-[11px]">Primary Operational Dashboard & Tier Auditing</td>
+              <td class="py-3.5 px-4 text-purple-300 font-mono text-[11px]">Deep Fault Investigation & BGP Flap Isolation</td>
+              <td class="py-3.5 px-4 text-emerald-300 font-mono text-[11px]">Inter-DC DWDM Backbone & Regional POP Monitoring</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TECHNICAL ARCHITECTURE SUMMARY -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-400">
+      <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-800 space-y-2">
+        <h4 class="font-bold text-white text-sm font-mono">Dataset Ingestion & Graph Topology</h4>
+        <p>
+          Derived directly from Viettel's <code class="text-cyan-400">devices.csv</code> (558 records) and <code class="text-cyan-400">links.csv</code> (632 records). The 78 core/aggregation/exchange routers are modeled as primary nodes, while 480 access switches are clustered under their respective 36 Exchange hubs as interactive expandable leaves.
+        </p>
+      </div>
+
+      <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-800 space-y-2">
+        <h4 class="font-bold text-white text-sm font-mono">Zero-Server Standalone Architecture</h4>
+        <p>
+          All prototype files are completely standalone and runnable via <code class="text-cyan-400">file://</code> protocol or any static web server without CORS errors or build steps. Built with Tailwind CSS CDN and D3.js v7 with responsive vector SVG navigation.
+        </p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="w-full py-8 border-t border-slate-800 text-center text-xs text-slate-500 font-mono mt-12">
+    NOC Command Center — Graduation Project Week 04 UI/UX Design Prototypes
+  </footer>
+
+</body>
+</html>

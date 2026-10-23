@@ -332,7 +332,7 @@ class TopologyRenderer {
     } else if (theoryId === 2) {
       if (edgeFault) {
         edgeFault.classList.remove('pulsing-fault-line');
-        edgeFault.setAttribute('stroke', '#cbd5e1');
+        edgeFault.setAttribute('stroke', '#334155');
         edgeFault.setAttribute('stroke-width', '2');
       }
       if (edgeImpact) {
@@ -345,7 +345,7 @@ class TopologyRenderer {
     } else if (theoryId === 3) {
       if (edgeFault) {
         edgeFault.classList.remove('pulsing-fault-line');
-        edgeFault.setAttribute('stroke', '#cbd5e1');
+        edgeFault.setAttribute('stroke', '#334155');
         edgeFault.setAttribute('stroke-width', '2');
       }
       if (edgeImpact) {

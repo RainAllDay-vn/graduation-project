@@ -1,6 +1,6 @@
 # HƯỚNG DẪN YÊU CẦU THIẾT KẾ UI/UX (UI/UX DESIGN REQUIREMENTS)
 
-## 1. Yêu cầu thiết kế UI/UX theo phản hồi Review (Review Feedback & Core Requirements)
+## 1. Review Feedback & Core Requirements
 
 Sau đợt review bản thiết kế và wireframe trước đó, giao diện cần được điều chỉnh tinh gọn theo 3 yêu cầu cốt lõi sau:
 
@@ -19,7 +19,7 @@ Sau đợt review bản thiết kế và wireframe trước đó, giao diện c�
 
 ---
 
-## 2. Thiết kế mới (New Dashboard Design)
+## 2. New Dashboard Design
 
 Bố cục giao diện được chuẩn hoá theo mô hình luồng tư duy tự nhiên từ Trái sang Phải (**Nguyên nhân $\rightarrow$ Bản đồ tác chiến $\rightarrow$ Căn cứ kiểm chứng**), áp dụng nguyên tắc phân cấp thông tin 3 tầng (Progressive Disclosure) để tránh quá tải:
 
@@ -43,15 +43,3 @@ Bố cục giao diện được chuẩn hoá theo mô hình luồng tư duy tự
 
 - **Thanh trượt thời gian (Bottom Timeline Scrubber):**
   - Thanh trượt hiển thị các mốc sự kiện chính (`13:58`, `14:32`, `14:33`, `Hiện tại`), cho phép kỹ sư tua lại (replay) tiến trình lan truyền sự cố trên sơ đồ mạng.
-
----
-
-## 3. Chuỗi Wireframe theo User Journey (Deliverables)
-
-Toàn bộ luồng nghiệp vụ được cụ thể hóa bằng chuỗi file HTML tương ứng theo từng bước trong sơ đồ [`user-journey.mmd`](./user-journey.mmd):
-
-1. **Giai đoạn 1 (Tiếp nhận sự cố - Default Landing):** [`01-overview.html`](./01-overview.html)
-2. **Giai đoạn 2 (Điều tra giả thuyết #1 - Hypothesis Focus):** `02-theory-focus.html`
-3. **Giai đoạn 3 (Soi chi tiết thiết bị & Cổng quang - Deep Inspect):** `03-node-inspect.html`
-4. **Giai đoạn 4 (Đánh giá diện ảnh hưởng L3 - Service Impact):** `04-service-impact.html`
-5. **Giai đoạn 5 (Xác nhận nguyên nhân & Khắc phục - Resolution):** `05-resolved.html`

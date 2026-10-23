@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D3 Comparison — Access Bloom: OLD vs NEW</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #05070c; --panel: #0b0f17; --node: #0b1220;
+    --line: #1e293b; --teal: #14532d;
+    --green: #34d399; --green-dim: #10b981;
+    --red: #f87171; --amber: #fbbf24;
+    --slate: #94a3b8; --slate-dim: #64748b;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  body {
+    background: var(--bg);
+    background-image: radial-gradient(rgba(34,197,94,.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: #e2e8f0; font-family: var(--mono);
+    padding: 28px 22px 40px; min-height: 100vh;
+  }
+  h1 { font-size: 17px; letter-spacing: .08em; color: var(--green); margin-bottom: 4px; }
+  .sub { font-size: 11px; color: var(--slate-dim); margin-bottom: 22px; }
+  .sub b { color: var(--slate); font-weight: 600; }
+
+  .row { display: flex; gap: 18px; align-items: stretch; flex-wrap: wrap; }
+  .card {
+    flex: 1 1 640px; min-width: 640px; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .card > header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; font-size: 11px; letter-spacing: .1em;
+    border-bottom: 1px solid var(--line); background: #070b12;
+  }
+  .tag { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: .12em; }
+  .tag.bad  { background: rgba(248,113,113,.12); color: var(--red);  border: 1px solid rgba(248,113,113,.4); }
+  .tag.good { background: rgba(52,211,153,.10); color: var(--green); border: 1px solid rgba(52,211,153,.4); }
+  .card > header .ttl { color: #cbd5e1; font-weight: 700; }
+  .card > header .hint { margin-left: auto; color: var(--slate-dim); font-size: 10px; }
+
+  /* ---------- shared mini-scene ---------- */
+  .scene { position: relative; height: 560px; overflow: hidden; cursor: default; }
+
+  .band {
+    position: absolute; left: 14px; right: 14px; top: 40px; height: 310px;
+    border: 1.5px solid rgba(20,83,45,.75); border-radius: 16px;
+    background: rgba(7,10,16,.6);
+  }
+  .band-title {
+    position: absolute; left: 34px; top: 54px; font-size: 21px; font-weight: 700;
+    letter-spacing: .22em; color: #4ade80; opacity: .9; white-space: nowrap;
+  }
+  .band2 {
+    position: absolute; left: 14px; right: 14px; top: 448px; height: 112px;
+    border: 1.5px solid rgba(20,83,45,.75); border-radius: 16px;
+    background: rgba(7,10,16,.6);
+  }
+  .band2 .band-title { top: 14px; left: 20px; font-size: 13px; color: #4ade80; opacity: .45; }
+
+  .node {
+    position: absolute; width: 132px; height: 96px; border-radius: 14px;
+    background: var(--node); border: 2px solid var(--green);
+    box-shadow: 0 0 22px rgba(52,211,153,.35), inset 0 0 14px rgba(52,211,153,.06);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 19px; font-weight: 800; letter-spacing: .06em; color: #f1f5f9;
+  }
+  .node .dot {
+    position: absolute; top: 8px; right: 10px; width: 10px; height: 10px;
+    border-radius: 50%; background: var(--green);
+  }
+  .node.dim { opacity: .38; border-color: var(--green-dim); box-shadow: none; }
+  .site { position: absolute; font-size: 12px; letter-spacing: .14em; color: var(--slate); }
+
+  .badge {
+    position: absolute; min-width: 96px; padding: 5px 14px; border-radius: 999px;
+    background: #1e293b; border: 1px solid #475569; color: #cbd5e1;
+    font-family: var(--mono); font-size: 12px; font-weight: 700; text-align: center;
+    cursor: pointer; user-select: none; transition: all .15s ease; letter-spacing: .05em;
+  }
+  .badge:hover { border-color: #94a3b8; }
+  .badge.on { background: #065f46; border-color: var(--green); color: #a7f3d0; }
+
+  /* ---------- OLD: in-canvas leaves ---------- */
+  #old-scene .leaves {
+    position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+    opacity: 0; pointer-events: none; transition: opacity .18s ease;
+  }
+  #old-scene.open .leaves { opacity: 1; pointer-events: auto; }
+
+  .callout {
+    position: absolute; font-size: 10.5px; line-height: 1.45; padding: 7px 10px;
+    border-radius: 8px; max-width: 205px; opacity: 0; transform: translateY(4px);
+    transition: all .2s ease .08s; pointer-events: none;
+  }
+  .callout.bad {
+    background: rgba(127,29,29,.28); color: #fecaca;
+    border: 1px dashed rgba(248,113,113,.65);
+  }
+  .callout.good {
+    background: rgba(6,78,59,.3); color: #a7f3d0;
+    border: 1px dashed rgba(52,211,153,.6);
+  }
+  .scene.open .callout { opacity: 1; transform: translateY(0); }
+
+  /* ---------- NEW: popover ---------- */
+  .popover {
+    position: absolute; left: 182px; top: 286px; width: 268px; z-index: 30;
+    background: #0d1420; border: 1px solid #334155; border-radius: 12px;
+    box-shadow: 0 18px 44px rgba(0,0,0,.65), 0 0 0 1px rgba(52,211,153,.08);
+    opacity: 0; transform: translateY(-6px) scale(.98); pointer-events: none;
+    transition: all .16s ease; transform-origin: top left;
+  }
+  .scene.open .popover { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  .popover::before {
+    content: ""; position: absolute; left: -6px; top: 18px; width: 10px; height: 10px;
+    background: #0d1420; border-left: 1px solid #334155; border-bottom: 1px solid #334155;
+    transform: rotate(45deg);
+  }
+  .pop-head {
+    display: flex; align-items: center; gap: 6px; padding: 9px 11px;
+    border-bottom: 1px solid #1e293b;
+  }
+  .pop-head .t { font-size: 10px; font-weight: 700; color: var(--green); letter-spacing: .06em; white-space: nowrap; }
+  .err-chip {
+    margin-left: auto; font-size: 9px; font-weight: 700; padding: 2px 6px; white-space: nowrap;
+    border-radius: 4px; background: rgba(248,113,113,.14); color: var(--red);
+    border: 1px solid rgba(248,113,113,.45);
+  }
+  .pop-grid { padding: 8px 6px 4px; border-bottom: 1px solid #1e293b; }
+  .pop-rows { max-height: 118px; overflow-y: auto; padding: 4px 0; }
+  .pop-rows::-webkit-scrollbar { width: 6px; }
+  .pop-rows::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  .arow {
+    display: flex; align-items: center; gap: 7px; padding: 3.5px 11px;
+    font-size: 10px; color: #cbd5e1;
+  }
+  .arow .sd { width: 7px; height: 7px; border-radius: 50%; background: var(--green-dim); flex: none; }
+  .arow .st { margin-left: auto; color: var(--slate-dim); font-size: 9px; letter-spacing: .05em; }
+  .arow.fault { background: rgba(248,113,113,.09); color: #fecaca; }
+  .arow.fault .sd { background: var(--red); box-shadow: 0 0 6px rgba(248,113,113,.8); }
+  .arow.fault .st { color: var(--red); font-weight: 700; }
+  .pop-foot {
+    padding: 6px 11px; font-size: 9px; color: var(--slate-dim);
+    border-top: 1px solid #1e293b; letter-spacing: .03em;
+  }
+
+  .footer {
+    padding: 12px 14px 14px; border-top: 1px solid var(--line);
+    font-size: 10.5px; line-height: 1.65; color: var(--slate);
+    background: #070b12;
+  }
+  .footer .h { font-weight: 700; margin-bottom: 3px; letter-spacing: .08em; font-size: 10px; }
+  .footer .h.b { color: var(--red); }
+  .footer .h.g { color: var(--green); }
+  .footer .h.n { color: var(--amber); }
+  .footer ul { list-style: none; }
+  .footer li::before { content: "› "; color: var(--slate-dim); }
+  .footer li.warn::before { content: "✕ "; color: var(--red); }
+  .footer li.ok::before  { content: "✓ "; color: var(--green); }
+  .footer li.gap::before { content: "… "; color: var(--amber); }
+
+  .note {
+    margin-top: 18px; padding: 10px 14px; border: 1px dashed #334155; border-radius: 10px;
+    font-size: 10.5px; color: var(--slate-dim); line-height: 1.6;
+  }
+  .note b { color: var(--slate); }
+</style>
+</head>
+<body>
+
+<h1>D3 · ACCESS BLOOM — SIDE-BY-SIDE</h1>
+<div class="sub">Cùng một kịch bản: bấm badge <b>EXCH-01 (14 ACC)</b> ở cả hai panel · <b>Trái = hiện tại</b> · <b>Phải = đề xuất popover</b></div>
+
+<div class="row">
+
+  <!-- ============ OLD ============ -->
+  <section class="card">
+    <header>
+      <span class="tag bad">OLD</span>
+      <span class="ttl">BUNG TẠI CHỖ (in-canvas bloom)</span>
+      <span class="hint">click badge →</span>
+    </header>
+
+    <div class="scene" id="old-scene">
+      <div class="band"><div class="band-title">TIER 5&nbsp; ·&nbsp; METRO EX</div></div>
+
+      <div class="node" style="left:58px; top:170px;">EXCH-01<span class="dot"></span></div>
+      <div class="site" style="left:78px; top:276px;">SITE-1</div>
+      <div class="badge" id="old-badge" style="left:74px; top:300px;">▼ +14</div>
+
+      <!-- neighbour that gets collided -->
+      <div class="node dim" style="right:-58px; top:170px;">EXCH-02<span class="dot"></span></div>
+      <div class="site" style="right:-30px; top:276px; opacity:.38;">SITE-1</div>
+      <div class="badge" style="right:-36px; top:300px; opacity:.38;">▼ +14</div>
+
+      <div class="band2"><div class="band-title">TIER 4 · AGG</div></div>
+
+      <!-- leaves drawn INTO the canvas (no viewBox → 1:1 px, aligned with HTML badge) -->
+      <svg class="leaves" width="100%" height="100%">
+        <g stroke="#334155" stroke-width=".8" stroke-dasharray="2 2" opacity=".75">
+          <line x1="122" y1="334" x2="50"  y2="378"/><line x1="122" y1="334" x2="70"  y2="378"/>
+          <line x1="122" y1="334" x2="91"  y2="378"/><line x1="122" y1="334" x2="111" y2="378"/>
+          <line x1="122" y1="334" x2="132" y2="378"/><line x1="122" y1="334" x2="152" y2="378"/>
+          <line x1="122" y1="334" x2="173" y2="378"/>
+          <line x1="122" y1="334" x2="40"  y2="402"/><line x1="122" y1="334" x2="61"  y2="402"/>
+          <line x1="122" y1="334" x2="81"  y2="402"/><line x1="122" y1="334" x2="102" y2="402"/>
+          <line x1="122" y1="334" x2="122" y2="402"/><line x1="122" y1="334" x2="143" y2="402"/>
+          <line x1="122" y1="334" x2="163" y2="402"/>
+        </g>
+        <g fill="#10b981" stroke="#070a10" stroke-width=".5">
+          <circle cx="50"  cy="378" r="4.5"/><circle cx="70"  cy="378" r="4.5"/><circle cx="91"  cy="378" r="4.5"/>
+          <circle cx="111" cy="378" r="4.5"/><circle cx="132" cy="378" r="4.5"/><circle cx="152" cy="378" r="4.5"/>
+          <circle cx="173" cy="378" r="4.5"/>
+          <circle cx="40"  cy="402" r="4.5"/><circle cx="61"  cy="402" r="4.5"/><circle cx="81"  cy="402" r="4.5"/>
+          <circle cx="102" cy="402" r="4.5"/><circle cx="122" cy="402" r="4.5"/><circle cx="143" cy="402" r="4.5"/>
+          <circle cx="163" cy="402" r="4.5"/>
+        </g>
+        <!-- red frame: the collision zone -->
+        <rect x="26" y="352" width="164" height="64" fill="none" stroke="#f87171"
+              stroke-width="1.2" stroke-dasharray="5 4" rx="8" opacity=".9"/>
+      </svg>
+
+      <div class="callout bad" style="left:206px; top:352px; max-width:212px;">
+        Leaves r trong <b>canvas</b> → tràn khỏi band (khung đứt đỏ), đè header
+        <b>TIER 4</b> của band dưới, lưới 14 dot (168px) rộng hơn spacing node
+        hàng xóm — và scale theo zoom (zoom-out → mất dạng, zoom-in → to blob).
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="h b">VẤN ĐỀ</div>
+      <ul>
+        <li class="warn">Chồng chéo: dot + line cắt qua viền band, đè label/link band dưới</li>
+        <li class="warn">Expand All Leaves ×4 → 480 dot + 480 line đổ chồng lên topology</li>
+        <li class="warn">Kẹt theo canvas transform: zoom-out dots thành pixel, pan ra khỏi màn hình</li>
+        <li class="warn">Nhiều EXCH mở cùng lúc → nhiều cụm chồng lên nhau</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ NEW ============ -->
+  <section class="card">
+    <header>
+      <span class="tag good">NEW</span>
+      <span class="ttl">POPOVER (đề xuất)</span>
+      <span class="hint">click badge · Esc / click ra ngoài để đóng</span>
+    </header>
+
+    <div class="scene" id="new-scene">
+      <div class="band"><div class="band-title">TIER 5&nbsp; ·&nbsp; METRO EX</div></div>
+
+      <div class="node" style="left:58px; top:170px;">EXCH-01<span class="dot"></span></div>
+      <div class="site" style="left:78px; top:276px;">SITE-1</div>
+      <div class="badge" id="new-badge" style="left:74px; top:300px;">▼ +14</div>
+
+      <div class="node dim" style="right:-58px; top:170px;">EXCH-02<span class="dot"></span></div>
+      <div class="site" style="right:-30px; top:276px; opacity:.38;">SITE-1</div>
+      <div class="badge" style="right:-36px; top:300px; opacity:.38;">▼ +14</div>
+
+      <div class="band2"><div class="band-title">TIER 4 · AGG</div></div>
+
+      <!-- popover: HTML overlay, OUTSIDE the canvas coordinate system -->
+      <div class="popover" id="new-pop">
+        <div class="pop-head">
+          <span class="t">EXCH-01 · ACCESS</span>
+          <span class="err-chip">[+14 ACC | 1 ERR]</span>
+        </div>
+        <div class="pop-grid">
+          <svg viewBox="0 0 236 74" width="100%" height="74">
+            <g stroke="#334155" stroke-width=".7" stroke-dasharray="2 2" opacity=".7">
+              <line x1="118" y1="10" x2="30"  y2="52"/><line x1="118" y1="10" x2="64"  y2="52"/>
+              <line x1="118" y1="10" x2="98"  y2="52"/><line x1="118" y1="10" x2="132" y2="52"/>
+              <line x1="118" y1="10" x2="166" y2="52"/><line x1="118" y1="10" x2="200" y2="52"/>
+              <line x1="118" y1="10" x2="47"  y2="66"/><line x1="118" y1="10" x2="81"  y2="66"/>
+              <line x1="118" y1="10" x2="115" y2="66"/><line x1="118" y1="10" x2="149" y2="66"/>
+              <line x1="118" y1="10" x2="183" y2="66"/><line x1="118" y1="10" x2="217" y2="66"/>
+              <line x1="118" y1="10" x2="13"  y2="52"/><line x1="118" y1="10" x2="234" y2="52"/>
+            </g>
+            <circle cx="118" cy="10" r="4" fill="#4ade80"/>
+            <g fill="#10b981" stroke="#070a10" stroke-width=".5">
+              <circle cx="13"  cy="52" r="5"/><circle cx="30" cy="52" r="5"/><circle cx="64" cy="52" r="5"/>
+              <circle cx="98"  cy="52" r="5"/><circle cx="132" cy="52" r="5"/><circle cx="166" cy="52" r="5"/>
+              <circle cx="200" cy="52" r="5"/><circle cx="234" cy="52" r="5"/>
+              <circle cx="47"  cy="66" r="5"/><circle cx="81" cy="66" r="5"/><circle cx="115" cy="66" r="5"/>
+              <circle cx="149" cy="66" r="5"/><circle cx="183" cy="66" r="5"/>
+            </g>
+            <!-- the 1 faulty ACC -->
+            <circle cx="217" cy="66" r="5" fill="#f87171" stroke="#070a10" stroke-width=".5"/>
+            <circle cx="217" cy="66" r="9" fill="none" stroke="#f87171" stroke-width="1" opacity=".55"/>
+          </svg>
+        </div>
+        <div class="pop-rows">
+          <div class="arow fault"><span class="sd"></span>ACC-HN-17<span class="st">CRC ERROR</span></div>
+          <div class="arow"><span class="sd"></span>ACC-HN-14<span class="st">OK</span></div>
+          <div class="arow"><span class="sd"></span>ACC-HN-15<span class="st">OK</span></div>
+          <div class="arow"><span class="sd"></span>ACC-HN-16<span class="st">OK</span></div>
+          <div class="arow"><span class="sd"></span>ACC-HN-18<span class="st">OK</span></div>
+          <div class="arow"><span class="sd"></span>ACC-HN-19<span class="st">OK</span></div>
+          <div class="arow"><span class="sd"></span>ACC-HN-20<span class="st">OK</span></div>
+          <div class="arow"><span class="sd"></span>…+7 ACC khác<span class="st">OK</span></div>
+        </div>
+        <div class="pop-foot">HTML overlay · anchor theo badge · không zoom theo canvas</div>
+      </div>
+
+      <div class="callout good" style="left:344px; top:98px; max-width:286px;">
+        Topology giữ nguyên — <b>không dot nào được vẽ vào canvas</b>. Children vẫn
+        "bung" (REQ-02) nhưng nằm gọn trong panel nổi, 1 panel/lần, đóng bằng
+        Esc / click ra ngoài / click lại badge.
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="h g">LỢI ÍCH</div>
+      <ul>
+        <li class="ok">Không chồng chéo: panel nằm ngoài hệ toạ độ canvas</li>
+        <li class="ok">Panel cố định kích thước → 14 ACC luôn đủ chỗ, scroll được</li>
+        <li class="ok">Không phụ thuộc zoom/pan — luôn đọc được ở mọi mức zoom</li>
+        <li class="ok">1 popover/lần → không thể multiple-cloud chồng nhau</li>
+        <li class="gap">D2 synergy: header chip <b>[+14 ACC | 1 ERR]</b> + row đỏ fault</li>
+        <li class="gap">Micro-decisions: anchor follow-pan vs close-on-pan; deprecate "Expand All Leaves"?</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<div class="note">
+  <b>Không đổi data/schema</b> — cả hai panel dùng cùng "14 ACC, 1 lỗi". D3 thuần thay đổi
+  <b>nơi render</b> (canvas SVG → HTML overlay). Mini fan-grid bên phải giữ semantics bloom
+  của <b>REQ-02</b> ("bung … dạng quạt tròn hoặc lưới nhánh nhỏ"), chỉ chuyển vào trong popover.
+</div>
+
+<script>
+  const oldScene = document.getElementById('old-scene');
+  const oldBadge = document.getElementById('old-badge');
+  oldBadge.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const open = oldScene.classList.toggle('open');
+    oldBadge.classList.toggle('on', open);
+    oldBadge.textContent = open ? '▲ -14' : '▼ +14';
+  });
+
+  const newScene = document.getElementById('new-scene');
+  const newBadge = document.getElementById('new-badge');
+  const newPop  = document.getElementById('new-pop');
+  function setPop(open) {
+    newScene.classList.toggle('open', open);
+    newBadge.classList.toggle('on', open);
+    newBadge.textContent = open ? '▲ -14' : '▼ +14';
+  }
+  newBadge.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setPop(!newScene.classList.contains('open'));
+  });
+  newPop.addEventListener('click', e => e.stopPropagation());
+  newScene.addEventListener('click', () => setPop(false));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') setPop(false); });
+</script>
+</body>
+</html>
