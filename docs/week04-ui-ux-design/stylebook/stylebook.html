@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOC Topology — Stylebook</title>
+<link rel="stylesheet" href="css/stylebook.css">
+</head>
+<body>
+
+<nav id="mini-toc">
+  <div class="t">Chương 1 · Node</div>
+  <a href="#rule-1-1">1.1 Sơ đồ của một node</a>
+  <a href="#rule-1-2">1.2 Viền = Site</a>
+  <a href="#rule-1-3">1.3 Nền = trạng thái sức khoẻ</a>
+  <a href="#rule-1-4">1.4 Layer = tầng trong Topology</a>
+  <a href="#rule-1-5">1.5 Nhãn &amp; badge</a>
+</nav>
+
+<div class="page">
+
+  <header class="mast">
+    <div class="eyebrow"><span class="dot"></span>NOC TOPOLOGY · STYLEBOOK</div>
+    <h1>NOC Topology Stylebook</h1>
+  </header>
+
+  <nav class="toc">
+    <div class="toc-title">Mục lục</div>
+    <ul class="chapters">
+      <li>
+        <div class="row">
+          <a href="#ch-1">Chương 1 — Topology <span class="sub">· Phần 1: Node</span></a>
+        </div>
+      </li>
+    </ul>
+  </nav>
+
+  <section class="chapter" id="ch-1">
+    <header class="chapter-head">
+      <div class="eyebrow"><span class="dot"></span>CHƯƠNG 1 · TOPOLOGY</div>
+      <h2>Phần 1: Node</h2>
+    </header>
+
+<nav class="toc">
+    <div class="toc-title">Mục lục chương</div>
+    <ol>
+      <li><a href="#rule-1-1">1.1 Sơ đồ của một node</a></li>
+      <li><a href="#rule-1-2">1.2 Viền = Site</a></li>
+      <li><a href="#rule-1-3">1.3 Nền = trạng thái sức khoẻ</a></li>
+      <li><a href="#rule-1-4">1.4 Layer = tầng trong Topology</a></li>
+      <li><a href="#rule-1-5">1.5 Nhãn &amp; badge</a></li>
+    </ol>
+  </nav>
+
+  <section class="rule" id="rule-1-1">
+    <h2><span class="sec-num">1.1</span>Sơ đồ của một node</h2>
+    <p>Một node gồm bốn bộ phận:</p>
+    <ul>
+      <li>Nền (thân hình chữ nhật)</li>
+      <li>Viền</li>
+      <li>Nhãn</li>
+      <li>Badge.</li>
+    </ul>
+
+    <figure class="specimen">
+      <div class="spec-head">
+        <div class="spec-name"><span class="no">HÌNH 1.1</span>Cấu tạo của node</div>
+      </div>
+      <div class="stage">
+        <svg viewBox="0 0 720 350" role="img" aria-label="Sơ đồ cấu tạo node">
+          <g transform="translate(360,165) scale(2.4)">
+            <rect class="n-body" x="-24" y="-18" width="48" height="36" rx="8" fill="#991b1b" stroke="#38bdf8" stroke-width="1"/>
+            <text x="0" y="4" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="800" font-family="ui-monospace, monospace">CORE-02</text>
+            <g opacity="0.45" transform="translate(0,30)">
+              <rect x="-26" y="-8" width="52" height="16" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1" stroke-dasharray="3 2"/>
+              <text x="0" y="3.5" text-anchor="middle" fill="#cbd5e1" font-size="8.5" font-weight="700" font-family="ui-monospace, monospace">▼ +N</text>
+            </g>
+          </g>
+
+          <g font-family="ui-monospace, monospace" font-size="10.5">
+            <text x="30" y="150" fill="#e2e8f0" font-weight="700">NỀN<tspan fill="#94a3b8" font-weight="400"> · theo status</tspan></text>
+            <line x1="191" y1="146" x2="330" y2="142" stroke="#475569" stroke-width="1"/>
+            <circle cx="330" cy="142" r="2.5" fill="#64748b"/>
+
+            <text x="30" y="240" fill="#e2e8f0" font-weight="700">THÂN CHỮ NHẬT</text>
+            <line x1="204" y1="236" x2="312" y2="208" stroke="#475569" stroke-width="1"/>
+            <circle cx="312" cy="208" r="2.5" fill="#64748b"/>
+
+            <text x="690" y="60" text-anchor="end" fill="#e2e8f0" font-weight="700">VIỀN<tspan fill="#94a3b8" font-weight="400"> · màu site (SITE-1)</tspan></text>
+            <line x1="504" y1="56" x2="408" y2="122" stroke="#475569" stroke-width="1"/>
+            <circle cx="408" cy="122" r="2.5" fill="#64748b"/>
+
+            <text x="690" y="205" text-anchor="end" fill="#e2e8f0" font-weight="700">NHÃN ID</text>
+            <line x1="561" y1="201" x2="411" y2="166" stroke="#475569" stroke-width="1"/>
+            <circle cx="411" cy="166" r="2.5" fill="#64748b"/>
+
+            <text x="690" y="296" text-anchor="end" fill="#e2e8f0" font-weight="700">BADGE<tspan fill="#94a3b8" font-weight="400"> · chỉ node exchange (vẽ mờ)</tspan></text>
+            <line x1="478" y1="292" x2="422" y2="237" stroke="#475569" stroke-width="1"/>
+            <circle cx="422" cy="237" r="2.5" fill="#64748b"/>
+          </g>
+        </svg>
+      </div>
+    </figure>
+  </section>
+
+  <section class="rule" id="rule-1-2">
+    <h2><span class="sec-num">1.2</span>Viền = Site</h2>
+    <p>Viền node là kênh mã hoá <strong>site</strong>, gồm các ràng buộc:</p>
+    <ul>
+      <li>Viền được tô theo <strong>màu site</strong> của thiết bị → các thiết bị cùng site sẽ có màu viền giống nhau.</li>
+      <li>Palette site: SITE-1 <code>#38bdf8</code> (sky) · SITE-2 <code>#a78bfa</code> (violet) · SITE-3 <code>#f472b6</code> (pink) · SITE-4 <code>#facc15</code> (yellow)</li>
+      <li>Nếu có nhiều hơn bốn site: màu cho site mới được sinh thêm theo quy tắc cố định — chọn hue cách xa nhất so với các màu site hiện có, tránh dải đỏ/hổ phách dành cho trạng thái.</li>
+    </ul>
+
+    <figure class="specimen">
+      <div class="spec-head">
+        <div class="spec-name"><span class="no">HÌNH 1.2</span>Nhóm bằng màu viền</div>
+      </div>
+      <div class="stage">
+        <svg viewBox="0 0 720 280" role="img" aria-label="Hai dải node thuộc ba site — nhóm bằng màu viền">
+          <g fill="#0f172a" stroke-width="2">
+            <rect x="86" y="60" width="48" height="36" rx="8" stroke="#38bdf8"/>
+            <rect x="148" y="60" width="48" height="36" rx="8" stroke="#38bdf8"/>
+            <rect x="210" y="60" width="48" height="36" rx="8" stroke="#38bdf8"/>
+            <rect x="272" y="60" width="48" height="36" rx="8" stroke="#a78bfa"/>
+            <rect x="334" y="60" width="48" height="36" rx="8" stroke="#a78bfa"/>
+            <rect x="396" y="60" width="48" height="36" rx="8" stroke="#a78bfa"/>
+            <rect x="458" y="60" width="48" height="36" rx="8" stroke="#f472b6"/>
+            <rect x="520" y="60" width="48" height="36" rx="8" stroke="#f472b6"/>
+            <rect x="582" y="60" width="48" height="36" rx="8" stroke="#f472b6"/>
+          </g>
+
+          <line x1="265" y1="166" x2="265" y2="214" stroke="#64748b" stroke-width="2" stroke-dasharray="6 5"/>
+          <line x1="451" y1="166" x2="451" y2="214" stroke="#64748b" stroke-width="2" stroke-dasharray="6 5"/>
+          <g fill="#0f172a" stroke-width="2">
+            <rect x="86" y="172" width="48" height="36" rx="8" stroke="#38bdf8"/>
+            <rect x="148" y="172" width="48" height="36" rx="8" stroke="#38bdf8"/>
+            <rect x="210" y="172" width="48" height="36" rx="8" stroke="#38bdf8"/>
+            <rect x="272" y="172" width="48" height="36" rx="8" stroke="#a78bfa"/>
+            <rect x="334" y="172" width="48" height="36" rx="8" stroke="#a78bfa"/>
+            <rect x="396" y="172" width="48" height="36" rx="8" stroke="#a78bfa"/>
+            <rect x="458" y="172" width="48" height="36" rx="8" stroke="#f472b6"/>
+            <rect x="520" y="172" width="48" height="36" rx="8" stroke="#f472b6"/>
+            <rect x="582" y="172" width="48" height="36" rx="8" stroke="#f472b6"/>
+          </g>
+          <g font-family="ui-monospace, monospace" font-size="10">
+            <rect x="30" y="240" width="18" height="12" rx="3" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+            <text x="54" y="250" fill="#cbd5e1">SITE-1</text>
+            <rect x="140" y="240" width="18" height="12" rx="3" fill="#0f172a" stroke="#a78bfa" stroke-width="2"/>
+            <text x="164" y="250" fill="#cbd5e1">SITE-2</text>
+            <rect x="250" y="240" width="18" height="12" rx="3" fill="#0f172a" stroke="#f472b6" stroke-width="2"/>
+            <text x="274" y="250" fill="#cbd5e1">SITE-3</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>Chỉ bằng màu viền, ta dễ dàng xác định các node thuộc chung site.</figcaption>
+    </figure>
+  </section>
+
+  <section class="rule" id="rule-1-3">
+    <h2><span class="sec-num">1.3</span>Nền = trạng thái sức khoẻ</h2>
+    <p>Nền node là kênh mã hoá sức khoẻ, gồm ba mức:</p>
+    <ul>
+      <li>healthy: nền tối <code>#0f172a</code> — đây là trạng thái mặc định của node, hoà vào canvas.</li>
+      <li>warning: nền amber đậm <code>#78350f</code> — node vẫn hoạt động nhưng gặp vấn đề cần giải quyết.</li>
+      <li>critical: nền đỏ đậm <code>#991b1b</code> — node không hoạt động.</li>
+    </ul>
+    <figure class="specimen">
+      <div class="spec-head">
+        <div class="spec-name"><span class="no">HÌNH 1.3</span>Ba mức nền</div>
+      </div>
+      <div class="stage">
+        <svg viewBox="0 0 720 230" role="img" aria-label="Ba mức nền: healthy, warning, critical">
+          <g transform="translate(150,95) scale(1.4)">
+            <rect x="-24" y="-18" width="48" height="36" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+          </g>
+          <g transform="translate(360,95) scale(1.4)">
+            <rect x="-24" y="-18" width="48" height="36" rx="8" fill="#78350f" stroke="#38bdf8" stroke-width="1"/>
+          </g>
+          <g transform="translate(570,95) scale(1.4)">
+            <rect x="-24" y="-18" width="48" height="36" rx="8" fill="#991b1b" stroke="#38bdf8" stroke-width="1"/>
+          </g>
+          <g font-family="ui-monospace, monospace" font-size="10.5" text-anchor="middle">
+            <text x="150" y="185" fill="#e2e8f0" font-weight="700">HEALTHY<tspan fill="#94a3b8" font-weight="400"> · nền tối</tspan></text>
+            <text x="360" y="185" fill="#e2e8f0" font-weight="700">WARNING<tspan fill="#94a3b8" font-weight="400"> · nền amber đậm</tspan></text>
+            <text x="570" y="185" fill="#e2e8f0" font-weight="700">CRITICAL<tspan fill="#94a3b8" font-weight="400"> · nền đỏ đậm</tspan></text>
+          </g>
+        </svg>
+      </div>
+    </figure>
+
+  </section>
+
+  <section class="rule" id="rule-1-4">
+    <h2><span class="sec-num">1.4</span>Layer = tầng trong Topology</h2>
+    <p>Layer là tầng của node trong cấu trúc mạng — và được thể hiện bằng vị trí của nó:</p>
+    <ul>
+      <li>Topology chia thành các <strong>tầng ngang cố định</strong>, xếp dọc đúng thứ tự luồng dữ liệu: Peering &amp; Transit → National Border Gateway → Core Backbone → Edge Aggregation → Metro Exchange → Access (tầng lá, chỉ mở qua badge — mục 1.5). Node cùng layer đứng thẳng hàng ngang trong tầng của nó.</li>
+      <li>Mỗi tầng có <strong>tiêu đề riêng</strong> đặt tại mép trái dải tầng (<code>PEERING &amp; TRANSIT</code>, <code>CORE BACKBONE</code>…). Dải nền mờ viền nét đứt sau tầng cũng để nhóm các node thành layer.</li>
+      <li>Tiền tố ID cũng khai báo vai trò (<code>CORE-02</code>, <code>EXCH-07</code>) — do đó layer vẫn có thể đọc được nếu người dùng di chuyển các node.</li>
+    </ul>
+
+    <figure class="specimen">
+      <div class="spec-head">
+        <div class="spec-name"><span class="no">HÌNH 1.4</span>Ba tầng node xếp dọc</div>
+      </div>
+      <div class="stage">
+        <svg viewBox="0 0 720 368" role="img" aria-label="Ba tầng node xếp dọc với tiêu đề tầng; node CORE-02 được khoanh, tiền tố ID khớp với layer của tầng đang đứng">
+          <g fill="#94a3b8" fill-opacity="0.08" stroke="#475569" stroke-width="1" stroke-dasharray="7 5">
+            <rect x="16" y="16" width="688" height="96" rx="10"/>
+            <rect x="16" y="134" width="688" height="96" rx="10"/>
+            <rect x="16" y="252" width="688" height="96" rx="10"/>
+          </g>
+          <g font-family="ui-monospace, monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="#64748b">
+            <text x="32" y="38">PEERING &amp; TRANSIT</text>
+            <text x="32" y="156">CORE BACKBONE</text>
+            <text x="32" y="274">METRO EXCHANGE</text>
+          </g>
+          <g stroke-width="2">
+            <g fill="#0f172a">
+              <rect x="40" y="54" width="48" height="36" rx="8" stroke="#facc15"/>
+              <rect x="156" y="54" width="48" height="36" rx="8" stroke="#38bdf8"/>
+              <rect x="272" y="54" width="48" height="36" rx="8" stroke="#a78bfa"/>
+              <rect x="388" y="54" width="48" height="36" rx="8" stroke="#f472b6"/>
+              <rect x="504" y="54" width="48" height="36" rx="8" stroke="#facc15"/>
+              <rect x="620" y="54" width="48" height="36" rx="8" stroke="#38bdf8"/>
+              <rect x="40" y="172" width="48" height="36" rx="8" stroke="#a78bfa"/>
+              <rect x="218" y="172" width="48" height="36" rx="8" stroke="#38bdf8"/>
+              <rect x="396" y="172" width="48" height="36" rx="8" stroke="#f472b6"/>
+              <rect x="574" y="172" width="48" height="36" rx="8" stroke="#facc15"/>
+              <rect x="40" y="290" width="48" height="36" rx="8" stroke="#a78bfa"/>
+              <rect x="126" y="290" width="48" height="36" rx="8" stroke="#f472b6"/>
+              <rect x="212" y="290" width="48" height="36" rx="8" stroke="#38bdf8"/>
+              <rect x="298" y="290" width="48" height="36" rx="8" stroke="#facc15"/>
+              <rect x="384" y="290" width="48" height="36" rx="8" stroke="#a78bfa"/>
+              <rect x="470" y="290" width="48" height="36" rx="8" stroke="#38bdf8"/>
+              <rect x="556" y="290" width="48" height="36" rx="8" stroke="#38bdf8"/>
+              <rect x="642" y="290" width="48" height="36" rx="8" stroke="#facc15"/>
+            </g>
+          </g>
+          <g font-family="ui-monospace, monospace" font-size="10" font-weight="800" text-anchor="middle" fill="#ffffff">
+            <text x="64" y="76">PEER-01</text>
+            <text x="180" y="76">PEER-02</text>
+            <text x="296" y="76">PEER-03</text>
+            <text x="412" y="76">PEER-04</text>
+            <text x="528" y="76">PEER-05</text>
+            <text x="644" y="76">PEER-06</text>
+            <text x="64" y="194">CORE-01</text>
+            <text x="242" y="194">CORE-02</text>
+            <text x="420" y="194">CORE-03</text>
+            <text x="598" y="194">CORE-04</text>
+            <text x="64" y="312">EXCH-01</text>
+            <text x="150" y="312">EXCH-02</text>
+            <text x="236" y="312">EXCH-03</text>
+            <text x="322" y="312">EXCH-04</text>
+            <text x="408" y="312">EXCH-05</text>
+            <text x="494" y="312">EXCH-06</text>
+            <text x="580" y="312">EXCH-07</text>
+            <text x="666" y="312">EXCH-08</text>
+          </g>
+          <circle cx="242" cy="190" r="33" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="5 4"/>
+          <g font-family="ui-monospace, monospace" font-size="10.5">
+            <text x="690" y="38" text-anchor="end" fill="#e2e8f0" font-weight="700">TIÊU ĐỀ TẦNG<tspan fill="#94a3b8" font-weight="400"> · đọc một lần cho cả hàng</tspan></text>
+            <line x1="446" y1="34" x2="172" y2="34" stroke="#475569" stroke-width="1"/>
+            <circle cx="172" cy="34" r="2.5" fill="#64748b"/>
+
+            <text x="690" y="246" text-anchor="end" fill="#e2e8f0" font-weight="700">TIỀN TỐ ID<tspan fill="#94a3b8" font-weight="400"> · khớp layer của tầng</tspan></text>
+            <line x1="484" y1="242" x2="271" y2="206" stroke="#475569" stroke-width="1"/>
+            <circle cx="271" cy="206" r="2.5" fill="#64748b"/>
+          </g>
+        </svg>
+      </div>
+    </figure>
+  </section>
+
+  <section class="rule" id="rule-1-5">
+    <h2><span class="sec-num">1.5</span>Nhãn &amp; badge</h2>
+    <p>Node mang hai trường chữ gồm:</p>
+    <ul>
+      <li><strong>Nhãn ID</strong> — Router ID, mono, trắng, đậm, giữa thân node.</li>
+      <li><strong>Badge leaf</strong> — <code>▼ +N</code> / <code>▲ −N</code>, dưới thân node, chỉ trên node exchange. N là số access switch của trạm — ví dụ EXCH-07 có N = 14: đang gập hiện <code>▼ +N</code>, bấm để bung ra N lá Access (mục 1.4); đang bung hiện <code>▲ −N</code>, bấm để gập lại.</li>
+    </ul>
+
+    <figure class="specimen">
+      <div class="spec-head">
+        <div class="spec-name"><span class="no">HÌNH 1.5</span>Hai trạng thái của badge</div>
+      </div>
+      <div class="stage">
+        <svg viewBox="0 0 720 320" role="img" aria-label="Node EXCH-07 với badge đang gập (▼ +14) và badge đang bung (▲ −14) cùng 14 lá access nở ra">
+          <g transform="translate(200,95) scale(1.8)">
+            <rect x="-24" y="-18" width="48" height="36" rx="8" fill="#78350f" stroke="#38bdf8" stroke-width="1"/>
+            <text x="0" y="4" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="800" font-family="ui-monospace, monospace">EXCH-07</text>
+            <g transform="translate(0,30)">
+              <rect x="-26" y="-8" width="52" height="16" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+              <text x="0" y="3.5" text-anchor="middle" fill="#cbd5e1" font-size="8.5" font-weight="700" font-family="ui-monospace, monospace">▼ +14</text>
+            </g>
+          </g>
+          <g transform="translate(520,95) scale(1.8)">
+            <rect x="-24" y="-18" width="48" height="36" rx="8" fill="#78350f" stroke="#38bdf8" stroke-width="1"/>
+            <text x="0" y="4" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="800" font-family="ui-monospace, monospace">EXCH-07</text>
+            <g transform="translate(0,30)">
+              <rect x="-26" y="-8" width="52" height="16" rx="8" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+              <text x="0" y="3.5" text-anchor="middle" fill="#f1f5f9" font-size="8.5" font-weight="700" font-family="ui-monospace, monospace">▲ −14</text>
+            </g>
+            <rect x="-34" y="44" width="68" height="52" rx="6" fill="#94a3b8" fill-opacity="0.05" stroke="#334155" stroke-width="0.7" stroke-dasharray="3 2"/>
+            <g stroke="#334155" stroke-width="0.7" stroke-dasharray="2 2" opacity="0.6">
+              <line x1="0" y1="48" x2="-24" y2="70"/>
+              <line x1="0" y1="48" x2="-16" y2="70"/>
+              <line x1="0" y1="48" x2="-8" y2="70"/>
+              <line x1="0" y1="48" x2="0" y2="70"/>
+              <line x1="0" y1="48" x2="8" y2="70"/>
+              <line x1="0" y1="48" x2="16" y2="70"/>
+              <line x1="0" y1="48" x2="24" y2="70"/>
+              <line x1="0" y1="48" x2="-24" y2="86"/>
+              <line x1="0" y1="48" x2="-16" y2="86"/>
+              <line x1="0" y1="48" x2="-8" y2="86"/>
+              <line x1="0" y1="48" x2="0" y2="86"/>
+              <line x1="0" y1="48" x2="8" y2="86"/>
+              <line x1="0" y1="48" x2="16" y2="86"/>
+              <line x1="0" y1="48" x2="24" y2="86"/>
+            </g>
+            <g fill="#10b981" stroke="#070a10" stroke-width="0.5">
+              <circle cx="-24" cy="70" r="3"/>
+              <circle cx="-16" cy="70" r="3"/>
+              <circle cx="-8" cy="70" r="3"/>
+              <circle cx="0" cy="70" r="3"/>
+              <circle cx="8" cy="70" r="3"/>
+              <circle cx="16" cy="70" r="3"/>
+              <circle cx="24" cy="70" r="3"/>
+              <circle cx="-24" cy="86" r="3"/>
+              <circle cx="-16" cy="86" r="3"/>
+              <circle cx="-8" cy="86" r="3"/>
+              <circle cx="0" cy="86" r="3"/>
+              <circle cx="8" cy="86" r="3"/>
+              <circle cx="16" cy="86" r="3"/>
+              <circle cx="24" cy="86" r="3"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+    </figure>
+  </section>
+
+  </section>
+</div>
+
+<script>
+const tocLinks = document.querySelectorAll('#mini-toc a');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+document.querySelectorAll('section.rule').forEach(s => obs.observe(s));
+
+</script>
+</body>
+</html>
