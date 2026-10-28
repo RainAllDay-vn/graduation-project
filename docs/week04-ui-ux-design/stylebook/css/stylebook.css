@@ -232,6 +232,7 @@ figure.specimen {
   background-size: 40px 40px;
 }
 .stage svg { display: block; width: 100%; height: auto; position: relative; z-index: 1; }
+.stage img { display: block; width: 100%; height: auto; position: relative; z-index: 1; border-radius: 0; }
 .stage.paused .anim { animation-play-state: paused !important; }
 
 #pan-svg { cursor: grab; touch-action: none; }

@@ -9,6 +9,8 @@
 <body>
 
 <nav id="mini-toc">
+  <div class="t">Chương 0 · Khung</div>
+  <a href="#rule-0-1">0.1 Sơ đồ khung</a>
   <div class="t">Chương 1 · Node</div>
   <a href="#rule-1-1">1.1 Sơ đồ của một node</a>
   <a href="#rule-1-2">1.2 Viền = Site</a>
@@ -40,6 +42,11 @@
     <ul class="chapters">
       <li>
         <div class="row">
+          <a href="#ch-0">Chương 0 — Khung dashboard</a>
+        </div>
+      </li>
+      <li>
+        <div class="row">
           <a href="#ch-1">Chương 1 — Topology <span class="sub">· Phần 1: Node</span></a>
         </div>
       </li>
@@ -55,6 +62,35 @@
       </li>
     </ul>
   </nav>
+
+  <section class="chapter" id="ch-0">
+    <header class="chapter-head">
+      <div class="eyebrow"><span class="dot"></span>CHƯƠNG 0 · DASHBOARD</div>
+      <h2>Khung dashboard</h2>
+    </header>
+
+    <section class="rule" id="rule-0-1">
+      <h2><span class="sec-num">0.1</span>Sơ đồ khung</h2>
+      <p>Dashboard gồm bốn vùng. Trong đó thì canvas hiển thị topology chiếm chủ đạo diện tích hiển thị:</p>
+      <ul>
+        <li><strong>Header mỏng</strong> — brand + trạng thái sự cố đang mở.</li>
+        <li><strong>Sidebar trái</strong> — điều hướng + cài đặt (chi tiết chương 4).</li>
+        <li><strong>Canvas</strong> — topology canvas (chi tiết chương 1–3).</li>
+        <li><strong>Sidebar phải</strong> — Inspector (chi tiết chương 5).</li>
+      </ul>
+      <p>Mỗi vùng kèm ghi chú "thuộc chương nào" — bản mục lục không gian của tài liệu.</p>
+      <p>Còn sống trên canvas: legend màu site góc dưới-trái — một hàng bốn swatch SITE-1…SITE-4, không có tier (tier đọc qua nhãn dải nền) — và cụm nút Fit / + / − nổi. Legend cũng là chỗ gắn chip quick-focus site (mục 4.4). Breadcrumb đã bỏ: canvas không có drill-down, beacon đã giữ vết các node đã tới, Inspector đã mô tả node đang chọn.</p>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 0.1</span>Sơ đồ khung dashboard</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-0-1.png" alt="Wireframe khung dashboard: header mỏng, sidebar trái, canvas chiếm chủ đạo, sidebar phải Inspector; các overlay trên canvas đánh dấu chờ chốt">
+        </div>
+      </figure>
+    </section>
+  </section>
 
   <section class="chapter" id="ch-1">
     <header class="chapter-head">
