@@ -28,6 +28,9 @@
   <a href="#rule-3-3">3.3 Di chuyển node</a>
   <a href="#rule-3-4">3.4 Hover — tooltip</a>
   <a href="#rule-3-5">3.5 Node focus</a>
+  <div class="t">Chương 4 · Sidebar trái</div>
+  <a href="#rule-4-1">4.1 Tìm kiếm</a>
+  <a href="#rule-4-2">4.2 Timeline báo động</a>
 </nav>
 
 <div class="page">
@@ -58,6 +61,11 @@
       <li>
         <div class="row">
           <a href="#ch-3">Chương 3 — Topology <span class="sub">· Phần 3: Interactions</span></a>
+        </div>
+      </li>
+      <li>
+        <div class="row">
+          <a href="#ch-4">Chương 4 — Khung dashboard <span class="sub">· Phần 4: Sidebar trái</span></a>
         </div>
       </li>
     </ul>
@@ -1028,6 +1036,79 @@
             <g id="focus-layer"></g>
           </svg>
           <div class="pan-hint" id="focus-hint">BẤM NODE ĐỂ FOCUS · BẤM LẠI ĐỂ GỠ</div>
+        </div>
+      </figure>
+    </section>
+  </section>
+
+  <section class="chapter" id="ch-4">
+    <header class="chapter-head">
+      <div class="eyebrow"><span class="dot"></span>CHƯƠNG 4 · KHUNG DASHBOARD</div>
+      <h2>Phần 4: Sidebar trái</h2>
+    </header>
+
+    <section class="rule" id="rule-4-1">
+      <h2><span class="sec-num">4.1</span>Tìm kiếm</h2>
+      <p>Tìm kiếm là lối vào nhanh nhất khi đã biết mình cần nhìn cái gì:</p>
+      <ul>
+        <li>Tìm theo ID thiết bị, IP quản lý hoặc tên site. Tiền tố khớp cả nhóm: gõ <code>CORE</code> là gợi ý mọi node core, gõ tên site là gợi ý toàn bộ node có tên site khớp với từ khóa.</li>
+        <li>Mỗi dòng kết quả kèm chấm màu trạng thái và tên site.</li>
+        <li>Chọn một thiết bị → canvas pan đưa node về giữa và focus.</li>
+      </ul>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 4.1A</span>Đang gõ — canvas giữ nguyên, kết quả sống trong dropdown</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-4-1a.png" alt="Ảnh tĩnh: khung tìm kiếm đang gõ CORE với dropdown gợi ý các node core; canvas giữ nguyên trạng thái mặc định, chưa chọn gì">
+        </div>
+      </figure>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 4.1B</span>Đã chọn — canvas pan về node + focus</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-4-1b.png" alt="Ảnh tĩnh: dòng CORE-02 được đánh dấu chọn trong dropdown; canvas pan về node — beacon bao quanh CORE-02, vùng K bằng 2 giữ nguyên hiển thị, phần còn lại mờ đi">
+        </div>
+      </figure>
+    </section>
+
+    <section class="rule" id="rule-4-2">
+      <h2><span class="sec-num">4.2</span>Timeline báo động</h2>
+      <p>Mọi phiên điều tra bắt đầu từ một báo động — timeline là điểm khởi đầu đó:</p>
+      <ul>
+        <li>Alarm hiện dạng cấu trúc trên trục thời gian: thời điểm, mã lỗi, thiết bị, nội dung; mức warning/error mã hoá bằng màu chấm. Mới nhất ở trên.</li>
+        <li>Bấm một alarm → canvas pan + focus thiết bị (mục 3.5).</li>
+        <li>Bấm mã lỗi → panel tài liệu trượt ra sát mép trái canvas, đè lên một phần topology. Bấm nút × hoặc Esc để đóng; canvas trở về đúng trạng thái trước đó.</li>
+        <li>Tài liệu là lớp đọc tạm thời trên layer riêng — canvas không bao giờ bị thay thế. Wiki đầy đủ mở ở tab mới (hệ thống ngoài), không nhúng vào dashboard.</li>
+      </ul>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 4.2A</span>Timeline báo động — canvas giữ nguyên</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-4-2a.png" alt="Ảnh tĩnh: timeline báo động trong sidebar trái — các alarm xếp trên trục thời gian với chấm màu theo mức, mới nhất ở trên; canvas giữ nguyên trạng thái mặc định">
+        </div>
+      </figure>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 4.2B</span>Bấm alarm — canvas pan + focus thiết bị</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-4-2b.png" alt="Ảnh tĩnh: alarm ALM-2035 của CORE-02 được đánh dấu chọn trong timeline; canvas pan về CORE-02 — beacon bao quanh, vùng K bằng 2 giữ nguyên hiển thị, phần còn lại mờ đi">
+        </div>
+      </figure>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 4.2C</span>Bấm mã lỗi — panel tài liệu trên canvas</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-4-2c.png" alt="Ảnh tĩnh: bấm mã lỗi ALM-2035 trong timeline — panel tài liệu trượt ra sát mép trái canvas, đè lên một phần topology; beacon CORE-02 vẫn thấy bên phải; × hoặc Esc đóng">
         </div>
       </figure>
     </section>

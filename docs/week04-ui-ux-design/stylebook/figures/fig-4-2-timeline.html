@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>HÌNH 4.2A — Timeline báo động</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #070a10; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .wrap { width: 960px; height: 560px; display: flex; flex-direction: column; }
+  .main { flex: 1; position: relative; display: flex; padding: 24px 24px 12px; min-height: 0; }
+
+  .card { width: 330px; flex: none; background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 16px; align-self: flex-start; }
+  .c-head { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: #94a3b8; margin-bottom: 12px; }
+  .tl { margin-top: 2px; }
+  .al-row { position: relative; display: flex; gap: 10px; padding: 9px 2px; }
+  .al-row + .al-row { border-top: 1px dashed #1e293b; }
+  .al-time { width: 40px; flex: none; font-size: 10px; color: #64748b; padding-top: 3px; }
+  .al-axis { position: relative; width: 14px; flex: none; }
+  .al-axis::before { content: ""; position: absolute; left: 50%; top: -10px; bottom: -10px; width: 1px; background: #1e293b; }
+  .al-row:first-child .al-axis::before { top: 7px; }
+  .al-row:last-child .al-axis::before { bottom: auto; height: 17px; }
+  .al-axis i { position: absolute; left: 50%; top: 7px; transform: translateX(-50%); width: 8px; height: 8px; border-radius: 50%; }
+  .al-body { flex: 1; min-width: 0; }
+  .al-l1 { display: flex; align-items: baseline; gap: 8px; }
+  .al-code { font-size: 11px; font-weight: 800; color: #e2e8f0; letter-spacing: 0.5px; }
+  .al-dev { font-size: 9.5px; color: #94a3b8; margin-left: auto; letter-spacing: 0.5px; }
+  .al-msg { font-size: 10px; color: #94a3b8; margin-top: 3px; }
+
+  .canvas { flex: 1; position: relative; background: #070a10; border: 1px solid #1e293b; border-radius: 10px; margin-left: 18px; overflow: hidden; }
+  .canvas svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .c-label { position: absolute; top: 14px; left: 0; right: 0; text-align: center; font-size: 10.5px; font-weight: 800; letter-spacing: 1.5px; color: #94a3b8; }
+
+  .note { height: 40px; flex: none; display: flex; align-items: center; justify-content: center; gap: 10px; border-top: 1px solid #1e293b; background: #0b111e; font-size: 11px; }
+  .note .n1 { font-weight: 800; color: #e2e8f0; letter-spacing: 0.8px; }
+  .note .n3 { color: #94a3b8; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="main">
+
+    <div class="card">
+      <div class="c-head">SIDEBAR TRÁI · 4.2</div>
+      <div class="tl">
+        <div class="al-row">
+          <div class="al-time">14:35</div>
+          <div class="al-axis"><i style="background:#ef4444"></i></div>
+          <div class="al-body">
+            <div class="al-l1"><span class="al-code">ALM-2037</span><span class="al-dev">EXCH-04</span></div>
+            <div class="al-msg">Mất kết nối BGP về AGG-02</div>
+          </div>
+        </div>
+        <div class="al-row">
+          <div class="al-time">14:33</div>
+          <div class="al-axis"><i style="background:#ef4444"></i></div>
+          <div class="al-body">
+            <div class="al-l1"><span class="al-code">ALM-2035</span><span class="al-dev">CORE-02</span></div>
+            <div class="al-msg">BGP session down</div>
+          </div>
+        </div>
+        <div class="al-row">
+          <div class="al-time">14:31</div>
+          <div class="al-axis"><i style="background:#f59e0b"></i></div>
+          <div class="al-body">
+            <div class="al-l1"><span class="al-code">ALM-2041</span><span class="al-dev">AGG-04</span></div>
+            <div class="al-msg">CPU trên 80%</div>
+          </div>
+        </div>
+        <div class="al-row">
+          <div class="al-time">13:58</div>
+          <div class="al-axis"><i style="background:#f59e0b"></i></div>
+          <div class="al-body">
+            <div class="al-l1"><span class="al-code">ALM-2038</span><span class="al-dev">IGW-02</span></div>
+            <div class="al-msg">Độ trễ tăng bất thường</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="canvas">
+      <svg viewBox="0 0 562 480" preserveAspectRatio="none" aria-hidden="true">
+       <g transform="translate(0,30)">
+        <g stroke="#475569" stroke-width="1" stroke-dasharray="6 4" stroke-opacity="0.5" fill="none">
+          <rect x="16" y="50" width="530" height="92" rx="8"/>
+          <rect x="16" y="170" width="530" height="92" rx="8"/>
+          <rect x="16" y="290" width="530" height="92" rx="8"/>
+        </g>
+        <g stroke="#334155" stroke-width="1" opacity="0.7">
+          <line x1="130" y1="96" x2="95" y2="216"/>
+          <line x1="130" y1="96" x2="225" y2="216"/>
+          <line x1="432" y1="96" x2="355" y2="216"/>
+          <line x1="432" y1="96" x2="480" y2="216"/>
+          <line x1="95" y1="216" x2="85" y2="336"/>
+          <line x1="480" y1="216" x2="490" y2="336"/>
+        </g>
+        <g stroke-width="1.6">
+          <line x1="281" y1="96" x2="225" y2="216" stroke="#ef4444"/>
+          <line x1="281" y1="96" x2="355" y2="216" stroke="#10b981"/>
+          <line x1="225" y1="216" x2="190" y2="336" stroke="#10b981"/>
+          <line x1="225" y1="216" x2="295" y2="336" stroke="#10b981"/>
+          <line x1="355" y1="216" x2="400" y2="336" stroke="#10b981"/>
+        </g>
+        <g font-family="ui-monospace, monospace" font-size="7" font-weight="800" text-anchor="middle">
+          <rect x="112" y="84" width="36" height="24" rx="5" fill="#0f172a" stroke="#38bdf8" stroke-width="1.4"/>
+          <text x="130" y="99" fill="#e2e8f0">CORE-01</text>
+          <rect x="263" y="84" width="36" height="24" rx="5" fill="#991b1b" stroke="#a78bfa" stroke-width="1.8"/>
+          <text x="281" y="99" fill="#ffffff">CORE-02</text>
+          <rect x="414" y="84" width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+          <text x="432" y="99" fill="#e2e8f0">CORE-03</text>
+          <rect x="77" y="204" width="36" height="24" rx="5" fill="#0f172a" stroke="#38bdf8" stroke-width="1.4"/>
+          <text x="95" y="219" fill="#e2e8f0">AGG-01</text>
+          <rect x="207" y="204" width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+          <text x="225" y="219" fill="#e2e8f0">AGG-02</text>
+          <rect x="337" y="204" width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+          <text x="355" y="219" fill="#e2e8f0">AGG-03</text>
+          <rect x="462" y="204" width="36" height="24" rx="5" fill="#0f172a" stroke="#facc15" stroke-width="1.4"/>
+          <text x="480" y="219" fill="#e2e8f0">AGG-04</text>
+          <rect x="67" y="324" width="36" height="24" rx="5" fill="#0f172a" stroke="#38bdf8" stroke-width="1.4"/>
+          <text x="85" y="339" fill="#e2e8f0">EXCH-01</text>
+          <rect x="172" y="324" width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+          <text x="190" y="339" fill="#e2e8f0">EXCH-02</text>
+          <rect x="277" y="324" width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+          <text x="295" y="339" fill="#e2e8f0">EXCH-03</text>
+          <rect x="382" y="324" width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+          <text x="400" y="339" fill="#e2e8f0">EXCH-04</text>
+          <rect x="472" y="324" width="36" height="24" rx="5" fill="#0f172a" stroke="#facc15" stroke-width="1.4"/>
+          <text x="490" y="339" fill="#e2e8f0">EXCH-05</text>
+        </g>
+       </g>
+      </svg>
+      <div class="c-label">CANVAS — KHI ĐANG XEM · GIỮ NGUYÊN</div>
+    </div>
+
+  </div>
+
+  <div class="note">
+    <span class="n1">TIMELINE BÁO ĐỘNG</span>
+    <span class="n3">— mọi phiên điều tra bắt đầu từ một báo động · canvas giữ nguyên</span>
+  </div>
+
+</div>
+</body>
+</html>
