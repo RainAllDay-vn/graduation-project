@@ -1,6 +1,6 @@
 # Chương 4: Khung dashboard — Phần 4: Sidebar trái
 
-> **4.1 + 4.2 + 4.3 đã viết nội dung; 4.4 là skeleton.** Quyết định đã chốt nằm trong `docs/week04-ui-ux-design/design-decisions.md` (§5–§9, gồm tóm tắt research yêu cầu).
+> Chương này đã viết đủ nội dung 4.1–4.4. Quyết định đã chốt nằm trong `docs/week04-ui-ux-design/design-decisions.md` (§5–§9, gồm tóm tắt research yêu cầu).
 > Văn phong theo các chương trước. Mọi số liệu "chốt khi dựng". Trường chưa có data ghi "chờ data".
 
 ---
@@ -61,11 +61,11 @@ Tab Giả thuyết AI thể hiện các giả thuyết được ai đưa ra:
 
 ## 4.4 Cài đặt hiển thị
 
-(chốt điểm 1 + 3 — design-decisions §7)
+Tab Cài đặt hiển thị thể hiện những tùy chỉnh của kỹ sư tác động trực tiếp lên canvas:
 
-- Dial K: **1 / 2 / 3 / Toàn mạng** (mặc định K = 2 — mục 3.5).
-- Chế độ loại bỏ: **Mờ / Ẩn** — một setting chung cho node ngoài-vùng-K và node bị-lọc.
-- Bộ lọc site: chip bật/tắt — node không khớp → hidden; **filter thắng focus**; edge theo node; tooltip bỏ qua node loại; áp mọi mức LOD.
-- Toàn khối lưu **localStorage** — không lưu DB (beacon + vị trí kéo không lưu).
+- Dial phạm vi tường minh: **1 / 2 / 3** (mặc định K = 2 — mục 3.5).
+- Chế độ loại bỏ: **Mờ / Ẩn** — một setting chung cho node ngoài-vùng-K và node bị-lọc; edge nối tới node loại bỏ cũng theo node.
+- Bộ lọc site: bốn chip bật/tắt theo màu site. Node không khớp bị loại bỏ dù đang giữ beacon — **filter thắng focus**; tooltip bỏ qua node loại bỏ; áp mọi mức zoom.
+- Toàn khối lưu **localStorage** để giữ lại giữa các phiên; beacon và vị trí kéo node là trạng thái của phiên — không lưu.
 
-[Illustration: demo tương tác — canvas phản ứng với dial K + Mờ/Ẩn + lọc site]
+[Illustration 4.4: demo tương tác — dial K, chế độ Mờ/Ẩn và bộ lọc site tác động lên canvas theo thời gian thực; bấm node để thêm hoặc gỡ beacon]

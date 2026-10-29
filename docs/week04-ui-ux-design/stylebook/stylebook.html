@@ -32,6 +32,7 @@
   <a href="#rule-4-1">4.1 Tìm kiếm</a>
   <a href="#rule-4-2">4.2 Timeline báo động</a>
   <a href="#rule-4-3">4.3 Giả thuyết AI Top 3</a>
+  <a href="#rule-4-4">4.4 Cài đặt hiển thị</a>
 </nav>
 
 <div class="page">
@@ -1048,6 +1049,16 @@
       <h2>Phần 4: Sidebar trái</h2>
     </header>
 
+    <nav class="toc">
+      <div class="toc-title">Mục lục chương</div>
+      <ol>
+        <li><a href="#rule-4-1">4.1 Tìm kiếm</a></li>
+        <li><a href="#rule-4-2">4.2 Timeline báo động</a></li>
+        <li><a href="#rule-4-3">4.3 Giả thuyết AI Top 3</a></li>
+        <li><a href="#rule-4-4">4.4 Cài đặt hiển thị</a></li>
+      </ol>
+    </nav>
+
     <section class="rule" id="rule-4-1">
       <h2><span class="sec-num">4.1</span>Tìm kiếm</h2>
       <p>Tab Tìm kiếm giúp kỹ sư xác định node trên topology dựa trên từ khóa:</p>
@@ -1138,6 +1149,134 @@
         </div>
         <div class="stage">
           <img src="images/fig-4-3b.png" alt="Ảnh tĩnh: chọn giả thuyết một — canvas beacon bao quanh hai đầu liên kết nghi vấn CORE-02 ↔ AGG-02, vùng K giữ nguyên hiển thị, phần còn lại mờ đi">
+        </div>
+      </figure>
+    </section>
+
+    <section class="rule" id="rule-4-4">
+      <h2><span class="sec-num">4.4</span>Cài đặt hiển thị</h2>
+      <p>Tab Cài đặt hiển thị thể hiện những tùy chỉnh của kỹ sư tác động trực tiếp lên canvas:</p>
+      <ul>
+        <li>Dial phạm vi tường minh: <strong>1 / 2 / 3</strong> (mặc định K = 2 — mục 3.5).</li>
+        <li>Chế độ loại bỏ: <strong>Mờ / Ẩn</strong> — một setting chung cho node ngoài-vùng-K và node bị-lọc; edge nối tới node loại bỏ cũng theo node.</li>
+        <li>Bộ lọc site: bốn chip bật/tắt theo màu site. Node không khớp bị loại bỏ dù đang giữ beacon — <strong>filter thắng focus</strong>; tooltip bỏ qua node loại bỏ; áp mọi mức zoom.</li>
+        <li>Toàn khối lưu <strong>localStorage</strong> để giữ lại giữa các phiên; beacon và vị trí kéo node là trạng thái của phiên — không lưu.</li>
+      </ul>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 4.4</span>Cài đặt hiển thị — canvas phản ứng theo thời gian thực<span class="demo-badge">DEMO</span></div>
+        </div>
+        <div class="stage">
+          <div id="demo44">
+            <div id="demo44-panel">
+              <div class="p-head">SIDEBAR TRÁI · 4.4</div>
+              <div>
+                <div class="p-lab">PHẠM VI TƯỜNG MINH (K)</div>
+                <div class="p-row">
+                  <button class="d44-k" data-k="1">1</button>
+                  <button class="d44-k on" data-k="2">2</button>
+                  <button class="d44-k" data-k="3">3</button>
+                </div>
+              </div>
+              <div>
+                <div class="p-lab">NODE LOẠI BỎ</div>
+                <div class="p-row">
+                  <button class="d44-mode on" data-mode="dim">MỜ</button>
+                  <button class="d44-mode" data-mode="hide">ẨN</button>
+                </div>
+              </div>
+              <div>
+                <div class="p-lab">BỘ LỌC SITE</div>
+                <div class="p-row">
+                  <button class="d44-site on" data-site="s1"><i class="d-dot" style="background:#38bdf8"></i>SITE-1</button>
+                  <button class="d44-site on" data-site="s2"><i class="d-dot" style="background:#a78bfa"></i>SITE-2</button>
+                  <button class="d44-site on" data-site="s3"><i class="d-dot" style="background:#f472b6"></i>SITE-3</button>
+                  <button class="d44-site on" data-site="s4"><i class="d-dot" style="background:#facc15"></i>SITE-4</button>
+                </div>
+              </div>
+              <div class="p-note">Lưu localStorage — beacon và vị trí kéo node không lưu.</div>
+            </div>
+            <div id="demo44-canvas">
+              <svg id="demo44-svg" viewBox="0 0 560 380" role="img" aria-label="Demo tương tác: dial K, chế độ Mờ/Ẩn và bộ lọc site tác động trực tiếp lên canvas; bấm node để thêm hoặc gỡ beacon">
+                <g fill="#94a3b8" fill-opacity="0.08" stroke="#475569" stroke-width="1" stroke-dasharray="6 4">
+                  <rect x="14" y="20" width="532" height="100" rx="8"/>
+                  <rect x="14" y="136" width="532" height="100" rx="8"/>
+                  <rect x="14" y="252" width="532" height="100" rx="8"/>
+                </g>
+                <g font-family="ui-monospace, monospace" font-size="9" font-weight="700" letter-spacing="1.5" fill="#64748b">
+                  <text x="28" y="40">CORE BACKBONE</text>
+                  <text x="28" y="156">EDGE AGGREGATION</text>
+                  <text x="28" y="272">METRO EXCHANGE</text>
+                </g>
+                <g id="demo44-edges" stroke="#10b981" stroke-width="1.6">
+                  <line data-a="core-1" data-b="agg-1" x1="102" y1="70" x2="74" y2="186"/>
+                  <line data-a="core-1" data-b="agg-2" x1="102" y1="70" x2="188" y2="186"/>
+                  <line data-a="core-2" data-b="agg-2" x1="268" y1="70" x2="188" y2="186" stroke="#ef4444"/>
+                  <line data-a="core-2" data-b="agg-3" x1="268" y1="70" x2="318" y2="186"/>
+                  <line data-a="core-3" data-b="agg-3" x1="434" y1="70" x2="318" y2="186"/>
+                  <line data-a="core-3" data-b="agg-4" x1="434" y1="70" x2="462" y2="186"/>
+                  <line data-a="agg-1" data-b="exch-1" x1="74" y1="186" x2="54" y2="302"/>
+                  <line data-a="agg-2" data-b="exch-2" x1="188" y1="186" x2="154" y2="302"/>
+                  <line data-a="agg-2" data-b="exch-3" x1="188" y1="186" x2="254" y2="302"/>
+                  <line data-a="agg-3" data-b="exch-4" x1="318" y1="186" x2="354" y2="302"/>
+                  <line data-a="agg-4" data-b="exch-5" x1="462" y1="186" x2="474" y2="302"/>
+                </g>
+                <g font-family="ui-monospace, monospace" font-size="7" font-weight="800" text-anchor="middle">
+                  <g class="d44-node" data-id="core-1" transform="translate(84,58)">
+                    <rect width="36" height="24" rx="5" fill="#0f172a" stroke="#38bdf8" stroke-width="1.4"/>
+                    <text x="18" y="15" fill="#e2e8f0">CORE-01</text>
+                  </g>
+                  <g class="d44-node" data-id="core-2" transform="translate(250,58)">
+                    <rect width="36" height="24" rx="5" fill="#991b1b" stroke="#a78bfa" stroke-width="1.8"/>
+                    <text x="18" y="15" fill="#ffffff">CORE-02</text>
+                  </g>
+                  <g class="d44-node" data-id="core-3" transform="translate(416,58)">
+                    <rect width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+                    <text x="18" y="15" fill="#e2e8f0">CORE-03</text>
+                  </g>
+                  <g class="d44-node" data-id="agg-1" transform="translate(56,174)">
+                    <rect width="36" height="24" rx="5" fill="#0f172a" stroke="#38bdf8" stroke-width="1.4"/>
+                    <text x="18" y="15" fill="#e2e8f0">AGG-01</text>
+                  </g>
+                  <g class="d44-node" data-id="agg-2" transform="translate(170,174)">
+                    <rect width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+                    <text x="18" y="15" fill="#e2e8f0">AGG-02</text>
+                  </g>
+                  <g class="d44-node" data-id="agg-3" transform="translate(300,174)">
+                    <rect width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+                    <text x="18" y="15" fill="#e2e8f0">AGG-03</text>
+                  </g>
+                  <g class="d44-node" data-id="agg-4" transform="translate(444,174)">
+                    <rect width="36" height="24" rx="5" fill="#0f172a" stroke="#facc15" stroke-width="1.4"/>
+                    <text x="18" y="15" fill="#e2e8f0">AGG-04</text>
+                  </g>
+                  <g class="d44-node" data-id="exch-1" transform="translate(36,290)">
+                    <rect width="36" height="24" rx="5" fill="#0f172a" stroke="#38bdf8" stroke-width="1.4"/>
+                    <text x="18" y="15" fill="#e2e8f0">EXCH-01</text>
+                  </g>
+                  <g class="d44-node" data-id="exch-2" transform="translate(136,290)">
+                    <rect width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+                    <text x="18" y="15" fill="#e2e8f0">EXCH-02</text>
+                  </g>
+                  <g class="d44-node" data-id="exch-3" transform="translate(236,290)">
+                    <rect width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+                    <text x="18" y="15" fill="#e2e8f0">EXCH-03</text>
+                  </g>
+                  <g class="d44-node" data-id="exch-4" transform="translate(336,290)">
+                    <rect width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+                    <text x="18" y="15" fill="#e2e8f0">EXCH-04</text>
+                  </g>
+                  <g class="d44-node" data-id="exch-5" transform="translate(456,290)">
+                    <rect width="36" height="24" rx="5" fill="#0f172a" stroke="#facc15" stroke-width="1.4"/>
+                    <text x="18" y="15" fill="#e2e8f0">EXCH-05</text>
+                  </g>
+                </g>
+                <g id="demo44-layer"></g>
+              </svg>
+              <div class="pan-hint" id="demo44-hint">BẤM NODE ĐỂ THÊM / GỠ BEACON · ĐIỀU KHIỂN BÊN TRÁI</div>
+            </div>
+          </div>
         </div>
       </figure>
     </section>
@@ -1369,6 +1508,95 @@ document.querySelectorAll('section.rule').forEach(s => obs.observe(s));
     if (hint) hint.style.opacity = '0';
     refresh();
   });
+})();
+
+(function () {
+  const root = document.getElementById('demo44');
+  if (!root) return;
+  const svg = document.getElementById('demo44-svg');
+  const layer = document.getElementById('demo44-layer');
+  const hint = document.getElementById('demo44-hint');
+  const NS = 'http://www.w3.org/2000/svg';
+  const KS = { '1': 1, '2': 2, '3': 3 };
+  const SITE = {
+    'core-1': 's1', 'core-2': 's2', 'core-3': 's2',
+    'agg-1': 's1', 'agg-2': 's2', 'agg-3': 's2', 'agg-4': 's4',
+    'exch-1': 's1', 'exch-2': 's2', 'exch-3': 's2', 'exch-4': 's2', 'exch-5': 's4'
+  };
+  const adj = {};
+  svg.querySelectorAll('#demo44-edges line').forEach(l => {
+    (adj[l.dataset.a] = adj[l.dataset.a] || []).push(l.dataset.b);
+    (adj[l.dataset.b] = adj[l.dataset.b] || []).push(l.dataset.a);
+  });
+  const nodes = {}, edges = svg.querySelectorAll('#demo44-edges line');
+  svg.querySelectorAll('.d44-node').forEach(g => nodes[g.dataset.id] = g);
+  const center = g => g.getAttribute('transform').match(/-?\d+(?:\.\d+)?/g).map(Number);
+  let K = 2, mode = 'dim';
+  const beacons = ['core-2'];
+  const sites = { s1: true, s2: true, s3: true, s4: true };
+  const apply = () => {
+    const bright = new Set();
+    beacons.forEach(id => {
+      const seen = new Set([id]);
+      let frontier = [id];
+      for (let d = 0; d < K; d++) {
+        if (!frontier.length) break;
+        const next = [];
+        frontier.forEach(u => (adj[u] || []).forEach(v => { if (!seen.has(v)) { seen.add(v); next.push(v); } }));
+        frontier = next;
+      }
+      seen.forEach(u => bright.add(u));
+    });
+    const removed = id => !sites[SITE[id]] || (beacons.length > 0 && !bright.has(id));
+    Object.keys(nodes).forEach(id => {
+      const g = nodes[id];
+      if (mode === 'hide') { g.style.display = removed(id) ? 'none' : ''; g.classList.remove('dim'); }
+      else { g.style.display = ''; g.classList.toggle('dim', removed(id)); }
+    });
+    edges.forEach(l => {
+      const out = removed(l.dataset.a) || removed(l.dataset.b);
+      if (mode === 'hide') { l.style.display = out ? 'none' : ''; l.classList.remove('dim'); }
+      else { l.style.display = ''; l.classList.toggle('dim', out); }
+    });
+    layer.innerHTML = '';
+    beacons.forEach(id => {
+      if (removed(id)) return;
+      const t = center(nodes[id]);
+      const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('cx', t[0] + 18);
+      c.setAttribute('cy', t[1] + 12);
+      c.setAttribute('r', 28);
+      c.setAttribute('fill', 'none');
+      c.setAttribute('stroke', '#e2e8f0');
+      c.setAttribute('stroke-width', 2);
+      layer.appendChild(c);
+    });
+  };
+  root.querySelectorAll('.d44-k').forEach(b => b.addEventListener('click', () => {
+    root.querySelectorAll('.d44-k').forEach(x => x.classList.toggle('on', x === b));
+    K = KS[b.dataset.k];
+    apply();
+  }));
+  root.querySelectorAll('.d44-mode').forEach(b => b.addEventListener('click', () => {
+    root.querySelectorAll('.d44-mode').forEach(x => x.classList.toggle('on', x === b));
+    mode = b.dataset.mode;
+    apply();
+  }));
+  root.querySelectorAll('.d44-site').forEach(b => b.addEventListener('click', () => {
+    sites[b.dataset.site] = !sites[b.dataset.site];
+    b.classList.toggle('on', sites[b.dataset.site]);
+    apply();
+  }));
+  svg.addEventListener('click', e => {
+    const g = e.target.closest('.d44-node');
+    if (!g) return;
+    const id = g.dataset.id;
+    const i = beacons.indexOf(id);
+    if (i >= 0) beacons.splice(i, 1); else beacons.push(id);
+    if (hint) hint.style.opacity = '0';
+    apply();
+  });
+  apply();
 })();
 
 </script>
