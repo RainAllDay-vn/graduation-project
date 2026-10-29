@@ -31,6 +31,7 @@
   <div class="t">Chương 4 · Sidebar trái</div>
   <a href="#rule-4-1">4.1 Tìm kiếm</a>
   <a href="#rule-4-2">4.2 Timeline báo động</a>
+  <a href="#rule-4-3">4.3 Giả thuyết AI Top 3</a>
 </nav>
 
 <div class="page">
@@ -1049,7 +1050,7 @@
 
     <section class="rule" id="rule-4-1">
       <h2><span class="sec-num">4.1</span>Tìm kiếm</h2>
-      <p>Tìm kiếm là lối vào nhanh nhất khi đã biết mình cần nhìn cái gì:</p>
+      <p>Tab Tìm kiếm giúp kỹ sư xác định node trên topology dựa trên từ khóa:</p>
       <ul>
         <li>Tìm theo ID thiết bị, IP quản lý hoặc tên site. Tiền tố khớp cả nhóm: gõ <code>CORE</code> là gợi ý mọi node core, gõ tên site là gợi ý toàn bộ node có tên site khớp với từ khóa.</li>
         <li>Mỗi dòng kết quả kèm chấm màu trạng thái và tên site.</li>
@@ -1077,7 +1078,7 @@
 
     <section class="rule" id="rule-4-2">
       <h2><span class="sec-num">4.2</span>Timeline báo động</h2>
-      <p>Mọi phiên điều tra bắt đầu từ một báo động — timeline là điểm khởi đầu đó:</p>
+      <p>Tab Timeline báo động thể hiện các báo động theo dòng thời gian:</p>
       <ul>
         <li>Alarm hiện dạng cấu trúc trên trục thời gian: thời điểm, mã lỗi, thiết bị, nội dung; mức warning/error mã hoá bằng màu chấm. Mới nhất ở trên.</li>
         <li>Bấm một alarm → canvas pan + focus thiết bị (mục 3.5).</li>
@@ -1109,6 +1110,34 @@
         </div>
         <div class="stage">
           <img src="images/fig-4-2c.png" alt="Ảnh tĩnh: bấm mã lỗi ALM-2035 trong timeline — panel tài liệu trượt ra sát mép trái canvas, đè lên một phần topology; beacon CORE-02 vẫn thấy bên phải; × hoặc Esc đóng">
+        </div>
+      </figure>
+    </section>
+
+    <section class="rule" id="rule-4-3">
+      <h2><span class="sec-num">4.3</span>Giả thuyết AI</h2>
+      <p>Tab Giả thuyết AI thể hiện các giả thuyết được ai đưa ra:</p>
+      <ul>
+        <li>Mỗi giả thuyết là một micro-card: thứ hạng, tóm tắt nguyên nhân, điểm khớp và một dòng căn cứ — xếp từ khớp cao xuống thấp. Giả thuyết có thể trỏ vào một liên kết hoặc một thiết bị.</li>
+        <li>Bấm một card → canvas khoanh vùng khu vực nghi vấn, beacon các thiết bị liên quan (trỏ vào liên kết thì beacon cả hai đầu — dùng cơ chế multi-beacon 3.5) và pan đưa vùng đó về giữa; đồng thời Inspector hiện nội dung đầy đủ của giả thuyết — mục 5.6. Chọn giả thuyết khác → vùng khoanh và beacon đổi theo.</li>
+        <li>Giả thuyết bị bác bỏ không biến mất: rơi xuống phần dưới danh sách kèm lý do, ghi lại hướng đã thử. Nút Xác nhận / Bác bỏ nằm ở Inspector.</li>
+      </ul>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 4.3A</span>Danh sách Top 3 — canvas giữ nguyên</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-4-3a.png" alt="Ảnh tĩnh: ba micro-card giả thuyết xếp theo độ tin cậy — thứ hạng, tóm tắt nguyên nhân, điểm khớp, một dòng căn cứ; một giả thuyết đã bác bỏ nằm dưới danh sách kèm lý do; canvas giữ nguyên">
+        </div>
+      </figure>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 4.3B</span>Chọn giả thuyết — khoanh vùng + beacon trên canvas</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-4-3b.png" alt="Ảnh tĩnh: chọn giả thuyết một — canvas beacon bao quanh hai đầu liên kết nghi vấn CORE-02 ↔ AGG-02, vùng K giữ nguyên hiển thị, phần còn lại mờ đi">
         </div>
       </figure>
     </section>

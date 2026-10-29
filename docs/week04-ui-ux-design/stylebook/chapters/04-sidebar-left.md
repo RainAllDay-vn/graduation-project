@@ -1,6 +1,6 @@
 # Chương 4: Khung dashboard — Phần 4: Sidebar trái
 
-> **4.1 + 4.2 đã viết nội dung; 4.3 + 4.4 là skeleton.** Quyết định đã chốt nằm trong `docs/week04-ui-ux-design/design-decisions.md` (§5–§9, gồm tóm tắt research yêu cầu).
+> **4.1 + 4.2 + 4.3 đã viết nội dung; 4.4 là skeleton.** Quyết định đã chốt nằm trong `docs/week04-ui-ux-design/design-decisions.md` (§5–§9, gồm tóm tắt research yêu cầu).
 > Văn phong theo các chương trước. Mọi số liệu "chốt khi dựng". Trường chưa có data ghi "chờ data".
 
 ---
@@ -16,7 +16,7 @@
 
 ## 4.1 Tìm kiếm
 
-Tìm kiếm là lối vào nhanh nhất khi đã biết mình cần nhìn cái gì:
+Tab Tìm kiếm giúp kỹ sư xác định node trên topology dựa trên từ khóa:
 
 - Tìm theo ID thiết bị, IP quản lý hoặc tên site. Tiền tố khớp cả nhóm: gõ `CORE` là gợi ý mọi node core, gõ tên site là gợi ý toàn bộ node có tên site khớp với từ khóa.
 - Mỗi dòng kết quả kèm chấm màu trạng thái và tên site.
@@ -30,7 +30,7 @@ Tìm kiếm là lối vào nhanh nhất khi đã biết mình cần nhìn cái g
 
 ## 4.2 Timeline báo động
 
-Mọi phiên điều tra bắt đầu từ một báo động — timeline là điểm khởi đầu đó:
+Tab Timeline báo động thể hiện các báo động theo dòng thời gian:
 
 - Alarm hiện dạng cấu trúc trên trục thời gian: thời điểm, mã lỗi, thiết bị, nội dung; mức warning/error mã hoá bằng màu chấm. Mới nhất ở trên.
 - Bấm một alarm → canvas pan + focus thiết bị (mục 3.5).
@@ -45,14 +45,17 @@ Mọi phiên điều tra bắt đầu từ một báo động — timeline là �
 
 ---
 
-## 4.3 Giả thuyết AI Top 3
+## 4.3 Giả thuyết AI
 
-(MUST)
+Tab Giả thuyết AI thể hiện các giả thuyết được ai đưa ra:
 
-- Micro-cards; bấm → khoanh vùng + beacon trên canvas (dùng cơ chế multi-beacon 3.5).
-- Nút Xác nhận/Bác bỏ nằm ở Inspector (mục 5.6).
+- Mỗi giả thuyết là một micro-card: thứ hạng, tóm tắt nguyên nhân, điểm khớp và một dòng căn cứ — xếp từ khớp cao xuống thấp. Giả thuyết có thể trỏ vào một liên kết hoặc một thiết bị.
+- Bấm một card → canvas khoanh vùng khu vực nghi vấn, beacon các thiết bị liên quan (trỏ vào liên kết thì beacon cả hai đầu — dùng cơ chế multi-beacon 3.5) và pan đưa vùng đó về giữa; đồng thời Inspector hiện nội dung đầy đủ của giả thuyết — mục 5.6. Chọn giả thuyết khác → vùng khoanh và beacon đổi theo.
+- Giả thuyết bị bác bỏ không biến mất: rơi xuống phần dưới danh sách kèm lý do, ghi lại hướng đã thử. Nút Xác nhận / Bác bỏ nằm ở Inspector.
 
-[Illustration: micro-cards → khoanh vùng + beacon — chốt hình thái khi dựng]
+[Illustration 4.3A: ảnh tĩnh — danh sách xếp theo độ tin cậy, một giả thuyết đã bác bỏ nằm dưới; canvas giữ nguyên]
+
+[Illustration 4.3B: ảnh tĩnh — chọn giả thuyết một; canvas khoanh vùng liên kết nghi vấn, beacon hai đầu, ngoài vùng mờ]
 
 ---
 
