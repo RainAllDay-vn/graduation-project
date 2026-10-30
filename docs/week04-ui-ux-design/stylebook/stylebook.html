@@ -33,6 +33,8 @@
   <a href="#rule-4-2">4.2 Timeline báo động</a>
   <a href="#rule-4-3">4.3 Giả thuyết AI Top 3</a>
   <a href="#rule-4-4">4.4 Cài đặt hiển thị</a>
+  <div class="t">Chương 5 · Sidebar phải</div>
+  <a href="#rule-5-1">5.1 Định danh thiết bị</a>
 </nav>
 
 <div class="page">
@@ -68,6 +70,11 @@
       <li>
         <div class="row">
           <a href="#ch-4">Chương 4 — Khung dashboard <span class="sub">· Phần 4: Sidebar trái</span></a>
+        </div>
+      </li>
+      <li>
+        <div class="row">
+          <a href="#ch-5">Chương 5 — Khung dashboard <span class="sub">· Phần 5: Sidebar phải — Inspector</span></a>
         </div>
       </li>
     </ul>
@@ -960,7 +967,8 @@
       <h2><span class="sec-num">3.5</span>Node focus</h2>
       <p>Focus là thuộc tính tạm thời của phiên làm việc, không phải thuộc tính của thiết bị:</p>
       <ul>
-        <li>Bấm một node → một vòng <strong>beacon</strong> bao ngoài node. Bấm lại vào node đó → beacon biến mất.</li>
+        <li>Bấm đúp một node → một vòng <strong>beacon</strong> bao ngoài node. Bấm đúp lại vào node đó → beacon biến mất.</li>
+        <li>Bấm đơn một node là chọn — chuyển ngữ cảnh Inspector (chương 5) — không đụng beacon.</li>
         <li>Toàn canvas có thể có nhiều beacon.</li>
         <li>Beacon vẽ trên <strong>layer riêng</strong> — thân node không thêm nét, không đổi màu.</li>
         <li>Các node trong bán kính K (mặc định K = 2) từ bất kỳ beacon nào sẽ giữ nguyên hiển thị, trong khi những node nằm ngoài sẽ bị làm mờ. Edge nối tới node bị làm mờ cũng mờ theo.</li>
@@ -971,7 +979,7 @@
           <div class="spec-name"><span class="no">HÌNH 3.5</span>Bấm node để focus<span class="demo-badge">DEMO</span></div>
         </div>
         <div class="stage">
-          <svg id="focus-svg" viewBox="0 0 720 340" role="img" aria-label="Demo tương tác: bấm node để focus — beacon trắng bao ngoài, vùng K = 2 giữ nguyên hiển thị, phần còn lại mờ đi; bấm lại node để gỡ beacon">
+          <svg id="focus-svg" viewBox="0 0 720 340" role="img" aria-label="Demo tương tác: bấm đúp node để focus — beacon trắng bao ngoài, vùng K = 2 giữ nguyên hiển thị, phần còn lại mờ đi; bấm đúp lại node để gỡ beacon">
             <g fill="#94a3b8" fill-opacity="0.08" stroke="#475569" stroke-width="1" stroke-dasharray="7 5">
               <rect x="20" y="16" width="680" height="80" rx="10"/>
               <rect x="20" y="130" width="680" height="80" rx="10"/>
@@ -1037,7 +1045,7 @@
             </g>
             <g id="focus-layer"></g>
           </svg>
-          <div class="pan-hint" id="focus-hint">BẤM NODE ĐỂ FOCUS · BẤM LẠI ĐỂ GỠ</div>
+          <div class="pan-hint" id="focus-hint">BẤM ĐÚP NODE ĐỂ FOCUS · BẤM ĐÚP LẠI ĐỂ GỠ</div>
         </div>
       </figure>
     </section>
@@ -1198,7 +1206,7 @@
               <div class="p-note">Lưu localStorage — beacon và vị trí kéo node không lưu.</div>
             </div>
             <div id="demo44-canvas">
-              <svg id="demo44-svg" viewBox="0 0 560 380" role="img" aria-label="Demo tương tác: dial K, chế độ Mờ/Ẩn và bộ lọc site tác động trực tiếp lên canvas; bấm node để thêm hoặc gỡ beacon">
+              <svg id="demo44-svg" viewBox="0 0 560 380" role="img" aria-label="Demo tương tác: dial K, chế độ Mờ/Ẩn và bộ lọc site tác động trực tiếp lên canvas; bấm đúp node để thêm hoặc gỡ beacon">
                 <g fill="#94a3b8" fill-opacity="0.08" stroke="#475569" stroke-width="1" stroke-dasharray="6 4">
                   <rect x="14" y="20" width="532" height="100" rx="8"/>
                   <rect x="14" y="136" width="532" height="100" rx="8"/>
@@ -1274,9 +1282,55 @@
                 </g>
                 <g id="demo44-layer"></g>
               </svg>
-              <div class="pan-hint" id="demo44-hint">BẤM NODE ĐỂ THÊM / GỠ BEACON · ĐIỀU KHIỂN BÊN TRÁI</div>
+              <div class="pan-hint" id="demo44-hint">BẤM ĐÚP NODE ĐỂ THÊM / GỠ BEACON · ĐIỀU KHIỂN BÊN TRÁI</div>
             </div>
           </div>
+        </div>
+      </figure>
+    </section>
+  </section>
+
+  <section class="chapter" id="ch-5">
+    <header class="chapter-head">
+      <div class="eyebrow"><span class="dot"></span>CHƯƠNG 5 · KHUNG DASHBOARD</div>
+      <h2>Phần 5: Sidebar phải — Inspector</h2>
+    </header>
+
+    <nav class="toc">
+      <div class="toc-title">Mục lục chương</div>
+      <ol>
+        <li><a href="#rule-5-1">5.1 Định danh thiết bị</a></li>
+      </ol>
+    </nav>
+
+    <section class="rule" id="rule-5-1">
+      <h2><span class="sec-num">5.1</span>Định danh thiết bị</h2>
+      <p>Bấm chọn một node trên canvas để đưa Inspector về ngữ cảnh thiết bị đó:</p>
+      <ul>
+        <li>Bấm một node là chọn: Inspector chuyển ngữ cảnh thiết bị đó.</li>
+        <li>Khi chưa có lựa chọn nào, Inspector mở sẵn danh sách thiết bị sắp xếp theo thứ tự bảng chữ cái của ID.</li>
+        <li>Bấm một dòng trong danh sách → chọn thiết bị đó, canvas pan đưa node về giữa — như tìm kiếm (mục 4.1).</li>
+        <li>Đang chọn, đầu khung có nút quay lại để bỏ chọn — Inspector trở về danh sách thiết bị.</li>
+        <li>Inspector đang đóng — bấm chọn một node sẽ tự mở lại khung.</li>
+        <li>Khối định danh gồm: chấm trạng thái sức khỏe, ID và tầng thiết bị ở đầu khung; bên dưới là hãng sản xuất, model, dòng sản phẩm, vị trí lắp đặt và IP quản lý.</li>
+        <li>Ngay dưới khối định danh là khung Quick CLI: câu lệnh truy vấn trạng thái đã điền sẵn ngữ cảnh thiết bị đang chọn, kèm một dòng mô tả ngắn câu lệnh làm gì và nút copy một lần bấm — trạng thái thiết bị vốn được đọc bằng câu lệnh truy vấn vì vậy khung này giúp cho kỹ sư không cần gõ lại lệnh mỗi lần điều tra.</li>
+      </ul>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 5.1A</span>Chưa chọn — Inspector mở danh sách thiết bị</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-5-1a.png" alt="Ảnh tĩnh: canvas giữ nguyên chưa chọn gì; Inspector sidebar phải mở danh sách mười hai thiết bị xếp theo thứ tự bảng chữ cái của ID, mỗi dòng kèm chấm trạng thái và tên site">
+        </div>
+      </figure>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 5.1B</span>Đã chọn CORE-02 — khối định danh + Quick CLI</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-5-1b.png" alt="Ảnh tĩnh: đã chọn CORE-02 — canvas giữ nguyên; Inspector hiện nút quay lại, chấm trạng thái đỏ, ID, tầng Core, khối định danh hãng, model, dòng sản phẩm, vị trí lắp đặt, IP quản lý và khung Quick CLI kèm dòng mô tả lệnh làm gì và nút copy">
         </div>
       </figure>
     </section>
@@ -1499,7 +1553,7 @@ document.querySelectorAll('section.rule').forEach(s => obs.observe(s));
     Object.keys(nodes).forEach(id => nodes[id].classList.toggle('dim', beacons.length > 0 && !bright.has(id)));
     edges.forEach(l => l.classList.toggle('dim', beacons.length > 0 && (!bright.has(l.dataset.a) || !bright.has(l.dataset.b))));
   };
-  svg.addEventListener('click', e => {
+  svg.addEventListener('dblclick', e => {
     const g = e.target.closest('.focus-node');
     if (!g) return;
     const id = g.dataset.id;
@@ -1587,7 +1641,7 @@ document.querySelectorAll('section.rule').forEach(s => obs.observe(s));
     b.classList.toggle('on', sites[b.dataset.site]);
     apply();
   }));
-  svg.addEventListener('click', e => {
+  svg.addEventListener('dblclick', e => {
     const g = e.target.closest('.d44-node');
     if (!g) return;
     const id = g.dataset.id;

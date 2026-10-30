@@ -1,6 +1,6 @@
 # Chương 5: Khung dashboard — Phần 5: Sidebar phải — Inspector
 
-> **Skeleton — chưa viết nội dung đầy đủ.** Quyết định đã chốt nằm trong `docs/week04-ui-ux-design/design-decisions.md` (§5–§9, gồm tóm tắt research yêu cầu).
+> **5.1 đã viết nội dung đầy đủ; 5.2–5.6 còn skeleton.** Quyết định đã chốt nằm trong `docs/week04-ui-ux-design/design-decisions.md` (§5–§9, gồm tóm tắt research yêu cầu).
 > Văn phong theo các chương trước. Mọi số liệu "chốt khi dựng". Trường chưa có data ghi "chờ data".
 
 ---
@@ -18,10 +18,19 @@
 
 ## 5.1 Định danh thiết bị
 
-- ID, tier, site, IP quản lý, model + product line.
-- Quick CLI + copy (giữ nguyên từ prototype).
+Bấm chọn một node trên canvas để đưa Inspector về ngữ cảnh thiết bị đó:
 
-[Illustration: chốt khi dựng]
+- Bấm một node là chọn: Inspector chuyển ngữ cảnh thiết bị đó.
+- Khi chưa có lựa chọn nào, Inspector mở sẵn danh sách thiết bị sắp xếp theo thứ tự bảng chữ cái của ID.
+- Bấm một dòng trong danh sách → chọn thiết bị đó, canvas pan đưa node về giữa — như tìm kiếm (mục 4.1).
+- Khi đang hiển thị thông tin thiết bị được chọn, đầu khung có nút quay lại để bỏ chọn — Inspector trở về danh sách thiết bị.
+- Khi Inspector đang đóng, nếu bấm chọn một node sẽ tự mở lại khung.
+- Khối định danh gồm: chấm trạng thái sức khỏe, ID và tầng thiết bị ở đầu khung; bên dưới là hãng sản xuất, model, dòng sản phẩm, vị trí lắp đặt và IP quản lý.
+- Ngay dưới khối định danh là khung Quick CLI: câu lệnh truy vấn trạng thái đã điền sẵn ngữ cảnh thiết bị đang chọn, kèm một dòng mô tả ngắn câu lệnh làm gì và nút copy một lần bấm — trạng thái thiết bị vốn được đọc bằng câu lệnh truy vấn vì vậy khung này giúp cho kỹ sư không cần gõ lại lệnh mỗi lần điều tra.
+
+[Illustration 5.1A: ảnh tĩnh — chưa chọn gì; Inspector mở danh sách thiết bị xếp theo thứ tự bảng chữ cái của ID]
+
+[Illustration 5.1B: ảnh tĩnh — đã chọn một node; Inspector hiện khối định danh đầy đủ và khung Quick CLI kèm dòng mô tả lệnh làm gì và nút copy; đầu khung có nút quay lại để bỏ chọn]
 
 ---
 

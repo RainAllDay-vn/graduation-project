@@ -62,9 +62,10 @@ Hover là kênh thông tin thể hiện đầy đủ các thông tin của một
 
 Focus là thuộc tính tạm thời của phiên làm việc, không phải thuộc tính của thiết bị:
 
-- Bấm một node → một vòng **beacon** bao ngoài node. Bấm lại vào node đó → vòng **beacon** sẽ biến mất.
+- Bấm đúp một node → một vòng **beacon** bao ngoài node. Bấm đúp lại vào node đó → vòng **beacon** sẽ biến mất.
+- Bấm đơn một node là chọn — chuyển ngữ cảnh Inspector (chương 5) — không đụng beacon.
 - Toàn canvas có thể có nhiều beacon.
 - Beacon vẽ trên **layer riêng** — thân node không thêm nét, không đổi màu.
 - Các node trong bán kính K (mặc định K = 2) từ bất kỳ beacon nào sẽ giữ nguyên hiển thị, trong khi những node nằm ngoài sẽ bị làm mờ. Các edge nối với node bị làm mờ cũng sẽ mờ theo.
 
-[Illustration là demo tương tác: bấm node → beacon trắng bao ngoài, vùng K = 2 quanh beacon giữ nguyên hiển thị, phần còn lại mờ đi; bấm lại node để gỡ beacon — có thể focus nhiều node cùng lúc]
+[Illustration là demo tương tác: bấm đúp node → beacon trắng bao ngoài, vùng K = 2 quanh beacon giữ nguyên hiển thị, phần còn lại mờ đi; bấm đúp lại node để gỡ beacon — có thể focus nhiều node cùng lúc]

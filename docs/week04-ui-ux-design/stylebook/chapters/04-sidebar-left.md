@@ -68,4 +68,4 @@ Tab Cài đặt hiển thị thể hiện những tùy chỉnh của kỹ sư t�
 - Bộ lọc site: bốn chip bật/tắt theo màu site. Node không khớp bị loại bỏ dù đang giữ beacon — **filter thắng focus**; tooltip bỏ qua node loại bỏ; áp mọi mức zoom.
 - Toàn khối lưu **localStorage** để giữ lại giữa các phiên; beacon và vị trí kéo node là trạng thái của phiên — không lưu.
 
-[Illustration 4.4: demo tương tác — dial K, chế độ Mờ/Ẩn và bộ lọc site tác động lên canvas theo thời gian thực; bấm node để thêm hoặc gỡ beacon]
+[Illustration 4.4: demo tương tác — dial K, chế độ Mờ/Ẩn và bộ lọc site tác động lên canvas theo thời gian thực; bấm đúp node để thêm hoặc gỡ beacon]
