@@ -51,7 +51,7 @@ Kéo một node để đổi vị trí của nó:
 Hover là kênh thông tin thể hiện đầy đủ các thông tin của một node hoặc edge:
 
 - Tooltip hiện theo con trỏ, mất khi rời — hover không làm canvas thay đổi.
-- Tooltip node gồm: ID, trạng thái sức khỏe, site, IP quản lý, model, CPU · bộ nhớ · nhiệt độ, số báo động đang mở.
+- Tooltip node gồm: ID, trạng thái sức khỏe, site, IP quản lý, model, CPU · bộ nhớ · nhiệt độ, số cảnh báo đang mở.
 - Tooltip edge gồm: hai đầu kèm cổng, băng thông lắp đặt, mức sử dụng hiện tại, tỉ lệ lỗi.
 
 [Illustration là demo tương tác: di chuột lên node hoặc edge — tooltip đi theo con trỏ với đầy đủ trường thông tin, mất khi rời]

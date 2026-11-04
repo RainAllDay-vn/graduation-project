@@ -8,7 +8,7 @@
 ## Mục lục chương
 
 - 4.1 Tìm kiếm
-- 4.2 Timeline báo động
+- 4.2 Timeline cảnh báo
 - 4.3 Giả thuyết AI Top 3
 - 4.4 Cài đặt hiển thị
 
@@ -28,18 +28,18 @@ Tab Tìm kiếm giúp kỹ sư xác định node trên topology dựa trên từ
 
 ---
 
-## 4.2 Timeline báo động
+## 4.2 Timeline cảnh báo
 
-Tab Timeline báo động thể hiện các báo động theo dòng thời gian:
+Tab Timeline cảnh báo thể hiện các cảnh báo theo dòng thời gian:
 
-- Alarm hiện dạng cấu trúc trên trục thời gian: thời điểm, mã lỗi, thiết bị, nội dung; mức warning/error mã hoá bằng màu chấm. Mới nhất ở trên.
-- Bấm một alarm → canvas pan + focus thiết bị (mục 3.5).
+- Cảnh báo hiện dạng cấu trúc trên trục thời gian: thời điểm, mã lỗi, thiết bị, nội dung; mức warning/error mã hoá bằng màu chấm. Mới nhất ở trên.
+- Bấm một cảnh báo → canvas pan + focus thiết bị (mục 3.5).
 - Bấm mã lỗi → panel tài liệu trượt ra sát mép trái canvas, đè lên một phần topology. Bấm nút × hoặc Esc để đóng; canvas trở về đúng trạng thái trước đó.
 - Tài liệu là lớp đọc tạm thời trên layer riêng — canvas không bao giờ bị thay thế. Wiki đầy đủ mở ở tab mới (hệ thống ngoài), không nhúng vào dashboard.
 
-[Illustration 4.2A: ảnh tĩnh — timeline báo động trong sidebar trái; canvas giữ nguyên]
+[Illustration 4.2A: ảnh tĩnh — timeline cảnh báo trong sidebar trái; canvas giữ nguyên]
 
-[Illustration 4.2B: ảnh tĩnh — bấm alarm của CORE-02; canvas pan + focus thiết bị đó]
+[Illustration 4.2B: ảnh tĩnh — bấm cảnh báo của CORE-02; canvas pan + focus thiết bị đó]
 
 [Illustration 4.2C: ảnh tĩnh — bấm mã lỗi; panel tài liệu mở trên phần trái canvas, topology vẫn thấy bên phải]
 

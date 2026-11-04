@@ -30,7 +30,7 @@
   <a href="#rule-3-5">3.5 Node focus</a>
   <div class="t">Chương 4 · Sidebar trái</div>
   <a href="#rule-4-1">4.1 Tìm kiếm</a>
-  <a href="#rule-4-2">4.2 Timeline báo động</a>
+  <a href="#rule-4-2">4.2 Timeline cảnh báo</a>
   <a href="#rule-4-3">4.3 Giả thuyết AI Top 3</a>
   <a href="#rule-4-4">4.4 Cài đặt hiển thị</a>
   <div class="t">Chương 5 · Sidebar phải</div>
@@ -904,7 +904,7 @@
       <p>Hover là kênh thông tin thể hiện đầy đủ các thông tin của một node hoặc edge:</p>
       <ul>
         <li>Tooltip hiện theo con trỏ, mất khi rời — hover không làm canvas thay đổi.</li>
-        <li>Tooltip node gồm: ID, trạng thái sức khỏe, site, IP quản lý, model, CPU · bộ nhớ · nhiệt độ, số báo động đang mở.</li>
+        <li>Tooltip node gồm: ID, trạng thái sức khỏe, site, IP quản lý, model, CPU · bộ nhớ · nhiệt độ, số cảnh báo đang mở.</li>
         <li>Tooltip edge gồm: hai đầu kèm cổng, băng thông lắp đặt, mức sử dụng hiện tại, tỉ lệ lỗi.</li>
       </ul>
 
@@ -1061,7 +1061,7 @@
       <div class="toc-title">Mục lục chương</div>
       <ol>
         <li><a href="#rule-4-1">4.1 Tìm kiếm</a></li>
-        <li><a href="#rule-4-2">4.2 Timeline báo động</a></li>
+        <li><a href="#rule-4-2">4.2 Timeline cảnh báo</a></li>
         <li><a href="#rule-4-3">4.3 Giả thuyết AI Top 3</a></li>
         <li><a href="#rule-4-4">4.4 Cài đặt hiển thị</a></li>
       </ol>
@@ -1096,30 +1096,30 @@
     </section>
 
     <section class="rule" id="rule-4-2">
-      <h2><span class="sec-num">4.2</span>Timeline báo động</h2>
-      <p>Tab Timeline báo động thể hiện các báo động theo dòng thời gian:</p>
+      <h2><span class="sec-num">4.2</span>Timeline cảnh báo</h2>
+      <p>Tab Timeline cảnh báo thể hiện các cảnh báo theo dòng thời gian:</p>
       <ul>
-        <li>Alarm hiện dạng cấu trúc trên trục thời gian: thời điểm, mã lỗi, thiết bị, nội dung; mức warning/error mã hoá bằng màu chấm. Mới nhất ở trên.</li>
-        <li>Bấm một alarm → canvas pan + focus thiết bị (mục 3.5).</li>
+        <li>Cảnh báo hiện dạng cấu trúc trên trục thời gian: thời điểm, mã lỗi, thiết bị, nội dung; mức warning/error mã hoá bằng màu chấm. Mới nhất ở trên.</li>
+        <li>Bấm một cảnh báo → canvas pan + focus thiết bị (mục 3.5).</li>
         <li>Bấm mã lỗi → panel tài liệu trượt ra sát mép trái canvas, đè lên một phần topology. Bấm nút × hoặc Esc để đóng; canvas trở về đúng trạng thái trước đó.</li>
         <li>Tài liệu là lớp đọc tạm thời trên layer riêng — canvas không bao giờ bị thay thế. Wiki đầy đủ mở ở tab mới (hệ thống ngoài), không nhúng vào dashboard.</li>
       </ul>
 
       <figure class="specimen">
         <div class="spec-head">
-          <div class="spec-name"><span class="no">HÌNH 4.2A</span>Timeline báo động — canvas giữ nguyên</div>
+          <div class="spec-name"><span class="no">HÌNH 4.2A</span>Timeline cảnh báo — canvas giữ nguyên</div>
         </div>
         <div class="stage">
-          <img src="images/fig-4-2a.png" alt="Ảnh tĩnh: timeline báo động trong sidebar trái — các alarm xếp trên trục thời gian với chấm màu theo mức, mới nhất ở trên; canvas giữ nguyên trạng thái mặc định">
+          <img src="images/fig-4-2a.png" alt="Ảnh tĩnh: timeline cảnh báo trong sidebar trái — các cảnh báo xếp trên trục thời gian với chấm màu theo mức, mới nhất ở trên; canvas giữ nguyên trạng thái mặc định">
         </div>
       </figure>
 
       <figure class="specimen">
         <div class="spec-head">
-          <div class="spec-name"><span class="no">HÌNH 4.2B</span>Bấm alarm — canvas pan + focus thiết bị</div>
+          <div class="spec-name"><span class="no">HÌNH 4.2B</span>Bấm cảnh báo — canvas pan + focus thiết bị</div>
         </div>
         <div class="stage">
-          <img src="images/fig-4-2b.png" alt="Ảnh tĩnh: alarm ALM-2035 của CORE-02 được đánh dấu chọn trong timeline; canvas pan về CORE-02 — beacon bao quanh, vùng K bằng 2 giữ nguyên hiển thị, phần còn lại mờ đi">
+          <img src="images/fig-4-2b.png" alt="Ảnh tĩnh: cảnh báo ALM-2035 của CORE-02 được đánh dấu chọn trong timeline; canvas pan về CORE-02 — beacon bao quanh, vùng K bằng 2 giữ nguyên hiển thị, phần còn lại mờ đi">
         </div>
       </figure>
 
@@ -1491,7 +1491,7 @@ document.querySelectorAll('section.rule').forEach(s => obs.observe(s));
     const c = CHIP[d.status];
     return '<div class="t-head"><span class="t-id">' + d.id + '</span><span><span class="t-dot" style="background:' + c[0] + '"></span>' + c[1] + '</span></div>'
       + row('Site', d.site) + row('IP quản lý', d.ip) + row('Model', d.model)
-      + row('CPU · Bộ nhớ · Nhiệt độ', d.metrics) + row('Báo động đang mở', d.alarms);
+      + row('CPU · Bộ nhớ · Nhiệt độ', d.metrics) + row('Cảnh báo đang mở', d.alarms);
   };
   const edgeTip = d => '<div class="t-head"><span class="t-id">' + d.a + ' → ' + d.b + '</span></div>'
     + row('Băng thông', d.cap) + row('Mức sử dụng', d.util) + row('Tỉ lệ lỗi', d.err);

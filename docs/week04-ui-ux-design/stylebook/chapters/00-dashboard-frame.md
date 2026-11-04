@@ -11,7 +11,7 @@ Dashboard gồm bốn vùng. Trong đó thì canvas hiển thị topology chiế
 
 Mỗi vùng kèm ghi chú "thuộc chương nào" — bản mục lục không gian của tài liệu.
 
-Header mỏng chỉ gồm brand + trạng thái sự cố đang mở (mã, trạng thái, thời điểm mở — week03 §III.3.a mục 1). Đã bỏ khỏi header: stats đếm (router/leaf/link), badge "N CRITICAL ALARMS" (trùng danh sách báo động), presets node nhanh, nút Fit/Reset zoom. Cần data: incident (gói a).
+Header mỏng chỉ gồm brand + trạng thái sự cố đang mở (mã, trạng thái, thời điểm mở — week03 §III.3.a mục 1). Đã bỏ khỏi header: stats đếm (router/leaf/link), badge "N CRITICAL ALARMS" (trùng danh sách cảnh báo), presets node nhanh, nút Fit/Reset zoom. Cần data: incident (gói a).
 
 Còn sống trên canvas: legend màu site góc dưới-trái — một hàng bốn swatch SITE-1…SITE-4, không có tier (tier đọc qua nhãn dải nền) — và cụm nút Fit / + / − nổi. Legend cũng là chỗ gắn chip quick-focus site (mục 4.4). Breadcrumb đã bỏ: canvas không có drill-down, beacon đã giữ vết các node đã tới, Inspector đã mô tả node đang chọn.
 
