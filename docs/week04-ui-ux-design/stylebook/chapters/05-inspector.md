@@ -49,10 +49,15 @@ Tab định danh thiết bị là nơi lưu thông tin cụ thể của thiết 
 Tab cảnh báo là nơi lưu thông tin tất cả cảnh báo (gồm cả cảnh báo thuộc sự cố hiện tại và cảnh báo không thuộc sự cố hiện tại) của thiết bị mà kỹ sư đang chọn:
 
 - Mỗi cảnh báo một dòng gồm thời điểm, mã lỗi, mức độ warning/error mã hoá bằng màu chấm như timeline (mục 4.2).
+- Các cảnh báo sẽ có màu đỏ cho error, màu vàng cho warning. Đối với cảnh báo không thuộc sự cố hiện tại thì cảnh báo đó sẽ có màu xám.
 - Bấm một cảnh báo → Inspector hiển thị thông tin chi tiết về cảnh báo đó.
 - Bấm mã lỗi → panel tài liệu trượt ra sát mép trái canvas như mục 4.2; wiki đầy đủ mở tab mới.
 
-[Illustration 5.2: ảnh tĩnh — đang chọn CORE-02; tab Cảnh báo liệt kê các cảnh báo của CORE-02; canvas giữ nguyên]
+[Illustration 5.2A: ảnh tĩnh — đang chọn CORE-02; thanh tab với tab Cảnh báo đang mở; tab liệt kê các cảnh báo của CORE-02; canvas giữ nguyên]
+
+[Illustration 5.2B: ảnh tĩnh — bấm một dòng ở tab Cảnh báo; tab chuyển sang chi tiết của cảnh báo đó, nút ← DANH SÁCH quay lại danh sách; canvas giữ nguyên]
+
+[Illustration 5.2C: ảnh tĩnh — bấm mã lỗi; panel tài liệu trượt ra sát mép trái canvas như mục 4.2; wiki đầy đủ mở tab mới]
 
 ---
 

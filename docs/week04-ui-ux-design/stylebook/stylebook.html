@@ -35,6 +35,7 @@
   <a href="#rule-4-4">4.4 Cài đặt hiển thị</a>
   <div class="t">Chương 5 · Sidebar phải</div>
   <a href="#rule-5-1">5.1 Định danh thiết bị</a>
+  <a href="#rule-5-2">5.2 Cảnh báo</a>
 </nav>
 
 <div class="page">
@@ -1300,6 +1301,7 @@
       <div class="toc-title">Mục lục chương</div>
       <ol>
         <li><a href="#rule-5-1">5.1 Định danh thiết bị</a></li>
+        <li><a href="#rule-5-2">5.2 Cảnh báo</a></li>
       </ol>
     </nav>
 
@@ -1331,6 +1333,44 @@
         </div>
         <div class="stage">
           <img src="images/fig-5-1b.png" alt="Ảnh tĩnh: đã chọn CORE-02 — canvas giữ nguyên; Inspector hiện nút quay lại, chấm trạng thái đỏ, ID, tầng Core, khối định danh hãng, model, dòng sản phẩm, vị trí lắp đặt, IP quản lý và khung Quick CLI kèm dòng mô tả lệnh làm gì và nút copy">
+        </div>
+      </figure>
+    </section>
+
+    <section class="rule" id="rule-5-2">
+      <h2><span class="sec-num">5.2</span>Cảnh báo</h2>
+      <p>Tab cảnh báo là nơi lưu thông tin tất cả cảnh báo (gồm cả cảnh báo thuộc sự cố hiện tại và cảnh báo không thuộc sự cố hiện tại) của thiết bị mà kỹ sư đang chọn:</p>
+      <ul>
+        <li>Mỗi cảnh báo một dòng gồm thời điểm, mã lỗi, mức độ warning/error mã hoá bằng màu chấm như timeline (mục 4.2).</li>
+        <li>Các cảnh báo sẽ có màu đỏ cho error, màu vàng cho warning. Đối với cảnh báo không thuộc sự cố hiện tại thì cảnh báo đó sẽ có màu xám.</li>
+        <li>Bấm một cảnh báo → Inspector hiển thị thông tin chi tiết về cảnh báo đó.</li>
+        <li>Bấm mã lỗi → panel tài liệu trượt ra sát mép trái canvas như mục 4.2; wiki đầy đủ mở tab mới.</li>
+      </ul>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 5.2A</span>Đã chọn CORE-02 — tab Cảnh báo</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-5-2a.png" alt="Ảnh tĩnh: đã chọn CORE-02 — canvas giữ nguyên; Inspector hiện dải định danh chung, thanh tab với tab Cảnh báo đang mở; tab liệt kê năm cảnh báo của CORE-02: ALM-2035 14:33 đỏ và ALM-2036 14:32 vàng (thuộc sự cố hiện tại), ba cảnh báo cũ hơn màu xám ngoài sự cố gồm ALM-1988 09:12, ALM-1954 06:40 và ALM-1921 02:14 (mức error — xám đè màu mức độ), mỗi dòng gồm thời điểm, mã lỗi và chấm màu mức độ">
+        </div>
+      </figure>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 5.2B</span>Bấm một cảnh báo — chi tiết của cảnh báo đó</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-5-2b.png" alt="Ảnh tĩnh: đang ở tab Cảnh báo của CORE-02 — bấm dòng ALM-2035; tab chuyển sang chi tiết cảnh báo gồm nút ← DANH SÁCH, mã ALM-2035 với chấm đỏ, nhãn ERROR, lưới thiết bị CORE-02, mức độ Error, thời điểm 14:33, thuộc sự cố Có và khối mô tả; canvas giữ nguyên">
+        </div>
+      </figure>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 5.2C</span>Bấm mã lỗi — panel tài liệu + wiki đầy đủ</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-5-2c.png" alt="Ảnh tĩnh: đang ở tab Cảnh báo của CORE-02 — bấm mã lỗi ALM-2035 (gạch chấm); panel tài liệu trượt ra sát mép trái canvas với ý nghĩa, nguyên nhân thường gặp, kiểm tra nhanh và liên kết mở wiki đầy đủ; Inspector giữ nguyên danh sách; × hoặc Esc đóng panel, canvas về trạng thái cũ">
         </div>
       </figure>
     </section>
