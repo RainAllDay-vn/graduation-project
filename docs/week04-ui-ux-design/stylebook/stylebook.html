@@ -36,6 +36,7 @@
   <div class="t">Chương 5 · Sidebar phải</div>
   <a href="#rule-5-1">5.1 Định danh thiết bị</a>
   <a href="#rule-5-2">5.2 Cảnh báo</a>
+  <a href="#rule-5-3">5.3 Trạng thái hiện tại &amp; Live telemetry</a>
 </nav>
 
 <div class="page">
@@ -118,13 +119,13 @@
 
 <nav class="toc">
     <div class="toc-title">Mục lục chương</div>
-    <ol>
+    <ul>
       <li><a href="#rule-1-1">1.1 Sơ đồ của một node</a></li>
       <li><a href="#rule-1-2">1.2 Viền = Site</a></li>
       <li><a href="#rule-1-3">1.3 Nền = trạng thái sức khoẻ</a></li>
       <li><a href="#rule-1-4">1.4 Layer = tầng trong Topology</a></li>
       <li><a href="#rule-1-5">1.5 Nhãn &amp; badge</a></li>
-    </ol>
+    </ul>
   </nav>
 
   <section class="rule" id="rule-1-1">
@@ -426,12 +427,12 @@
 
     <nav class="toc">
       <div class="toc-title">Mục lục chương</div>
-      <ol>
+      <ul>
         <li><a href="#rule-2-1">2.1 Sơ đồ của một edge</a></li>
         <li><a href="#rule-2-2">2.2 Màu = trạng thái sức khỏe</a></li>
         <li><a href="#rule-2-3">2.3 Độ dày = băng thông</a></li>
         <li><a href="#rule-2-4">2.4 Nét liền/nét đứt = hiệu suất sử dụng băng thông</a></li>
-      </ol>
+      </ul>
     </nav>
 
     <section class="rule" id="rule-2-1">
@@ -592,13 +593,13 @@
 
     <nav class="toc">
       <div class="toc-title">Mục lục chương</div>
-      <ol>
+      <ul>
         <li><a href="#rule-3-1">3.1 Di chuyển góc nhìn</a></li>
         <li><a href="#rule-3-2">3.2 Zoom &amp; mức chi tiết</a></li>
         <li><a href="#rule-3-3">3.3 Di chuyển node</a></li>
         <li><a href="#rule-3-4">3.4 Hover — tooltip</a></li>
         <li><a href="#rule-3-5">3.5 Node focus</a></li>
-      </ol>
+      </ul>
     </nav>
 
     <section class="rule" id="rule-3-1">
@@ -1060,12 +1061,12 @@
 
     <nav class="toc">
       <div class="toc-title">Mục lục chương</div>
-      <ol>
+      <ul>
         <li><a href="#rule-4-1">4.1 Tìm kiếm</a></li>
         <li><a href="#rule-4-2">4.2 Timeline cảnh báo</a></li>
         <li><a href="#rule-4-3">4.3 Giả thuyết AI Top 3</a></li>
         <li><a href="#rule-4-4">4.4 Cài đặt hiển thị</a></li>
-      </ol>
+      </ul>
     </nav>
 
     <section class="rule" id="rule-4-1">
@@ -1299,10 +1300,11 @@
 
     <nav class="toc">
       <div class="toc-title">Mục lục chương</div>
-      <ol>
+      <ul>
         <li><a href="#rule-5-1">5.1 Định danh thiết bị</a></li>
         <li><a href="#rule-5-2">5.2 Cảnh báo</a></li>
-      </ol>
+        <li><a href="#rule-5-3">5.3 Trạng thái hiện tại &amp; Live telemetry</a></li>
+      </ul>
     </nav>
 
     <section class="rule" id="rule-5-1">
@@ -1371,6 +1373,35 @@
         </div>
         <div class="stage">
           <img src="images/fig-5-2c.png" alt="Ảnh tĩnh: đang ở tab Cảnh báo của CORE-02 — bấm mã lỗi ALM-2035 (gạch chấm); panel tài liệu trượt ra sát mép trái canvas với ý nghĩa, nguyên nhân thường gặp, kiểm tra nhanh và liên kết mở wiki đầy đủ; Inspector giữ nguyên danh sách; × hoặc Esc đóng panel, canvas về trạng thái cũ">
+        </div>
+      </figure>
+    </section>
+
+    <section class="rule" id="rule-5-3">
+      <h2><span class="sec-num">5.3</span>Trạng thái hiện tại &amp; Live telemetry</h2>
+      <p>Tab trạng thái là nơi theo dõi tình trạng vận hành hiện tại của thiết bị mà kỹ sư đang chọn:</p>
+      <ul>
+        <li>Phần trạng thái hiển thị tất cả các trạng thái của thiết bị (oper_status, uptime, mức tải, routes learned/used, CPU, bộ nhớ, nhiệt độ, …), kèm mốc collected_at — thời điểm dữ liệu được thu thập; trạng thái chỉ đáng tin đến mốc đó.</li>
+        <li>Một số trạng thái có dạng timeseries — bấm vào trạng thái đó, trạng thái được highlight, phần live telemetry bên dưới có một line cho trạng thái được highlight.</li>
+        <li>Phần live telemetry là một line chart, có các quick button để chỉnh thời gian (gồm mốc thời gian và khoảng thời gian).</li>
+        <li>Mặc định ban đầu là không có timeseries telemetry nào được highlight, phần đồ thị bên dưới không hiện line nào.</li>
+      </ul>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 5.3A</span>Đã chọn CORE-02 — tab Trạng thái, mặc định trống</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-5-3a.png" alt="Ảnh tĩnh: đã chọn CORE-02 — canvas giữ nguyên; tab Trạng thái đang mở: tất cả các trạng thái (oper_status Up, uptime 42 ngày, mức tải 34%, routes learned/used 1284/976, CPU 23%, bộ nhớ 61%, nhiệt độ 48°C) kèm mốc collected_at 14:35, ba trạng thái timeseries đánh dấu TS, chưa trạng thái nào được highlight; phần live telemetry là khung line chart trống với gợi ý bấm một trạng thái TS, quick button BÂY GIỜ, 15 PHÚT, 1 GIỜ (đang chọn) và 6 GIỜ">
+        </div>
+      </figure>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 5.3B</span>Bấm một trạng thái timeseries — highlight + line xuất hiện</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-5-3b.png" alt="Ảnh tĩnh: tab Trạng thái của CORE-02 — bấm trạng thái timeseries Nhiệt độ; dòng Nhiệt độ được highlight, đồ thị hiện line nhiệt độ; canvas giữ nguyên">
         </div>
       </figure>
     </section>

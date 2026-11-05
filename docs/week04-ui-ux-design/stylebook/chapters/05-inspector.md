@@ -1,6 +1,6 @@
 # Chương 5: Khung dashboard — Phần 5: Sidebar phải — Inspector
 
-> **5.0–5.2 đã viết nội dung đầy đủ; 5.3–5.6 còn skeleton.** Quyết định đã chốt nằm trong `docs/week04-ui-ux-design/design-decisions.md` (§5–§9, gồm tóm tắt research yêu cầu).
+> **5.0–5.3 đã viết nội dung đầy đủ; 5.4–5.6 còn skeleton.** Quyết định đã chốt nằm trong `docs/week04-ui-ux-design/design-decisions.md` (§5–§9, gồm tóm tắt research yêu cầu).
 > Văn phong theo các chương trước. Mọi số liệu "chốt khi dựng". Trường chưa có data ghi "chờ data".
 
 ---
@@ -63,10 +63,16 @@ Tab cảnh báo là nơi lưu thông tin tất cả cảnh báo (gồm cả cả
 
 ## 5.3 Trạng thái hiện tại & Live telemetry
 
-- **Uptime, tải, routes learned/used, oper_status + mốc collected_at** (week03 §III.3.a mục 4).
-- Live telemetry: CPU · bộ nhớ · nhiệt độ (progress bar như prototype).
+Tab trạng thái là nơi theo dõi tình trạng vận hành hiện tại của thiết bị mà kỹ sư đang chọn:
 
-[Illustration: chốt khi dựng]
+- Phần trạng thái hiển thị tất cả các trạng thái của thiết bị (oper_status, uptime, mức tải, routes learned/used, CPU, bộ nhớ, nhiệt độ, …), kèm mốc collected_at — thời điểm dữ liệu được thu thập; trạng thái chỉ đáng tin đến mốc đó.
+- Một số trạng thái có dạng timeseries — bấm vào trạng thái đó, trạng thái được highlight, phần live telemetry bên dưới có một line cho trạng thái được highlight.
+- Phần live telemetry là một line chart, có các quick button để chỉnh thời gian (gồm mốc thời gian và khoảng thời gian).
+- Mặc định ban đầu là không có timeseries telemetry nào được highlight, phần đồ thị bên dưới không hiện line nào.
+
+[Illustration 5.3A: ảnh tĩnh — đang chọn CORE-02; thanh tab với tab Trạng thái đang mở; tab hiện tất cả các trạng thái (oper_status, uptime, mức tải, routes learned/used, CPU, bộ nhớ, nhiệt độ) kèm mốc collected_at; chưa có timeseries nào được highlight, phần đồ thị bên dưới không hiện line nào; canvas giữ nguyên]
+
+[Illustration 5.3B: ảnh tĩnh — bấm một trạng thái dạng timeseries (ví dụ nhiệt độ); trạng thái đó được highlight, phần đồ thị bên dưới hiện line cho trạng thái đó; canvas giữ nguyên]
 
 ---
 
