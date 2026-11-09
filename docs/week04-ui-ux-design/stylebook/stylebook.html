@@ -37,6 +37,7 @@
   <a href="#rule-5-1">5.1 Định danh thiết bị</a>
   <a href="#rule-5-2">5.2 Cảnh báo</a>
   <a href="#rule-5-3">5.3 Trạng thái hiện tại &amp; Live telemetry</a>
+  <a href="#rule-5-4">5.4 Edge inspector</a>
 </nav>
 
 <div class="page">
@@ -1140,7 +1141,7 @@
       <p>Tab Giả thuyết AI thể hiện các giả thuyết được ai đưa ra:</p>
       <ul>
         <li>Mỗi giả thuyết là một micro-card: thứ hạng, tóm tắt nguyên nhân, điểm khớp và một dòng căn cứ — xếp từ khớp cao xuống thấp. Giả thuyết có thể trỏ vào một liên kết hoặc một thiết bị.</li>
-        <li>Bấm một card → canvas khoanh vùng khu vực nghi vấn, beacon các thiết bị liên quan (trỏ vào liên kết thì beacon cả hai đầu — dùng cơ chế multi-beacon 3.5) và pan đưa vùng đó về giữa; đồng thời Inspector hiện nội dung đầy đủ của giả thuyết — mục 5.6. Chọn giả thuyết khác → vùng khoanh và beacon đổi theo.</li>
+        <li>Bấm một card → canvas khoanh vùng khu vực nghi vấn, beacon các thiết bị liên quan (trỏ vào liên kết thì beacon cả hai đầu — dùng cơ chế multi-beacon 3.5) và pan đưa vùng đó về giữa; đồng thời Inspector hiện nội dung đầy đủ của giả thuyết — mục 5.5. Chọn giả thuyết khác → vùng khoanh và beacon đổi theo.</li>
         <li>Giả thuyết bị bác bỏ không biến mất: rơi xuống phần dưới danh sách kèm lý do, ghi lại hướng đã thử. Nút Xác nhận / Bác bỏ nằm ở Inspector.</li>
       </ul>
 
@@ -1304,6 +1305,7 @@
         <li><a href="#rule-5-1">5.1 Định danh thiết bị</a></li>
         <li><a href="#rule-5-2">5.2 Cảnh báo</a></li>
         <li><a href="#rule-5-3">5.3 Trạng thái hiện tại &amp; Live telemetry</a></li>
+        <li><a href="#rule-5-4">5.4 Edge inspector</a></li>
       </ul>
     </nav>
 
@@ -1402,6 +1404,25 @@
         </div>
         <div class="stage">
           <img src="images/fig-5-3b.png" alt="Ảnh tĩnh: tab Trạng thái của CORE-02 — bấm trạng thái timeseries Nhiệt độ; dòng Nhiệt độ được highlight, đồ thị hiện line nhiệt độ; canvas giữ nguyên">
+        </div>
+      </figure>
+    </section>
+
+    <section class="rule" id="rule-5-4">
+      <h2><span class="sec-num">5.4</span>Edge inspector</h2>
+      <p>Edge inspector là nơi xem chi tiết của liên kết mà kỹ sư đang chọn:</p>
+      <ul>
+        <li>Bấm một edge trên canvas → chọn edge, Inspector hiện edge inspector.</li>
+        <li>Chọn edge thay ngữ cảnh node: thanh tab nhường chỗ cho hàng hai đầu kèm cổng — như tooltip (mục 3.4), ví dụ <code>CORE-01:0/0/0 → AGG-01:0/0/0</code>; nút quay lại bỏ chọn, về danh sách thiết bị.</li>
+        <li>Phần thuộc tính gồm: băng thông lắp đặt, mức sử dụng hiện tại, tỉ lệ lỗi và trạng thái vận hành.</li>
+      </ul>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 5.4</span>Chọn edge CORE-02 ↔ AGG-02 — canvas giữ nguyên</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-5-4.png" alt="Ảnh tĩnh: chọn edge CORE-02 ↔ AGG-02 — canvas giữ nguyên, liên kết nghi vấn tô đỏ; Inspector chuyển ngữ cảnh edge: thanh tab nhường chỗ cho hàng hai đầu kèm cổng CORE-02:0/0/4 → AGG-02:0/0/2 với chấm đỏ và nút quay lại bỏ chọn; khối thuộc tính liên kết: băng thông lắp đặt 100G, mức sử dụng hiện tại 12%, tỉ lệ lỗi 1.45%, trạng thái vận hành Down">
         </div>
       </figure>
     </section>

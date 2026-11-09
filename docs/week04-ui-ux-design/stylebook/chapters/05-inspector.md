@@ -1,6 +1,6 @@
 # Chương 5: Khung dashboard — Phần 5: Sidebar phải — Inspector
 
-> **5.0–5.3 đã viết nội dung đầy đủ; 5.4–5.6 còn skeleton.** Quyết định đã chốt nằm trong `docs/week04-ui-ux-design/design-decisions.md` (§5–§9, gồm tóm tắt research yêu cầu).
+> **5.0–5.4 đã viết nội dung đầy đủ; 5.5 còn skeleton.** Quyết định đã chốt nằm trong `docs/week04-ui-ux-design/design-decisions.md` (§5–§9, gồm tóm tắt research yêu cầu).
 > Văn phong theo các chương trước. Mọi số liệu "chốt khi dựng". Trường chưa có data ghi "chờ data".
 
 ---
@@ -11,9 +11,8 @@
 - 5.1 Định danh thiết bị
 - 5.2 Cảnh báo
 - 5.3 Trạng thái hiện tại & Live telemetry
-- 5.4 Direct neighbors
-- 5.5 Edge inspector
-- 5.6 Chi tiết giả thuyết & kiểm chứng
+- 5.4 Edge inspector
+- 5.5 Chi tiết giả thuyết & kiểm chứng
 
 ---
 
@@ -76,24 +75,19 @@ Tab trạng thái là nơi theo dõi tình trạng vận hành hiện tại củ
 
 ---
 
-## 5.4 Direct neighbors
+## 5.4 Edge inspector
 
-- Danh sách hàng xóm trực tiếp **kèm cổng hai đầu** (pain point "bảng cổng không thấy đầu xa") + medium, utilization, errorRatio.
+Edge inspector là nơi xem chi tiết của liên kết mà kỹ sư đang chọn:
 
-[Illustration: chốt khi dựng]
+- Bấm một edge trên canvas → chọn edge, Inspector hiện edge inspector.
+- Chọn edge thay ngữ cảnh node: thanh tab nhường chỗ cho hàng hai đầu kèm cổng — như tooltip (mục 3.4), ví dụ `CORE-01:0/0/0 → AGG-01:0/0/0`; nút quay lại bỏ chọn, về danh sách thiết bị.
+- Phần thuộc tính gồm: băng thông lắp đặt, mức sử dụng hiện tại, tỉ lệ lỗi và trạng thái vận hành.
 
----
-
-## 5.5 Edge inspector
-
-- Khi chọn edge: băng thông lắp đặt, mức sử dụng hiện tại, tỉ lệ lỗi, trạng thái vận hành.
-- **L2** (Rx/Tx dBm, nhiệt SFP, CRC/phút) và **L3** (subnet, BGP state, OSPF cost) — **chờ data** (gói b).
-
-[Illustration: chốt khi dựng]
+[Illustration 5.4: ảnh tĩnh — bấm edge CORE-02 ↔ AGG-02 trên canvas; Inspector hiện edge inspector với hai đầu kèm cổng, băng thông lắp đặt, mức sử dụng hiện tại, tỉ lệ lỗi, trạng thái vận hành; canvas giữ nguyên]
 
 ---
 
-## 5.6 Chi tiết giả thuyết & kiểm chứng
+## 5.5 Chi tiết giả thuyết & kiểm chứng
 
 - Bấm một giả thuyết ở sidebar trái (mục 4.3) → mục này hiện **nội dung đầy đủ** của giả thuyết đang chọn: cơ sở xếp hạng, nguyên nhân chi tiết, bằng chứng ủng hộ, bằng chứng không phù hợp, hướng dẫn kiểm tra, cách xử lý gợi ý (week03 §III.3.b — chi tiết giả thuyết đang chọn; week01 — AI trả về cả bước đề xuất).
 - **Nút Xác nhận / Bác bỏ nằm ở cuối phần này** — sau luồng đọc nguyên nhân → kiểm tra → xử lý; bác bỏ phải ghi lý do ngay tại đây.

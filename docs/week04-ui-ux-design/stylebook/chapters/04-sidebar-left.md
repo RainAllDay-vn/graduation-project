@@ -50,7 +50,7 @@ Tab Timeline cảnh báo thể hiện các cảnh báo theo dòng thời gian:
 Tab Giả thuyết AI thể hiện các giả thuyết được ai đưa ra:
 
 - Mỗi giả thuyết là một micro-card: thứ hạng, tóm tắt nguyên nhân, điểm khớp và một dòng căn cứ — xếp từ khớp cao xuống thấp. Giả thuyết có thể trỏ vào một liên kết hoặc một thiết bị.
-- Bấm một card → canvas khoanh vùng khu vực nghi vấn, beacon các thiết bị liên quan (trỏ vào liên kết thì beacon cả hai đầu — dùng cơ chế multi-beacon 3.5) và pan đưa vùng đó về giữa; đồng thời Inspector hiện nội dung đầy đủ của giả thuyết — mục 5.6. Chọn giả thuyết khác → vùng khoanh và beacon đổi theo.
+- Bấm một card → canvas khoanh vùng khu vực nghi vấn, beacon các thiết bị liên quan (trỏ vào liên kết thì beacon cả hai đầu — dùng cơ chế multi-beacon 3.5) và pan đưa vùng đó về giữa; đồng thời Inspector hiện nội dung đầy đủ của giả thuyết — mục 5.5. Chọn giả thuyết khác → vùng khoanh và beacon đổi theo.
 - Giả thuyết bị bác bỏ không biến mất: rơi xuống phần dưới danh sách kèm lý do, ghi lại hướng đã thử. Nút Xác nhận / Bác bỏ nằm ở Inspector.
 
 [Illustration 4.3A: ảnh tĩnh — danh sách xếp theo độ tin cậy, một giả thuyết đã bác bỏ nằm dưới; canvas giữ nguyên]
