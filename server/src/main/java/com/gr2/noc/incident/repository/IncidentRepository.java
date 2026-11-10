@@ -12,9 +12,13 @@ import java.util.List;
 @Repository
 public interface IncidentRepository extends JpaRepository<Incident, String> {
 
+    List<Incident> findAllByOrderByCreatedAtDesc();
+
     List<Incident> findByStatusOrderByCreatedAtDesc(IncidentStatus status);
 
     List<Incident> findBySeverityOrderByCreatedAtDesc(Severity severity);
+
+    List<Incident> findByStatusAndSeverityOrderByCreatedAtDesc(IncidentStatus status, Severity severity);
 
     List<Incident> findByCreatedAtBetweenOrderByCreatedAtDesc(Instant start, Instant end);
 
