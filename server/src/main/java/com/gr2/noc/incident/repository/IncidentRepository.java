@@ -2,7 +2,7 @@ package com.gr2.noc.incident.repository;
 
 import com.gr2.noc.incident.enums.IncidentStatus;
 import com.gr2.noc.incident.enums.Severity;
-import com.gr2.noc.incident.models.Incident;
+import com.gr2.noc.incident.model.Incident;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

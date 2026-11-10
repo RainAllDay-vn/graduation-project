@@ -1,6 +1,6 @@
 package com.gr2.noc.telemetry.repository;
 
-import com.gr2.noc.telemetry.models.TelemetryTimeseriesPoint;
+import com.gr2.noc.telemetry.model.TelemetryTimeseriesPoint;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

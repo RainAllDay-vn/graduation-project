@@ -1,4 +1,4 @@
-package com.gr2.noc.telemetry.models;
+package com.gr2.noc.telemetry.model;
 
 import jakarta.persistence.*;
 import lombok.*;

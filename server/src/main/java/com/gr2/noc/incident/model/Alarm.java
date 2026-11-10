@@ -1,4 +1,4 @@
-package com.gr2.noc.incident.models;
+package com.gr2.noc.incident.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gr2.noc.incident.enums.AlarmType;

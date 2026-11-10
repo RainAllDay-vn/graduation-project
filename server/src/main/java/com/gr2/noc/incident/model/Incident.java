@@ -1,6 +1,6 @@
-package com.gr2.noc.incident.models;
+package com.gr2.noc.incident.model;
 
-import com.gr2.noc.hypothesis.models.Hypothesis;
+import com.gr2.noc.hypothesis.model.Hypothesis;
 import com.gr2.noc.incident.enums.IncidentStatus;
 import com.gr2.noc.incident.enums.Severity;
 import jakarta.persistence.*;

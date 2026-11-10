@@ -1,6 +1,6 @@
 package com.gr2.noc.incident.repository;
 
-import com.gr2.noc.incident.models.Alarm;
+import com.gr2.noc.incident.model.Alarm;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

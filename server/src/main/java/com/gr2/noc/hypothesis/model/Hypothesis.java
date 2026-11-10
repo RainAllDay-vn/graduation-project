@@ -1,8 +1,8 @@
-package com.gr2.noc.hypothesis.models;
+package com.gr2.noc.hypothesis.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gr2.noc.hypothesis.enums.HypothesisStatus;
-import com.gr2.noc.incident.models.Incident;
+import com.gr2.noc.incident.model.Incident;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,7 +1,7 @@
 package com.gr2.noc.hypothesis.repository;
 
 import com.gr2.noc.hypothesis.enums.HypothesisStatus;
-import com.gr2.noc.hypothesis.models.Hypothesis;
+import com.gr2.noc.hypothesis.model.Hypothesis;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
