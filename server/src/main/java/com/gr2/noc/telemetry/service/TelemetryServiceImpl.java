@@ -1,7 +1,10 @@
 package com.gr2.noc.telemetry.service;
 
+import com.gr2.noc.telemetry.dto.create.RecordDeviceTelemetrySnapshotRequest;
+import com.gr2.noc.telemetry.dto.create.RecordTelemetryPointRequest;
 import com.gr2.noc.telemetry.dto.get.DeviceTelemetrySnapshotDetails;
 import com.gr2.noc.telemetry.dto.get.TelemetryMetricSeries;
+import com.gr2.noc.telemetry.model.DeviceTelemetrySnapshot;
 import com.gr2.noc.telemetry.model.TelemetryTimeseriesPoint;
 import com.gr2.noc.telemetry.repository.DeviceTelemetryRepository;
 import com.gr2.noc.telemetry.repository.TelemetryTimeseriesRepository;
@@ -54,5 +57,51 @@ public class TelemetryServiceImpl implements TelemetryService {
                 );
 
         return TelemetryMetricSeries.from(deviceId, metricName, points);
+    }
+
+    @Override
+    @Transactional
+    public DeviceTelemetrySnapshotDetails recordSnapshot(String deviceId, RecordDeviceTelemetrySnapshotRequest request) {
+        DeviceTelemetrySnapshot snapshot = DeviceTelemetrySnapshot.builder()
+                .deviceId(deviceId)
+                .collectedAt(request.collectedAt() != null ? request.collectedAt() : Instant.now())
+                .operStatus(request.operStatus())
+                .uptimeSeconds(request.uptimeSeconds())
+                .loadPercentage(request.loadPercentage())
+                .routesLearned(request.routesLearned())
+                .routesUsed(request.routesUsed())
+                .cpuPercent(request.cpuPercent())
+                .memoryPercent(request.memoryPercent())
+                .temperatureCelsius(request.temperatureCelsius())
+                .build();
+
+        DeviceTelemetrySnapshot saved = telemetryRepository.save(snapshot);
+        return DeviceTelemetrySnapshotDetails.from(saved);
+    }
+
+    @Override
+    @Transactional
+    public int recordTimeseriesPoints(String deviceId, List<RecordTelemetryPointRequest> requests) {
+        if (requests == null || requests.isEmpty()) {
+            return 0;
+        }
+
+        Instant fallbackTime = Instant.now();
+        List<TelemetryTimeseriesPoint> entities = requests.stream().map(req -> TelemetryTimeseriesPoint.builder()
+                .deviceId(deviceId)
+                .metricName(req.metricName())
+                .value(req.value())
+                .unit(req.unit())
+                .timestamp(req.timestamp() != null ? req.timestamp() : fallbackTime)
+                .build()
+        ).toList();
+
+        timeseriesRepository.saveAll(entities);
+        return entities.size();
+    }
+
+    @Override
+    public List<String> getAvailableMetrics(String deviceId) {
+        return timeseriesRepository.findDistinctMetricNamesByDeviceId(deviceId);
     }
 }
