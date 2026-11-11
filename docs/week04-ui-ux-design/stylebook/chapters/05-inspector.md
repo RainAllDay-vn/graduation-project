@@ -1,6 +1,6 @@
 # Chương 5: Khung dashboard — Phần 5: Sidebar phải — Inspector
 
-> **5.0–5.4 đã viết nội dung đầy đủ; 5.5 còn skeleton.** Quyết định đã chốt nằm trong `docs/week04-ui-ux-design/design-decisions.md` (§5–§9, gồm tóm tắt research yêu cầu).
+> **5.0–5.4 đã viết nội dung đầy đủ.** Chi tiết giả thuyết đã dời về sidebar trái (mục 4.3). Quyết định đã chốt nằm trong `docs/week04-ui-ux-design/design-decisions.md` (§5–§9, gồm tóm tắt research yêu cầu).
 > Văn phong theo các chương trước. Mọi số liệu "chốt khi dựng". Trường chưa có data ghi "chờ data".
 
 ---
@@ -12,7 +12,6 @@
 - 5.2 Cảnh báo
 - 5.3 Trạng thái hiện tại & Live telemetry
 - 5.4 Edge inspector
-- 5.5 Chi tiết giả thuyết & kiểm chứng
 
 ---
 
@@ -84,13 +83,3 @@ Edge inspector là nơi xem chi tiết của liên kết mà kỹ sư đang ch�
 - Phần thuộc tính gồm: băng thông lắp đặt, mức sử dụng hiện tại, tỉ lệ lỗi và trạng thái vận hành.
 
 [Illustration 5.4: ảnh tĩnh — bấm edge CORE-02 ↔ AGG-02 trên canvas; Inspector hiện edge inspector với hai đầu kèm cổng, băng thông lắp đặt, mức sử dụng hiện tại, tỉ lệ lỗi, trạng thái vận hành; canvas giữ nguyên]
-
----
-
-## 5.5 Chi tiết giả thuyết & kiểm chứng
-
-- Bấm một giả thuyết ở sidebar trái (mục 4.3) → mục này hiện **nội dung đầy đủ** của giả thuyết đang chọn: cơ sở xếp hạng, nguyên nhân chi tiết, bằng chứng ủng hộ, bằng chứng không phù hợp, hướng dẫn kiểm tra, cách xử lý gợi ý (week03 §III.3.b — chi tiết giả thuyết đang chọn; week01 — AI trả về cả bước đề xuất).
-- **Nút Xác nhận / Bác bỏ nằm ở cuối phần này** — sau luồng đọc nguyên nhân → kiểm tra → xử lý; bác bỏ phải ghi lý do ngay tại đây.
-- Giả thuyết là một loại lựa chọn của Inspector như node / edge — bấm node khác thì Inspector chuyển ngữ cảnh.
-
-[Illustration: chốt khi dựng]

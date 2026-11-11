@@ -1141,8 +1141,14 @@
       <p>Tab Giả thuyết AI thể hiện các giả thuyết được ai đưa ra:</p>
       <ul>
         <li>Mỗi giả thuyết là một micro-card: thứ hạng, tóm tắt nguyên nhân, điểm khớp và một dòng căn cứ — xếp từ khớp cao xuống thấp. Giả thuyết có thể trỏ vào một liên kết hoặc một thiết bị.</li>
-        <li>Bấm một card → canvas khoanh vùng khu vực nghi vấn, beacon các thiết bị liên quan (trỏ vào liên kết thì beacon cả hai đầu — dùng cơ chế multi-beacon 3.5) và pan đưa vùng đó về giữa; đồng thời Inspector hiện nội dung đầy đủ của giả thuyết — mục 5.5. Chọn giả thuyết khác → vùng khoanh và beacon đổi theo.</li>
-        <li>Giả thuyết bị bác bỏ không biến mất: rơi xuống phần dưới danh sách kèm lý do, ghi lại hướng đã thử. Nút Xác nhận / Bác bỏ nằm ở Inspector.</li>
+        <li>Bấm một card → canvas khoanh vùng khu vực nghi vấn, beacon các thiết bị liên quan (trỏ vào liên kết thì beacon cả hai đầu — dùng cơ chế multi-beacon 3.5) và pan đưa vùng đó về giữa; đồng thời chi tiết đầy đủ của giả thuyết mở ngay tại chỗ trong sidebar trái. Chọn giả thuyết khác → vùng khoanh, beacon và chi tiết đổi theo.</li>
+        <li>Chi tiết giả thuyết là nơi đọc trọn vẹn nội dung để đi đến kết luận — card chỉ là bản tóm tắt để chọn; nội dung dài (nguyên nhân, hướng dẫn kiểm tra, cách xử lý) không nhét vào card. Chi tiết mở dạng accordion: một lần chỉ mở một card, các card còn lại vẫn nằm trong danh sách để đổi ý nhanh.</li>
+        <li>Inspector bên phải giữ nguyên ngữ cảnh đang có — kỹ sư vừa đọc giả thuyết, vừa bấm node hay edge trên canvas để xem thông số ở Inspector.</li>
+        <li>Nội dung đầy đủ xếp theo luồng đọc: cơ sở xếp hạng, nguyên nhân chi tiết, bằng chứng ủng hộ, bằng chứng không phù hợp, hướng dẫn kiểm tra và cách xử lý gợi ý.</li>
+        <li><strong>Nút Xác nhận / Bác bỏ nằm ở cuối chi tiết</strong> — sau luồng đọc nguyên nhân → kiểm tra → xử lý; bác bỏ phải ghi lý do ngay tại đây.</li>
+        <li>Bấm Xác nhận → giả thuyết trở thành <strong>nguyên nhân chính thức</strong> của sự cố: sự cố ở header (mục 0.1) chuyển trạng thái, chi tiết thu lại về danh sách card.</li>
+        <li>Giả thuyết bị bác bỏ không biến mất: rơi xuống phần ĐÃ BÁC BỎ dưới danh sách, gạch ngang kèm lý do đã nhập, ghi lại hướng đã thử.</li>
+        <li>Giả thuyết chỉ là gợi ý của hệ thống — kết luận thuộc về kỹ sư.</li>
       </ul>
 
       <figure class="specimen">
@@ -1160,6 +1166,24 @@
         </div>
         <div class="stage">
           <img src="images/fig-4-3b.png" alt="Ảnh tĩnh: chọn giả thuyết một — canvas beacon bao quanh hai đầu liên kết nghi vấn CORE-02 ↔ AGG-02, vùng K giữ nguyên hiển thị, phần còn lại mờ đi">
+        </div>
+      </figure>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 4.3C</span>Chi tiết giả thuyết mở tại chỗ — vừa đọc, vừa xem thông số</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-4-3c.png" alt="Ảnh tĩnh: chọn giả thuyết một — Suy hao tín hiệu cáp quang CORE-02 ↔ AGG-02, khớp 88%; chi tiết đầy đủ mở tại chỗ trong sidebar trái gồm cơ sở xếp hạng, nguyên nhân chi tiết, bằng chứng ủng hộ (Rx −18.4 dBm dưới ngưỡng −14, nhiệt SFP 58.2°C), bằng chứng không phù hợp (CRC tăng từ 09:12 sớm hơn mốc rớt BGP), hướng dẫn kiểm tra, cách xử lý gợi ý và cặp nút XÁC NHẬN / BÁC BỎ ở cuối; canvas khoanh vùng + beacon hai đầu như HÌNH 4.3B; Inspector bên phải giữ nguyên ngữ cảnh — đang xem tab Trạng thái của AGG-02 với nhiệt độ 58.2°C được highlight và line nhiệt độ">
+        </div>
+      </figure>
+
+      <figure class="specimen">
+        <div class="spec-head">
+          <div class="spec-name"><span class="no">HÌNH 4.3D</span>Bấm Bác bỏ — khung nhập lý do ngay tại đây</div>
+        </div>
+        <div class="stage">
+          <img src="images/fig-4-3d.png" alt="Ảnh tĩnh: bấm Bác bỏ — khung LÝ DO BÁC BỎ đè đáy chi tiết ở sidebar trái với ô nhập lý do đã điền và nút GỬI BÁC BỎ / HUỶ; gửi đi giả thuyết rơi xuống phần ĐÃ BÁC BỎ; canvas và Inspector giữ nguyên như HÌNH 4.3C">
         </div>
       </figure>
     </section>

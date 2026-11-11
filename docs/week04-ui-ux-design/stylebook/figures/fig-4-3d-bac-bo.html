@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>HÌNH 4.3D — Bấm Bác bỏ: khung nhập lý do đè đáy chi tiết</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #070a10; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .app { width: 960px; height: 560px; display: flex; flex-direction: column; background: #0f172a; }
+
+  .topbar { height: 48px; flex: none; display: flex; align-items: center; gap: 12px; padding: 0 16px; border-bottom: 1px solid #1e293b; }
+  .brand { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; letter-spacing: 1px; color: #e2e8f0; }
+  .brand i { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+  .tag { flex: 1; text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 2px; color: #64748b; }
+  .chip { font-size: 10.5px; font-weight: 700; color: #fbbf24; border: 1px solid #f59e0b; border-radius: 7px; padding: 5px 12px; }
+
+  .body { flex: 1; display: flex; min-height: 0; }
+  aside { flex: none; padding: 10px 12px; display: flex; flex-direction: column; overflow: hidden; }
+  aside.left { width: 320px; border-right: 1px solid #1e293b; }
+  aside.right { width: 190px; border-left: 1px solid #1e293b; }
+
+  .c-head { font-size: 10px; font-weight: 800; letter-spacing: 1.4px; color: #94a3b8; margin-bottom: 3px; }
+  .c-sub { font-size: 8.5px; color: #64748b; margin-bottom: 8px; }
+
+  .card { background: #111c31; border: 1px solid #e2e8f0; border-radius: 8px; padding: 9px 11px; position: relative; }
+  .ov { position: absolute; left: 0; right: 0; bottom: 0; background: #111c31; border-top: 1px solid #b91c1c; border-radius: 0 0 7px 7px; padding: 10px 11px 11px; box-shadow: 0 -10px 18px rgba(2,6,17,0.85); }
+  .ov .lab { display: block; font-size: 8px; font-weight: 800; letter-spacing: 1px; color: #f87171; margin-bottom: 5px; }
+  .ov .input { background: #070a10; border: 1px dashed #b91c1c; border-radius: 6px; padding: 6px 8px; font-size: 9px; line-height: 1.4; color: #e2e8f0; }
+  .ov .btns { margin-top: 7px; }
+  .btn.go { color: #ffffff; background: #b91c1c; border: 1px solid #b91c1c; }
+  .btn.huy { color: #94a3b8; background: transparent; border: 1px solid #475569; }
+  .h-row { display: flex; align-items: center; gap: 8px; }
+  .h-rank { font-size: 10px; font-weight: 800; color: #e2e8f0; background: #0f172a; border: 1px solid #334155; border-radius: 4px; padding: 1px 7px; }
+  .h-match { font-size: 9.5px; font-weight: 800; color: #fbbf24; margin-left: auto; }
+  .h-title { font-size: 10.5px; font-weight: 800; color: #ffffff; line-height: 1.4; margin-top: 5px; }
+
+  .blk { margin-top: 5px; background: #0b111e; border: 1px solid #1e293b; border-radius: 7px; padding: 5px 9px; }
+  .blk .lab { display: block; font-size: 8px; font-weight: 800; letter-spacing: 1px; color: #64748b; margin-bottom: 2px; }
+  .blk .t { font-size: 9px; color: #94a3b8; line-height: 1.4; }
+  .e-row { font-size: 9px; color: #94a3b8; line-height: 1.4; padding: 0.5px 0; }
+  .e-row b { font-weight: 800; }
+  .e-row .ok { color: #34d399; }
+  .e-row .no { color: #64748b; }
+
+  .btns { display: flex; gap: 8px; margin-top: 7px; }
+  .btn { flex: 1; text-align: center; font: 800 9.5px/1 ui-monospace, monospace; letter-spacing: 0.8px; border-radius: 6px; padding: 7px 0; }
+  .btn.cf { color: #052e1b; background: #34d399; border: 1px solid #34d399; }
+  .btn.rj { color: #f87171; background: transparent; border: 1px solid #b91c1c; }
+
+  .canvas { flex: 1; position: relative; background: #070a10; border: 1px solid #1e293b; border-radius: 10px; margin: 10px 0; overflow: hidden; min-width: 0; }
+  .canvas svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .c-label { position: absolute; top: 12px; left: 0; right: 0; text-align: center; font-size: 9.5px; font-weight: 800; letter-spacing: 1.2px; color: #94a3b8; pointer-events: none; }
+
+  .r-chrome { display: flex; align-items: center; gap: 7px; }
+  .back { flex: none; font: 800 9.5px/1 ui-monospace, monospace; color: #94a3b8; background: #1e293b; border: 1px solid #475569; border-radius: 6px; padding: 5px 7px; }
+  .r-dot { width: 9px; height: 9px; border-radius: 50%; background: #991b1b; flex: none; }
+  .r-id { font-size: 11px; font-weight: 800; color: #ffffff; }
+  .r-tier { font-size: 7.5px; font-weight: 700; letter-spacing: 1px; color: #64748b; margin-top: 4px; }
+  .ribbon { display: flex; gap: 2px; margin-top: 8px; border-bottom: 1px solid #1e293b; }
+  .tab { flex: 1; text-align: center; font-size: 7.5px; font-weight: 800; letter-spacing: 0.4px; color: #64748b; padding: 5px 0 6px; }
+  .tab.on { color: #e2e8f0; box-shadow: inset 0 -2px 0 #38bdf8; }
+  .s-rows { margin-top: 7px; }
+  .s-row { display: flex; align-items: center; gap: 5px; font-size: 8.5px; color: #94a3b8; padding: 3.5px 6px; border-radius: 5px; }
+  .s-row .k { color: #64748b; }
+  .s-row .v { margin-left: auto; font-weight: 800; color: #e2e8f0; }
+  .s-row .ts { font-size: 6.5px; font-weight: 800; color: #38bdf8; border: 1px solid #38bdf8; border-radius: 3px; padding: 0.5px 2.5px; }
+  .s-row.sel { background: #16233b; box-shadow: inset 0 0 0 1px #38bdf8; }
+  .s-row.sel .k { color: #94a3b8; }
+  .s-at { font-size: 7px; color: #475569; margin-top: 4px; }
+  .chartbox { margin-top: 6px; background: #0b111e; border: 1px solid #1e293b; border-radius: 7px; padding: 5px; }
+  .chartbox svg { display: block; width: 100%; height: 86px; }
+
+  .note { height: 40px; flex: none; display: flex; align-items: center; justify-content: center; gap: 10px; border-top: 1px solid #1e293b; background: #0b111e; font-size: 11px; }
+  .note .n1 { font-weight: 800; color: #e2e8f0; letter-spacing: 0.8px; }
+  .note .n3 { color: #94a3b8; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand"><i></i>NOC TOPOLOGY</div>
+    <div class="tag"></div>
+    <div class="chip">INC-07 · ĐANG XỬ LÝ</div>
+  </header>
+
+  <div class="body">
+
+    <aside class="left">
+      <div class="c-head">SIDEBAR TRÁI · 4.3</div>
+      <div class="c-sub">AI đề xuất — xếp theo độ tin cậy</div>
+
+      <div class="card">
+        <div class="h-row">
+          <span class="h-rank">#1</span>
+          <span class="h-match">khớp 88%</span>
+        </div>
+        <div class="h-title">Suy hao tín hiệu cáp quang CORE-02 ↔ AGG-02</div>
+
+        <div class="blk">
+          <span class="lab">CƠ SỞ XẾP HẠNG</span>
+          <div class="t">Rx quang −18.4 dBm dưới ngưỡng −14; CRC tăng trùng mốc rớt BGP hai đầu.</div>
+        </div>
+
+        <div class="blk">
+          <span class="lab">NGUYÊN NHÂN CHI TIẾT</span>
+          <div class="t">Phiên BGP rớt khi giữ-alive hết hạn do tín hiệu quang suy hao.</div>
+        </div>
+
+        <div class="blk">
+          <span class="lab">BẰNG CHỨNG ỦNG HỘ</span>
+          <div class="e-row"><b class="ok">✓</b> Rx −18.4 dBm tại AGG-02 — dưới ngưỡng −14</div>
+          <div class="e-row"><b class="ok">✓</b> Nhiệt SFP 58.2°C — cao bất thường</div>
+        </div>
+
+        <div class="blk">
+          <span class="lab">BẰNG CHỨNG KHÔNG PHÙ HỢP</span>
+          <div class="e-row"><b class="no">✗</b> CRC tăng từ 09:12 — sớm hơn mốc rớt BGP 5 giờ</div>
+        </div>
+
+        <div class="blk">
+          <span class="lab">HƯỚNG DẪN KIỂM TRA</span>
+          <div class="t">Đo quang hai đầu · soi CRC theo phút.</div>
+        </div>
+
+        <div class="blk">
+          <span class="lab">CÁCH XỬ LÝ GỢI Ý</span>
+          <div class="t">Thay SFP/quang tại AGG-02 · siết connector.</div>
+        </div>
+
+        <div class="btns">
+          <span class="btn cf">XÁC NHẬN</span>
+          <span class="btn rj">BÁC BỎ</span>
+        </div>
+
+        <div class="ov">
+          <span class="lab">LÝ DO BÁC BỎ</span>
+          <div class="input">CRC tăng từ 09:12 — sớm hơn mốc rớt BGP, chưa đủ căn cứ</div>
+          <div class="btns">
+            <span class="btn go">GỬI BÁC BỎ</span>
+            <span class="btn huy">HUỶ</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="canvas">
+      <svg viewBox="0 0 562 480" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+       <g transform="translate(0,30)">
+        <g stroke="#475569" stroke-width="1" stroke-dasharray="6 4" stroke-opacity="0.5" fill="none">
+          <rect x="16" y="50" width="530" height="92" rx="8"/>
+          <rect x="16" y="170" width="530" height="92" rx="8"/>
+          <rect x="16" y="290" width="530" height="92" rx="8"/>
+        </g>
+        <g stroke="#334155" stroke-width="1" opacity="0.22">
+          <line x1="432" y1="96" x2="355" y2="216"/>
+          <line x1="432" y1="96" x2="480" y2="216"/>
+          <line x1="95" y1="216" x2="85" y2="336"/>
+          <line x1="480" y1="216" x2="490" y2="336"/>
+        </g>
+        <g stroke-width="1.6">
+          <line x1="130" y1="96" x2="95" y2="216" stroke="#10b981"/>
+          <line x1="130" y1="96" x2="225" y2="216" stroke="#10b981"/>
+          <line x1="281" y1="96" x2="225" y2="216" stroke="#ef4444"/>
+          <line x1="281" y1="96" x2="355" y2="216" stroke="#10b981"/>
+          <line x1="225" y1="216" x2="190" y2="336" stroke="#10b981"/>
+          <line x1="225" y1="216" x2="295" y2="336" stroke="#10b981"/>
+          <line x1="355" y1="216" x2="400" y2="336" stroke="#10b981"/>
+        </g>
+        <g font-family="ui-monospace, monospace" font-size="7" font-weight="800" text-anchor="middle">
+          <g opacity="0.22">
+            <rect x="414" y="84" width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+            <text x="432" y="99" fill="#e2e8f0">CORE-03</text>
+            <rect x="462" y="204" width="36" height="24" rx="5" fill="#0f172a" stroke="#facc15" stroke-width="1.4"/>
+            <text x="480" y="219" fill="#e2e8f0">AGG-04</text>
+            <rect x="67" y="324" width="36" height="24" rx="5" fill="#0f172a" stroke="#38bdf8" stroke-width="1.4"/>
+            <text x="85" y="339" fill="#e2e8f0">EXCH-01</text>
+            <rect x="472" y="324" width="36" height="24" rx="5" fill="#0f172a" stroke="#facc15" stroke-width="1.4"/>
+            <text x="490" y="339" fill="#e2e8f0">EXCH-05</text>
+          </g>
+          <rect x="112" y="84" width="36" height="24" rx="5" fill="#0f172a" stroke="#38bdf8" stroke-width="1.4"/>
+          <text x="130" y="99" fill="#e2e8f0">CORE-01</text>
+          <rect x="263" y="84" width="36" height="24" rx="5" fill="#991b1b" stroke="#a78bfa" stroke-width="1.8"/>
+          <text x="281" y="99" fill="#ffffff">CORE-02</text>
+          <rect x="77" y="204" width="36" height="24" rx="5" fill="#0f172a" stroke="#38bdf8" stroke-width="1.4"/>
+          <text x="95" y="219" fill="#e2e8f0">AGG-01</text>
+          <rect x="207" y="204" width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+          <text x="225" y="219" fill="#e2e8f0">AGG-02</text>
+          <rect x="337" y="204" width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+          <text x="355" y="219" fill="#e2e8f0">AGG-03</text>
+          <rect x="172" y="324" width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+          <text x="190" y="339" fill="#e2e8f0">EXCH-02</text>
+          <rect x="277" y="324" width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+          <text x="295" y="339" fill="#e2e8f0">EXCH-03</text>
+          <rect x="382" y="324" width="36" height="24" rx="5" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+          <text x="400" y="339" fill="#e2e8f0">EXCH-04</text>
+        </g>
+        <circle cx="281" cy="96" r="30" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+        <circle cx="225" cy="216" r="30" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+       </g>
+      </svg>
+      <div class="c-label">CANVAS — KHOANH VÙNG + BEACON HAI ĐẦU (4.3B)</div>
+    </div>
+
+    <aside class="right">
+      <div class="c-head">SIDEBAR PHẢI · 5.3</div>
+
+      <div class="r-chrome">
+        <span class="back">←</span>
+        <span class="r-dot"></span>
+        <span class="r-id">AGG-02</span>
+      </div>
+      <div class="r-tier">TẦNG AGGREGATION</div>
+
+      <div class="ribbon">
+        <span class="tab">ĐỊNH DANH</span>
+        <span class="tab">CẢNH BÁO</span>
+        <span class="tab on">TRẠNG THÁI</span>
+      </div>
+
+      <div class="s-rows">
+        <div class="s-row"><span class="k">oper_status</span><span class="v">Up</span></div>
+        <div class="s-row"><span class="k">Mức tải</span><span class="v">87%</span></div>
+        <div class="s-row"><span class="k">CPU</span><span class="v">41%</span><span class="ts">TS</span></div>
+        <div class="s-row sel"><span class="k">Nhiệt độ</span><span class="v">58.2°C</span><span class="ts">TS</span></div>
+      </div>
+      <div class="s-at">collected_at 14:35</div>
+
+      <div class="chartbox">
+        <svg viewBox="0 0 160 86" preserveAspectRatio="none" aria-hidden="true">
+          <g stroke="#1e293b" stroke-width="1">
+            <line x1="0" y1="21" x2="160" y2="21"/>
+            <line x1="0" y1="43" x2="160" y2="43"/>
+            <line x1="0" y1="65" x2="160" y2="65"/>
+          </g>
+          <path d="M0,58 L18,55 L36,56 L54,50 L72,46 L90,44 L108,38 L126,30 L144,24 L160,20 L160,86 L0,86 Z" fill="rgba(56,189,248,0.08)"/>
+          <path d="M0,58 L18,55 L36,56 L54,50 L72,46 L90,44 L108,38 L126,30 L144,24 L160,20" fill="none" stroke="#38bdf8" stroke-width="1.6"/>
+        </svg>
+      </div>
+    </aside>
+
+  </div>
+
+  <div class="note">
+    <span class="n1">BÁC BỎ PHẢI GHI LÝ DO</span>
+    <span class="n3">— khung nhập đè đáy chi tiết · gửi đi → rơi xuống ĐÃ BÁC BỎ · canvas + Inspector giữ nguyên</span>
+  </div>
+
+</div>
+</body>
+</html>
