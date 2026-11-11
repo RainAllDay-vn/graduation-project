@@ -92,4 +92,12 @@ public class Hypothesis {
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private Instant createdAt = Instant.now();
+
+    public void setEvidence(List<String> evidence) {
+        this.evidence = evidence != null ? new ArrayList<>(evidence) : new ArrayList<>();
+    }
+
+    public void setContradictingEvidence(List<String> contradictingEvidence) {
+        this.contradictingEvidence = contradictingEvidence != null ? new ArrayList<>(contradictingEvidence) : new ArrayList<>();
+    }
 }
