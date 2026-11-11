@@ -1,0 +1,5 @@
+# Development Profile Configuration
+logging:
+  level:
+    com.gr2.noc: DEBUG
+    org.springframework.web: INFO

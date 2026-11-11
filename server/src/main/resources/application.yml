@@ -1,11 +1,11 @@
 server:
   port: 8080
-  servlet:
-    context-path: /api
 
 spring:
   application:
     name: noc-server
+  profiles:
+    default: dev
 
   # PostgreSQL + JPA (Alarms, Telemetry, Incidents)
   datasource:

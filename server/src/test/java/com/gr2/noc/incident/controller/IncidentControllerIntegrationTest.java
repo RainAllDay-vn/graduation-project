@@ -8,7 +8,6 @@ import com.gr2.noc.incident.enums.IncidentStatus;
 import com.gr2.noc.incident.enums.Severity;
 import com.gr2.noc.incident.model.Alarm;
 import com.gr2.noc.incident.model.Incident;
-import com.gr2.noc.incident.repository.AlarmRepository;
 import com.gr2.noc.incident.repository.IncidentRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -41,9 +40,6 @@ class IncidentControllerIntegrationTest {
 
     @Autowired
     private IncidentRepository incidentRepository;
-
-    @Autowired
-    private AlarmRepository alarmRepository;
 
     private Incident createSampleIncident(String id, String title, IncidentStatus status, Severity severity) {
         Incident incident = Incident.builder()
