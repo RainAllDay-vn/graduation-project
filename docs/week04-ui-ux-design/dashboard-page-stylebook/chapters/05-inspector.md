@@ -1,6 +1,6 @@
 # Chương 5: Khung dashboard — Phần 5: Sidebar phải — Inspector
 
-> **5.0–5.4 đã viết nội dung đầy đủ.** Chi tiết giả thuyết đã dời về sidebar trái (mục 4.3). Quyết định đã chốt nằm trong `docs/week04-ui-ux-design/design-decisions.md` (§5–§9, gồm tóm tắt research yêu cầu).
+> **5.0–5.4 đã viết nội dung đầy đủ.** Chi tiết giả thuyết đã dời về sidebar trái (mục 4.3).
 > Văn phong theo các chương trước. Mọi số liệu "chốt khi dựng". Trường chưa có data ghi "chờ data".
 
 ---

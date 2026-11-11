@@ -1,6 +1,6 @@
 # Chương 4: Khung dashboard — Phần 4: Sidebar trái
 
-> Chương này đã viết đủ nội dung 4.1–4.4. Quyết định đã chốt nằm trong `docs/week04-ui-ux-design/design-decisions.md` (§5–§9, gồm tóm tắt research yêu cầu).
+> Chương này đã viết đủ nội dung 4.1–4.4. Chi tiết giả thuyết (4.3) dời về đây từ Inspector ngày 10-11.
 > Văn phong theo các chương trước. Mọi số liệu "chốt khi dựng". Trường chưa có data ghi "chờ data".
 
 ---
