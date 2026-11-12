@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trang Đăng ký tài khoản — Bản đồ trang ứng dụng</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="../design-tokens.css">
 <link rel="stylesheet" href="css/app-pages.css">
 <link rel="stylesheet" href="css/signup.css">
@@ -39,28 +42,33 @@
     <aside class="sidebar left">
       <div class="side-head">BỐ CỤC &amp; VÙNG</div>
 
-      <div class="card" data-region="r-brand">
-        <h3>Khối brand — góc trên trái</h3>
-        <p>Giống hệt trang Đăng nhập: "NOC TOPOLOGY" mono in hoa kèm chấm xanh lá + dòng phụ "Hỗ trợ điều tra sự cố mạng" — hai trang xác thực dùng chung một vỏ ngoài.</p>
-      </div>
-
-      <div class="card" data-region="r-card">
-        <h3>Thẻ đăng ký — giữa trang</h3>
-        <p>Cùng ngôn ngữ với thẻ Đăng nhập nhưng rộng hơn (460px) vì chứa bốn trường. Vẫn chỉ một thẻ duy nhất giữa nền chấm bi — không có bướcwizard, không có điều khoản dài kéo dãn trang.</p>
+      <div class="card" data-region="r-mark">
+        <h3>Khối nhận diện — đầu cột trái</h3>
+        <p>Giống hệt trang Đăng nhập: logo tròn nền xanh nhạt + tiêu đề "Tạo tài khoản" + dòng chuyển hướng "Đã có tài khoản? Đăng nhập" — hai trang xác thực dùng chung một vỏ ngoài.</p>
       </div>
 
       <div class="card" data-region="r-fields">
-        <h3>Bốn trường thông tin</h3>
+        <h3>Bốn trường nhập — placeholder trong trường</h3>
         <p>Họ và tên, Email công ty, Mật khẩu (gợi ý mờ "tối thiểu 8 ký tự" ngay dưới trường) và Xác nhận mật khẩu. Không hỏi thêm gì khác — đơn vị/site gán sau bởi quản trị (đề xuất).</p>
       </div>
 
       <div class="card" data-region="r-submit">
-        <h3>Nút chính + đường về Đăng nhập</h3>
-        <p>Nút "Tạo tài khoản" chiếm hết bề ngang, cùng xanh #1d4ed8 với Đăng nhập. Dưới nút là dòng "Đã có tài khoản? Đăng nhập" — lối về trang Đăng nhập, không để người new bế tắc.</p>
+        <h3>Nút chính — viên thuốc giữa cột</h3>
+        <p>Nút "Tạo tài khoản" nền xanh hệ thống, bo tròn hoàn toàn, đặt giữa cột — cùng hình dáng với nút Đăng nhập.</p>
+      </div>
+
+      <div class="card" data-region="r-side">
+        <h3>Panel phải — nền tối, tạm để trống</h3>
+        <p>Giống trang Đăng nhập: khoảng một phần ba bên phải nền navy đặc, tạm để trống chờ quyết định nội dung.</p>
+      </div>
+
+      <div class="card">
+        <h3>Chuyển ngôn ngữ — góc trên phải</h3>
+        <p>Giống trang Đăng nhập: cặp nút mono VI/EN trên panel tối, mặc định tiếng Việt (đề xuất chờ gật). Nút chức năng — không tham gia soi vùng.</p>
       </div>
 
       <div class="card" data-region="r-footer">
-        <h3>Chân trang</h3>
+        <h3>Chân trang — đáy cột trái</h3>
         <p>Một dòng mono giống Đăng nhập: phiên bản + môi trường TEST màu vàng + hỗ trợ IT nội bộ.</p>
       </div>
     </aside>
@@ -68,56 +76,60 @@
     <main class="stage" id="stage">
       <div class="viewport-frame">
         <div class="viewport">
-          <div class="vp-signup" id="vp-signup" data-state="default">
+          <div class="vp-signup" id="vp-signup" data-state="default" translate="no">
 
-            <div class="vp-brand" data-region="r-brand">
-              <div class="row"><span class="dot"></span><span class="name">NOC TOPOLOGY</span></div>
-              <div class="sub">Hỗ trợ điều tra sự cố mạng</div>
+            <div class="vp-lang">
+              <button type="button" class="lg active" data-lang="vi">VI</button>
+              <button type="button" class="lg" data-lang="en">EN</button>
             </div>
 
-            <div class="vp-card" data-region="r-card">
-              <h1>Tạo tài khoản</h1>
-              <p class="desc">Đăng ký tài khoản kỹ sư vận hành.</p>
+            <div class="vp-pane" data-region="r-form">
+              <div class="vp-auth">
 
-              <div class="vp-banner err">Email này đã được đăng ký.</div>
-              <div class="vp-banner ok">Tạo tài khoản thành công — đã gửi email kích hoạt tới hộp thư công ty.</div>
-
-              <form id="vp-form">
-                <div data-region="r-fields">
-                  <div class="vp-field">
-                    <label for="s-name">Họ và tên</label>
-                    <input id="s-name" type="text" placeholder="nguyễn văn an" autocomplete="off">
-                  </div>
-                  <div class="vp-field email">
-                    <label for="s-email">Email công ty</label>
-                    <input id="s-email" type="text" placeholder="ten@congty.vn" autocomplete="off">
-                  </div>
-                  <div class="vp-field pw">
-                    <label for="s-pass">Mật khẩu</label>
-                    <input id="s-pass" type="password" placeholder="••••••••">
-                    <div class="vp-hint">tối thiểu 8 ký tự</div>
-                  </div>
-                  <div class="vp-field pw2">
-                    <label for="s-pass2">Xác nhận mật khẩu</label>
-                    <input id="s-pass2" type="password" placeholder="••••••••">
-                    <div class="vp-err-under">Mật khẩu xác nhận không khớp.</div>
-                  </div>
+                <div class="vp-head" data-region="r-mark">
+                  <div class="vp-mark">N</div>
+                  <h1 data-i18n="h1">Tạo tài khoản</h1>
+                  <p class="vp-lead"><span data-i18n="lead-pre">Đã có tài khoản?</span> <a href="#" id="link-login" data-i18n="lead-link">Đăng nhập</a></p>
                 </div>
-                <div data-region="r-submit">
-                  <button type="submit" class="vp-submit">Tạo tài khoản</button>
-                  <div class="vp-alt">Đã có tài khoản? <a href="#" id="link-login">Đăng nhập</a></div>
-                </div>
-              </form>
+
+                <div class="vp-banner err" data-i18n="banner-err">Email này đã được đăng ký.</div>
+                <div class="vp-banner ok" data-i18n="banner-ok">Tạo tài khoản thành công — đã gửi email kích hoạt tới hộp thư công ty.</div>
+
+                <form id="vp-form">
+                  <div data-region="r-fields">
+                    <div class="vp-field">
+                      <input id="s-name" type="text" placeholder="Họ và tên" data-i18n-ph="name-ph" aria-label="Họ và tên" autocomplete="off" autocapitalize="off" spellcheck="false">
+                    </div>
+                    <div class="vp-field email">
+                      <input id="s-email" type="text" placeholder="Email công ty — ten@congty.vn" data-i18n-ph="email-ph" aria-label="Email công ty" autocomplete="off" autocapitalize="off" spellcheck="false">
+                    </div>
+                    <div class="vp-field pw">
+                      <input id="s-pass" type="password" placeholder="Mật khẩu" data-i18n-ph="pass-ph" aria-label="Mật khẩu" autocomplete="off" autocapitalize="off" spellcheck="false">
+                      <div class="vp-hint" data-i18n="hint">tối thiểu 8 ký tự</div>
+                    </div>
+                    <div class="vp-field pw2">
+                      <input id="s-pass2" type="password" placeholder="Nhập lại mật khẩu" data-i18n-ph="pass2-ph" aria-label="Xác nhận mật khẩu" autocomplete="off" autocapitalize="off" spellcheck="false">
+                      <div class="vp-err-under" data-i18n="err-under">Mật khẩu xác nhận không khớp.</div>
+                    </div>
+                  </div>
+                  <div data-region="r-submit">
+                    <button type="submit" class="vp-submit" data-i18n="submit">Tạo tài khoản</button>
+                  </div>
+                </form>
+
+              </div>
+
+              <div class="vp-footer" data-region="r-footer">
+                <span data-i18n="ft-a">NOC TOPOLOGY v0.4 · MÔI TRƯỜNG</span> <span class="env">TEST</span> · <span data-i18n="ft-b">HỖ TRỢ: IT NỘI BỘ</span>
+              </div>
             </div>
 
-            <div class="vp-footer" data-region="r-footer">
-              NOC TOPOLOGY v0.4 · MÔI TRƯỜNG <span class="env">TEST</span> · HỖ TRỢ: IT NỘI BỘ
-            </div>
+            <div class="vp-side" data-region="r-side"></div>
 
           </div>
         </div>
       </div>
-      <div class="stage-hint">Bấm một card ở sidebar hoặc một vùng trên miniature để soi tương ứng — Esc hoặc bấm nền để bỏ chốt.</div>
+      <div class="stage-hint">Bấm một card ở sidebar trái để soi vùng tương ứng trên miniature — bấm lại card, Esc hoặc bấm nền để bỏ chốt. Bấm lên miniature không đổi vùng soi.</div>
     </main>
 
     <aside class="sidebar right">
@@ -125,7 +137,7 @@
 
       <div class="card">
         <h3>Gõ thông tin đăng ký</h3>
-        <p>Bấm vào trường → viền xanh + quầng sáng, như Đăng nhập. Trong trường Mật khẩu có gợi ý mờ "tối thiểu 8 ký tự" ngay dưới — nhìn thấy trước khi gõ, không chờ báo lỗi.</p>
+        <p>Bấm vào trường → viền xanh + quầng sáng, gợi ý viết mờ ngay trong trường, như Đăng nhập. Dưới trường Mật khẩu có dòng gợi ý "tối thiểu 8 ký tự" — nhìn thấy trước khi gõ, không chờ báo lỗi.</p>
       </div>
 
       <div class="card">
@@ -134,8 +146,13 @@
       </div>
 
       <div class="card">
-        <h3>Bấm "Đăng nhập" dưới nút chính</h3>
+        <h3>Bấm "Đăng nhập" đầu cột</h3>
         <p>Quay về trang Đăng nhập mà không mất gì — người new lưỡi lạy không bị kẹt ở trang đăng ký.</p>
+      </div>
+
+      <div class="card">
+        <h3>Bấm VI / EN</h3>
+        <p>Đổi ngôn ngữ toàn trang ngay trong miniature — tiêu đề, gợi ý trong trường, nút, băng trạng thái và chân trang cùng đổi; các trạng thái demo vẫn chạy bình thường (đề xuất chờ gật).</p>
       </div>
 
       <div class="card">

@@ -24,20 +24,15 @@
   window.addEventListener("resize", fitViewport);
   fitViewport();
 
-  /* ---- soi card <-> vùng ---- */
+  /* ---- soi card (sidebar trái) <-> vùng — chỉ card kích hoạt, miniature không clickable ---- */
   var viewport = document.querySelector(".viewport");
   var cards = Array.prototype.slice.call(document.querySelectorAll(".card[data-region]"));
   var regions = Array.prototype.slice.call(document.querySelectorAll(".viewport [data-region]"));
   var pinnedCard = null;
-  var hoveredRegion = null;
-
-  function clearHl() {
-    viewport.classList.remove("dim");
-    regions.forEach(function (r) { r.classList.remove("hl"); r.classList.remove("dimmed"); });
-  }
 
   function applyHl(regionId) {
-    clearHl();
+    viewport.classList.remove("dim");
+    regions.forEach(function (r) { r.classList.remove("hl"); r.classList.remove("dimmed"); });
     if (!regionId) return;
     viewport.classList.add("dim");
     var el = viewport.querySelector('[data-region="' + regionId + '"]');
@@ -48,55 +43,26 @@
     });
   }
 
-  function currentRegion() {
-    if (pinnedCard) return pinnedCard.getAttribute("data-region");
-    if (hoveredRegion) return hoveredRegion;
-    return null;
-  }
-
-  function refresh() { applyHl(currentRegion()); }
-
   function setPinned(card) {
     cards.forEach(function (c) { c.classList.remove("pinned"); });
     pinnedCard = card;
     if (card) card.classList.add("pinned");
-    refresh();
+    applyHl(card ? card.getAttribute("data-region") : null);
   }
 
   cards.forEach(function (card) {
-    var regionId = card.getAttribute("data-region");
-    card.addEventListener("mouseenter", function () {
-      if (!pinnedCard) { hoveredRegion = regionId; refresh(); }
-    });
-    card.addEventListener("mouseleave", function () {
-      if (hoveredRegion === regionId) { hoveredRegion = null; refresh(); }
-    });
-    card.addEventListener("click", function () {
-      setPinned(card === pinnedCard ? null : card);
-    });
-  });
-
-  regions.forEach(function (region) {
-    var regionId = region.getAttribute("data-region");
-    region.addEventListener("click", function (e) {
+    card.addEventListener("click", function (e) {
       e.stopPropagation();
-      var match = null;
-      cards.forEach(function (c) {
-        if (c.getAttribute("data-region") === regionId) match = c;
-      });
-      setPinned(match === pinnedCard ? null : match);
-      if (match) match.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      setPinned(card === pinnedCard ? null : card);
+      if (card === pinnedCard) card.scrollIntoView({ block: "nearest", behavior: "smooth" });
     });
   });
 
   document.addEventListener("click", function (e) {
-    if (!e.target.closest(".card") && !e.target.closest("[data-region]")) {
-      setPinned(null);
-      hoveredRegion = null;
-    }
+    if (!e.target.closest(".card[data-region]")) setPinned(null);
   });
 
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") { setPinned(null); hoveredRegion = null; }
+    if (e.key === "Escape") setPinned(null);
   });
 })();

@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trang Đăng nhập — Bản đồ trang ứng dụng</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="../design-tokens.css">
 <link rel="stylesheet" href="css/app-pages.css">
 </head>
@@ -38,33 +41,38 @@
     <aside class="sidebar left">
       <div class="side-head">BỐ CỤC &amp; VÙNG</div>
 
-      <div class="card" data-region="r-brand">
-        <h3>Khối brand — góc trên trái</h3>
-        <p>"NOC TOPOLOGY" viết mono in hoa kèm chấm xanh lá, giống hệt topbar Dashboard — người dùng biết ngay mình đang ở đúng hệ thống, trước khi nhập gì cả. Dòng phụ "Hỗ trợ điều tra sự cố mạng" nói rõ sản phẩm này là gì.</p>
-      </div>
-
-      <div class="card" data-region="r-card">
-        <h3>Thẻ đăng nhập — giữa trang</h3>
-        <p>Một thẻ trắng duy nhất (bóng đổ mềm, bo góc 16) nổi trên nền chấm bi mờ nhắc tới canvas topology. Mọi thứ của trang nằm trong thẻ này — không có cột, không có quảng cáo, không có preview Dashboard.</p>
+      <div class="card" data-region="r-mark">
+        <h3>Khối nhận diện — đầu cột trái</h3>
+        <p>Logo tròn nền xanh nhạt (chữ N mono) + tiêu đề lớn "Đăng nhập" + dòng "Chưa có tài khoản? Đăng ký" dẫn sang trang Đăng ký (đề xuất chờ gật). Không còn brand góc trên — nhận diện gói gọn ở đầu cột.</p>
       </div>
 
       <div class="card" data-region="r-fields">
-        <h3>Hai trường + nút chính</h3>
-        <p>Tài khoản và Mật khẩu, label đặt trên trường, placeholder gợi ý "tên đăng nhập nội bộ". Nút "Đăng nhập" màu xanh hệ thống (#1d4ed8) chiếm hết bề ngang — hành động chính duy nhất của trang.</p>
+        <h3>Hai trường nhập — placeholder trong trường</h3>
+        <p>Tài khoản và Mật khẩu, gợi ý viết mờ ngay trong trường (không có label phía trên — theo mẫu tham chiếu). Dưới hai trường là hàng "Ghi nhớ tôi" + "Quên mật khẩu?" (đề xuất chờ gật — mật khẩu nội bộ do IT cấp, quên thì chuyển hướng liên hệ, không tự reset trong bản này).</p>
+      </div>
+
+      <div class="card" data-region="r-submit">
+        <h3>Nút chính — viên thuốc giữa cột</h3>
+        <p>Nút "Đăng nhập" nền xanh hệ thống, bo tròn hoàn toàn, đặt giữa cột và không trải hết bề ngang — điểm nhấn duy nhất của trang.</p>
       </div>
 
       <div class="card" data-region="r-sso">
-        <h3>Nút SSO — dưới phân cách "hoặc"</h3>
-        <p>"Đăng nhập bằng tài khoản công ty" kèm nhãn mono SSO. Đây là <b>đề xuất chờ gật</b>: doanh nghiệp viễn thông thường đã có SSO/LDAP; nút phụ giữ vai trò đường tắt, form nội bộ vẫn là đường chính để hệ thống chạy được độc lập.</p>
+        <h3>SSO — dưới phân cách "HOẶC"</h3>
+        <p>Link chữ "Đăng nhập bằng SSO công ty" đặt giữa. Đây là <b>đề xuất chờ gật</b>: doanh nghiệp viễn thông thường đã có SSO/LDAP; link phụ giữ vai trò đường tắt, form nội bộ vẫn là đường chính để hệ thống chạy được độc lập.</p>
       </div>
 
-      <div class="card" data-region="r-signup">
-        <h3>Liên kết sang Đăng ký</h3>
-        <p>"Chưa có tài khoản? Đăng ký" — dòng nhỏ dưới nút SSO. Công cụ nội bộ thường do quản trị tạo tài khoản; link giữ làm đường dự phòng (đề xuất chờ gật).</p>
+      <div class="card" data-region="r-side">
+        <h3>Panel phải — nền tối, tạm để trống</h3>
+        <p>Chiếm khoảng một phần ba bên phải, nền navy đặc — tạm để trống theo yêu cầu. Về sau có thể đặt mẫu hình trang trí hoặc thông điệp sản phẩm (chờ quyết định).</p>
+      </div>
+
+      <div class="card">
+        <h3>Chuyển ngôn ngữ — góc trên phải</h3>
+        <p>Cặp nút mono VI/EN viền mảnh nổi trên panel tối. Mặc định tiếng Việt — người dùng chính là kỹ sư nội bộ; EN phục vụ đối tác, tài liệu tích hợp hoặc tình huống đào tạo (đề xuất chờ gật). Nút chức năng — không tham gia soi vùng.</p>
       </div>
 
       <div class="card" data-region="r-footer">
-        <h3>Chân trang</h3>
+        <h3>Chân trang — đáy cột trái</h3>
         <p>Một dòng mono nhỏ: phiên bản hệ thống + môi trường (TEST màu vàng để phân biệt với PROD) + điểm hỗ trợ. Đề xuất chờ gật — giúp kỹ sư biết mình đang đăng nhập vào môi trường nào trước khi tác động.</p>
       </div>
     </aside>
@@ -72,56 +80,65 @@
     <main class="stage" id="stage">
       <div class="viewport-frame">
         <div class="viewport">
-          <div class="vp-login" id="vp-login" data-state="default">
+          <div class="vp-login" id="vp-login" data-state="default" translate="no">
 
-            <div class="vp-brand" data-region="r-brand">
-              <div class="row"><span class="dot"></span><span class="name">NOC TOPOLOGY</span></div>
-              <div class="sub">Hỗ trợ điều tra sự cố mạng</div>
+            <div class="vp-lang">
+              <button type="button" class="lg active" data-lang="vi">VI</button>
+              <button type="button" class="lg" data-lang="en">EN</button>
             </div>
 
-            <div class="vp-card" data-region="r-card">
-              <h1>Đăng nhập</h1>
-              <p class="desc">Truy cập hệ thống hỗ trợ điều tra sự cố.</p>
+            <div class="vp-pane" data-region="r-form">
+              <div class="vp-auth">
 
-              <div class="vp-banner err">Tài khoản hoặc mật khẩu không đúng.</div>
-              <div class="vp-banner ok">Đăng nhập thành công — đang mở Tổng quan mạng…</div>
-
-              <form id="vp-form">
-                <div data-region="r-fields">
-                  <div class="vp-field">
-                    <label for="f-user">Tài khoản</label>
-                    <input id="f-user" type="text" placeholder="tên đăng nhập nội bộ" autocomplete="off">
-                  </div>
-                  <div class="vp-field">
-                    <label for="f-pass">Mật khẩu</label>
-                    <input id="f-pass" type="password" placeholder="••••••••">
-                  </div>
-                  <button type="submit" class="vp-submit">
-                    <span class="vp-spinner"></span>
-                    <span class="txt-idle">Đăng nhập</span>
-                    <span class="txt-busy">Đang đăng nhập…</span>
-                  </button>
+                <div class="vp-head" data-region="r-mark">
+                  <div class="vp-mark">N</div>
+                  <h1 data-i18n="h1">Đăng nhập</h1>
+                  <p class="vp-lead"><span data-i18n="lead-pre">Chưa có tài khoản?</span> <a href="#" id="link-signup" data-i18n="lead-link">Đăng ký</a></p>
                 </div>
-              </form>
 
-              <div class="vp-divider">HOẶC</div>
+                <div class="vp-banner err" data-i18n="banner-err">Tài khoản hoặc mật khẩu không đúng.</div>
+                <div class="vp-banner ok" data-i18n="banner-ok">Đăng nhập thành công — đang mở Tổng quan mạng…</div>
 
-              <button type="button" class="vp-sso" data-region="r-sso">
-                Đăng nhập bằng tài khoản công ty <span class="mono">SSO</span>
-              </button>
+                <form id="vp-form">
+                  <div data-region="r-fields">
+                    <div class="vp-field">
+                      <input id="f-user" type="text" placeholder="Tên đăng nhập nội bộ" data-i18n-ph="user-ph" aria-label="Tài khoản" autocomplete="off" autocapitalize="off" spellcheck="false">
+                    </div>
+                    <div class="vp-field">
+                      <input id="f-pass" type="password" placeholder="Mật khẩu" data-i18n-ph="pass-ph" aria-label="Mật khẩu" autocomplete="off" autocapitalize="off" spellcheck="false">
+                    </div>
+                    <div class="vp-aux">
+                      <label class="vp-check"><input type="checkbox"> <span data-i18n="remember">Ghi nhớ tôi</span></label>
+                      <a href="#" class="vp-forgot" data-i18n="forgot">Quên mật khẩu?</a>
+                    </div>
+                  </div>
+                  <div data-region="r-submit">
+                    <button type="submit" class="vp-submit">
+                      <span class="vp-spinner"></span>
+                      <span class="txt-idle" data-i18n="submit">Đăng nhập</span>
+                      <span class="txt-busy" data-i18n="submit-busy">Đang đăng nhập…</span>
+                    </button>
+                  </div>
+                </form>
 
-              <div class="vp-alt" data-region="r-signup">Chưa có tài khoản? <a href="#" id="link-signup">Đăng ký</a></div>
+                <div class="vp-divider" data-i18n="divider">HOẶC</div>
+
+                <button type="button" class="vp-sso" data-region="r-sso" data-i18n="sso">Đăng nhập bằng SSO công ty</button>
+
+              </div>
+
+              <div class="vp-footer" data-region="r-footer">
+                <span data-i18n="ft-a">NOC TOPOLOGY v0.4 · MÔI TRƯỜNG</span> <span class="env">TEST</span> · <span data-i18n="ft-b">HỖ TRỢ: IT NỘI BỘ</span>
+              </div>
             </div>
 
-            <div class="vp-footer" data-region="r-footer">
-              NOC TOPOLOGY v0.4 · MÔI TRƯỜNG <span class="env">TEST</span> · HỖ TRỢ: IT NỘI BỘ
-            </div>
+            <div class="vp-side" data-region="r-side"></div>
 
           </div>
         </div>
       </div>
 
-      <div class="stage-hint">Bấm một card ở sidebar hoặc một vùng trên miniature để soi tương ứng — Esc hoặc bấm nền để bỏ chốt.</div>
+      <div class="stage-hint">Bấm một card ở sidebar trái để soi vùng tương ứng trên miniature — bấm lại card, Esc hoặc bấm nền để bỏ chốt. Bấm lên miniature không đổi vùng soi.</div>
     </main>
 
     <aside class="sidebar right">
@@ -129,17 +146,27 @@
 
       <div class="card">
         <h3>Gõ thông tin đăng nhập</h3>
-        <p>Bấm vào trường → viền xanh + quầng sáng, placeholder mờ chỉ dẫn "tên đăng nhập nội bộ". Tab chuyển giữa hai trường. Có thể gõ thử ngay trong miniature.</p>
+        <p>Bấm vào trường → viền xanh + quầng sáng, placeholder mờ chỉ dẫn "Tên đăng nhập nội bộ" ngay trong trường. Tab chuyển giữa hai trường. Có thể gõ thử ngay trong miniature.</p>
+      </div>
+
+      <div class="card">
+        <h3>Đánh dấu "Ghi nhớ tôi" / bấm "Quên mật khẩu?"</h3>
+        <p>Ghi nhớ giữ phiên trên máy này cho lần mở sau (đề xuất chờ gật). Quên mật khẩu → hướng sang liên hệ IT nội bộ, không tự reset trong bản này (đề xuất).</p>
       </div>
 
       <div class="card">
         <h3>Bấm "Đăng nhập" (hoặc Enter)</h3>
-        <p>Thiếu thông tin → viền đỏ trường trống. Sai thông tin → băng đỏ inline trong thẻ + viền đỏ hai trường, không dùng alert. Đúng → nút chuyển spinner "Đang đăng nhập…", khóa cả form, rồi băng xanh "đang mở Tổng quan mạng…" và chuyển trang; nếu còn phiên điều tra dở, Tổng quan hỏi tiếp tục trước.</p>
+        <p>Thiếu thông tin → viền đỏ trường trống. Sai thông tin → băng đỏ inline trong cột + viền đỏ hai trường, không dùng alert. Đúng → nút chuyển spinner "Đang đăng nhập…", khóa cả form, rồi băng xanh "đang mở Tổng quan mạng…" và chuyển trang; nếu còn phiên điều tra dở, Tổng quan hỏi tiếp tục trước.</p>
       </div>
 
       <div class="card">
-        <h3>Bấm nút SSO</h3>
+        <h3>Bấm link SSO</h3>
         <p>Chuyển tới trang đăng nhập một lần của công ty và quay lại với phiên sẵn — không nhập gì thêm. Demo chưa mô phỏng luồng SSO (đề xuất chờ gật).</p>
+      </div>
+
+      <div class="card">
+        <h3>Bấm VI / EN</h3>
+        <p>Đổi ngôn ngữ toàn trang ngay trong miniature — tiêu đề, gợi ý trong trường, nút, băng trạng thái và chân trang cùng đổi; các trạng thái demo vẫn chạy bình thường (đề xuất chờ gật).</p>
       </div>
 
       <div class="card">

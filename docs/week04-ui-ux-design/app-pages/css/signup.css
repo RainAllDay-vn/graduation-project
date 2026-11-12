@@ -1,15 +1,5 @@
-/* ================= sign-up page (miniature, design space 1440x900) ================= */
-.vp-signup {
-  width: 100%;
-  height: 100%;
-  background: var(--paper-soft);
-  background-image: radial-gradient(var(--line) 1px, transparent 1px);
-  background-size: 26px 26px;
-  position: relative;
-  font-family: var(--sans);
-}
-
-.vp-signup .vp-card { width: 460px; top: 128px; }
+/* ================= sign-up page (bổ sung cho khối xác thực chia đôi) ================= */
+.vp-signup .vp-auth { width: 460px; }
 
 .vp-hint { font-size: 11px; color: var(--ink-faint); margin-top: 5px; }
 

@@ -55,7 +55,7 @@
   --tier-6: #64748b;
   --focus: #38bdf8;
 
-  /* font */
-  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* font — Inter + JetBrains Mono (Google Fonts, link trong từng HTML), fallback system khi offline */
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
