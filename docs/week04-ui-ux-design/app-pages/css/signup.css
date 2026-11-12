@@ -1,0 +1,40 @@
+/* ================= sign-up page (miniature, design space 1440x900) ================= */
+.vp-signup {
+  width: 100%;
+  height: 100%;
+  background: var(--paper-soft);
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 26px 26px;
+  position: relative;
+  font-family: var(--sans);
+}
+
+.vp-signup .vp-card { width: 460px; top: 128px; }
+
+.vp-hint { font-size: 11px; color: var(--ink-faint); margin-top: 5px; }
+
+.vp-err-under {
+  display: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b91c1c;
+  margin-top: 5px;
+}
+
+.vp-signup[data-state="mismatch"] .vp-field.pw input,
+.vp-signup[data-state="mismatch"] .vp-field.pw2 input { border-color: #ef4444; }
+.vp-signup[data-state="mismatch"] .vp-err-under { display: block; }
+.vp-signup[data-state="exists"] .vp-field.email input { border-color: #ef4444; }
+.vp-signup[data-state="exists"] .vp-banner.err { display: block; }
+.vp-signup[data-state="success"] .vp-banner.ok { display: block; }
+
+.vp-signup .vp-banner.err {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+.vp-signup .vp-banner.ok {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #047857;
+}

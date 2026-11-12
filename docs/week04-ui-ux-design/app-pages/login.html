@@ -14,6 +14,7 @@
     <div class="sep"></div>
     <nav class="page-tabs">
       <span class="page-tab active">Đăng nhập</span>
+      <a class="page-tab" href="signup.html">Đăng ký</a>
       <span class="page-tab todo" title="Chưa thiết kế — xem app-pages.md">Tổng quan</span>
       <span class="page-tab todo" title="Chưa thiết kế — xem app-pages.md">Điều tra</span>
       <span class="page-tab todo" title="Chưa thiết kế — xem app-pages.md">Tra cứu</span>
@@ -36,31 +37,31 @@
       <div class="side-head">BỐ CỤC &amp; VÙNG</div>
 
       <div class="card" data-region="r-brand">
-        <span class="tag vung">VÙNG</span>
         <h3>Khối brand — góc trên trái</h3>
         <p>"NOC TOPOLOGY" viết mono in hoa kèm chấm xanh lá, giống hệt topbar Dashboard — người dùng biết ngay mình đang ở đúng hệ thống, trước khi nhập gì cả. Dòng phụ "Hỗ trợ điều tra sự cố mạng" nói rõ sản phẩm này là gì.</p>
       </div>
 
       <div class="card" data-region="r-card">
-        <span class="tag vung">VÙNG</span>
         <h3>Thẻ đăng nhập — giữa trang</h3>
         <p>Một thẻ trắng duy nhất (bóng đổ mềm, bo góc 16) nổi trên nền chấm bi mờ nhắc tới canvas topology. Mọi thứ của trang nằm trong thẻ này — không có cột, không có quảng cáo, không có preview Dashboard.</p>
       </div>
 
       <div class="card" data-region="r-fields">
-        <span class="tag vung">VÙNG</span>
         <h3>Hai trường + nút chính</h3>
         <p>Tài khoản và Mật khẩu, label đặt trên trường, placeholder gợi ý "tên đăng nhập nội bộ". Nút "Đăng nhập" màu xanh hệ thống (#1d4ed8) chiếm hết bề ngang — hành động chính duy nhất của trang.</p>
       </div>
 
       <div class="card" data-region="r-sso">
-        <span class="tag vung">VÙNG</span>
         <h3>Nút SSO — dưới phân cách "hoặc"</h3>
         <p>"Đăng nhập bằng tài khoản công ty" kèm nhãn mono SSO. Đây là <b>đề xuất chờ gật</b>: doanh nghiệp viễn thông thường đã có SSO/LDAP; nút phụ giữ vai trò đường tắt, form nội bộ vẫn là đường chính để hệ thống chạy được độc lập.</p>
       </div>
 
+      <div class="card" data-region="r-signup">
+        <h3>Liên kết sang Đăng ký</h3>
+        <p>"Chưa có tài khoản? Đăng ký" — dòng nhỏ dưới nút SSO. Công cụ nội bộ thường do quản trị tạo tài khoản; link giữ làm đường dự phòng (đề xuất chờ gật).</p>
+      </div>
+
       <div class="card" data-region="r-footer">
-        <span class="tag vung">VÙNG</span>
         <h3>Chân trang</h3>
         <p>Một dòng mono nhỏ: phiên bản hệ thống + môi trường (TEST màu vàng để phân biệt với PROD) + điểm hỗ trợ. Đề xuất chờ gật — giúp kỹ sư biết mình đang đăng nhập vào môi trường nào trước khi tác động.</p>
       </div>
@@ -106,6 +107,8 @@
               <button type="button" class="vp-sso" data-region="r-sso">
                 Đăng nhập bằng tài khoản công ty <span class="mono">SSO</span>
               </button>
+
+              <div class="vp-alt" data-region="r-signup">Chưa có tài khoản? <a href="#" id="link-signup">Đăng ký</a></div>
             </div>
 
             <div class="vp-footer" data-region="r-footer">
@@ -123,44 +126,33 @@
       <div class="side-head">TƯƠNG TÁC</div>
 
       <div class="card">
-        <span class="tag tac-vu">TÁC VỤ</span>
         <h3>Gõ thông tin đăng nhập</h3>
         <p>Bấm vào trường → viền xanh + quầng sáng, placeholder mờ chỉ dẫn "tên đăng nhập nội bộ". Tab chuyển giữa hai trường. Có thể gõ thử ngay trong miniature.</p>
       </div>
 
       <div class="card">
-        <span class="tag tac-vu">TÁC VỤ</span>
         <h3>Bấm "Đăng nhập" (hoặc Enter)</h3>
         <p>Thiếu thông tin → viền đỏ trường trống. Sai thông tin → băng đỏ inline trong thẻ + viền đỏ hai trường, không dùng alert. Đúng → nút chuyển spinner "Đang đăng nhập…", khóa cả form, rồi băng xanh "đang mở Tổng quan mạng…" và chuyển trang; nếu còn phiên điều tra dở, Tổng quan hỏi tiếp tục trước.</p>
       </div>
 
       <div class="card">
-        <span class="tag tac-vu">TÁC VỤ</span>
         <h3>Bấm nút SSO</h3>
         <p>Chuyển tới trang đăng nhập một lần của công ty và quay lại với phiên sẵn — không nhập gì thêm. Demo chưa mô phỏng luồng SSO (đề xuất chờ gật).</p>
       </div>
 
       <div class="card">
-        <span class="tag tac-vu">TÁC VỤ</span>
         <h3>Sửa thông tin sau khi lỗi</h3>
         <p>Băng đỏ biến mất ngay khi người dùng sửa lại một trong hai trường — không để lỗi cũ "mắc kẹt" trên màn hình (đề xuất).</p>
       </div>
 
       <div class="card">
-        <span class="tag tac-vu">TÁC VỤ</span>
-        <h3>Demo trạng thái (tài liệu này)</h3>
-        <p>Bốn nút TRẠNG THÁI trên topbar chạy thẳng các trạng thái: Mặc định, Lỗi, Đang xử lý, Thành công — cùng hiệu ứng như khi thao tác thật.</p>
+        <h3>Bấm "Đăng ký"</h3>
+        <p>Mở trang Đăng ký tài khoản (signup.html). Đường phụ — đa số tài khoản nội bộ do quản trị cấp.</p>
       </div>
 
       <div class="card">
-        <span class="tag mo">CÂU HỎI MỞ</span>
-        <h3>Chờ gật trước khi dựng thật</h3>
-        <ul>
-          <li>SSO là nút phụ (như hiện nay) hay đường chính thay form?</li>
-          <li>Có cần ô "ghi nhớ phiên" không?</li>
-          <li>Chân trang: phiên bản + môi trường + hỗ trợ — giữ hay lược?</li>
-          <li>Khóa tài khoản sau mấy lần sai, báo gì?</li>
-        </ul>
+        <h3>Demo trạng thái (tài liệu này)</h3>
+        <p>Bốn nút TRẠNG THÁI trên topbar chạy thẳng các trạng thái: Mặc định, Lỗi, Đang xử lý, Thành công — cùng hiệu ứng như khi thao tác thật.</p>
       </div>
     </aside>
 

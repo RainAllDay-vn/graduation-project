@@ -68,6 +68,8 @@ body {
   color: #ffffff;
 }
 .page-tab.todo { cursor: not-allowed; }
+a.page-tab { text-decoration: none; color: var(--ink-faint); }
+a.page-tab:hover { border-color: var(--line-strong); color: var(--ink-mid); }
 .topbar .controls { display: flex; align-items: center; gap: 6px; margin-left: auto; flex: 0 0 auto; }
 
 .cols { flex: 1; display: flex; min-height: 0; }
@@ -95,19 +97,6 @@ body {
   margin-bottom: 12px;
   transition: border-color .15s, background .15s, box-shadow .15s;
 }
-.card .tag {
-  display: inline-block;
-  font: 800 10px var(--mono);
-  letter-spacing: 0.14em;
-  padding: 2px 8px;
-  border-radius: 999px;
-  margin-bottom: 8px;
-}
-.tag.vung { background: #ecfdf5; color: #047857; }
-.tag.tac-vu { background: #eef2ff; color: #4338ca; }
-.tag.quyet-dinh { background: var(--accent-soft); color: var(--accent); }
-.tag.trang-thai { background: #fff7ed; color: #c2410c; }
-.tag.mo { background: #fdf2f8; color: #be185d; }
 .card h3 { margin: 0 0 6px; font-size: 14px; line-height: 1.4; }
 .card p { margin: 0; font-size: 13px; color: var(--ink-mid); line-height: 1.65; }
 .card p + p { margin-top: 6px; }
@@ -310,6 +299,10 @@ body {
 }
 .vp-sso:hover { border-color: var(--ink-faint); }
 .vp-sso .mono { font: 800 10px var(--mono); letter-spacing: .12em; color: var(--ink-soft); border: 1px solid var(--line); border-radius: 4px; padding: 2px 5px; }
+
+.vp-alt { text-align: center; font-size: 12.5px; color: var(--ink-soft); margin-top: 16px; }
+.vp-alt a { color: var(--accent); font-weight: 700; text-decoration: none; }
+.vp-alt a:hover { text-decoration: underline; }
 
 .vp-login[data-state="loading"] .vp-field input,
 .vp-login[data-state="loading"] .vp-sso { opacity: .55; pointer-events: none; }

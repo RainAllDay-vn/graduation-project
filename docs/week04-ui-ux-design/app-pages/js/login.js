@@ -22,5 +22,10 @@
     e.preventDefault();
   });
 
+  var signupLink = document.getElementById("link-signup");
+  if (signupLink) signupLink.addEventListener("click", function (e) {
+    e.preventDefault();
+  });
+
   setState("default");
 })();
