@@ -134,7 +134,7 @@ class TelemetryControllerIntegrationTest {
             Instant now = Instant.now();
 
             TelemetryTimeseriesPoint pt1 = TelemetryTimeseriesPoint.builder()
-                    .deviceId("SW-HN-02")
+                    .deviceId("SW-TEST-TIMESERIES")
                     .metricName("CPU")
                     .value(65.0)
                     .unit("%")
@@ -142,7 +142,7 @@ class TelemetryControllerIntegrationTest {
                     .build();
 
             TelemetryTimeseriesPoint pt2 = TelemetryTimeseriesPoint.builder()
-                    .deviceId("SW-HN-02")
+                    .deviceId("SW-TEST-TIMESERIES")
                     .metricName("CPU")
                     .value(78.5)
                     .unit("%")
@@ -151,13 +151,13 @@ class TelemetryControllerIntegrationTest {
 
             timeseriesRepository.saveAll(List.of(pt1, pt2));
 
-            mockMvc.perform(get("/api/devices/{deviceId}/telemetry/timeseries", "SW-HN-02")
+            mockMvc.perform(get("/api/devices/{deviceId}/telemetry/timeseries", "SW-TEST-TIMESERIES")
                             .param("metricName", "CPU")
                             .param("start", now.minus(1, ChronoUnit.HOURS).toString())
                             .param("end", now.toString()))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.deviceId", is("SW-HN-02")))
+                    .andExpect(jsonPath("$.deviceId", is("SW-TEST-TIMESERIES")))
                     .andExpect(jsonPath("$.metricName", is("CPU")))
                     .andExpect(jsonPath("$.unit", is("%")))
                     .andExpect(jsonPath("$.points", hasSize(2)))

@@ -64,7 +64,12 @@ public class NetworkDevice {
         if (this.links == null) {
             this.links = new ArrayList<>();
         }
-        this.links.add(link);
+        if (link != null && link.getLinkId() != null) {
+            this.links.removeIf(existing -> link.getLinkId().equals(existing.getLinkId()));
+        }
+        if (link != null) {
+            this.links.add(link);
+        }
     }
 
     public void setLinks(List<NetworkLink> links) {
