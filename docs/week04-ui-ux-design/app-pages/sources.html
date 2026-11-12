@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trang Nguồn dữ liệu — Bản đồ trang ứng dụng</title>
+<link rel="stylesheet" href="css/app-pages.css">
+<link rel="stylesheet" href="css/sources.css">
+</head>
+<body>
+<div class="shell">
+
+  <header class="topbar">
+    <div class="brand"><span class="dot"></span><span class="doc-tag">BẢN ĐỒ TRANG</span></div>
+    <div class="sep"></div>
+    <nav class="page-tabs">
+      <a class="page-tab" href="landing.html">Trang chủ</a>
+      <a class="page-tab" href="login.html">Đăng nhập</a>
+      <a class="page-tab" href="signup.html">Đăng ký</a>
+      <a class="page-tab" href="overview.html">Tổng quan</a>
+      <span class="page-tab todo" title="Đã thiết kế — dashboard-page-stylebook/">Điều tra</span>
+      <a class="page-tab" href="lookup.html">Tra cứu</a>
+      <a class="page-tab" href="documents.html">Tài liệu</a>
+      <span class="page-tab active">Nguồn dữ liệu</span>
+      <a class="page-tab" href="settings.html">Cài đặt</a>
+    </nav>
+    <div class="controls">
+      <span class="lbl">TRẠNG THÁI</span>
+      <button class="seg active" data-state="default">Mặc định</button>
+      <button class="seg" data-state="queue">Nguồn hàng đợi</button>
+      <button class="seg" data-state="error">Lỗi đồng bộ</button>
+      <button class="seg" data-state="syncing">Đang đồng bộ lại</button>
+    </div>
+  </header>
+
+  <div class="cols">
+
+    <aside class="sidebar left">
+      <div class="side-head">BỐ CỤC &amp; VÙNG</div>
+
+      <div class="card" data-region="r-topnav">
+        <h3>Thanh điều hướng ứng dụng</h3>
+        <p>Brand + 6 tab, tab "Nguồn dữ liệu" active — giống mọi trang sau đăng nhập. Trang quản trị nhưng vẫn nằm trong thanh điều hướng chung, không tách khu riêng.</p>
+      </div>
+
+      <div class="card" data-region="r-head">
+        <h3>Tiêu đề + nút thêm nguồn</h3>
+        <p>"Nguồn dữ liệu" + dòng phụ nói rõ dữ liệu chỉ đồng bộ một chiều vào hệ thống. Nút "Thêm nguồn" là hành động chính duy nhất của trang.</p>
+      </div>
+
+      <div class="card" data-region="r-list">
+        <h3>Danh sách nguồn</h3>
+        <p>Tên + kiểu kết nối (REST polling hoặc message queue) + trạng thái lần đồng bộ gần nhất ngay trên dòng — lỗi kèm lý do, không cần mở vào mới biết nguồn nào đang hỏng (Inventory CRM: token hết hạn).</p>
+      </div>
+
+      <div class="card" data-region="r-cfg">
+        <h3>Cấu hình nguồn đang chọn</h3>
+        <p>Địa chỉ, phương thức đồng bộ và bảng ánh xạ trường dữ liệu vào mô hình của hệ thống (thiết bị, liên kết, cổng). Nội dung đổi theo nguồn đang chọn — REST polling và message queue có bộ trường khác nhau. Trường chưa ánh xạ cảnh báo vàng.</p>
+      </div>
+
+      <div class="card" data-region="r-hist">
+        <h3>Lịch sử đồng bộ</h3>
+        <p>Kết quả các lần đồng bộ gần nhất của nguồn đang chọn + nút "Đồng bộ lại từ đầu". Nguồn message queue nhận sự kiện liên tục nên không có lịch sử poll.</p>
+      </div>
+
+      <div class="card" data-region="r-footer">
+        <h3>Chân trang</h3>
+        <p>Một dòng mono: phiên bản + môi trường TEST + hỗ trợ IT nội bộ — giống mọi trang.</p>
+      </div>
+    </aside>
+
+    <main class="stage" id="stage">
+      <div class="viewport-frame">
+        <div class="viewport">
+          <div class="vp-sources" id="vp-sources" data-state="default">
+
+            <div class="vp-topnav" data-region="r-topnav">
+              <div class="row"><span class="dot"></span><span class="name">NOC TOPOLOGY</span></div>
+              <div class="tabs">
+                <span class="tab">Tổng quan</span>
+                <span class="tab">Điều tra</span>
+                <span class="tab">Tra cứu</span>
+                <span class="tab">Tài liệu</span>
+                <span class="tab active">Nguồn dữ liệu</span>
+                <span class="tab">Cài đặt</span>
+              </div>
+              <div class="right user">
+                <div class="ava">AN</div>
+                <div class="uname">N.V. An</div>
+              </div>
+            </div>
+
+            <div class="vp-head" data-region="r-head">
+              <div>
+                <h1>Nguồn dữ liệu</h1>
+                <div class="sub">Kết nối hệ thống nguồn bên thứ ba · dữ liệu chỉ đồng bộ một chiều vào hệ thống</div>
+              </div>
+              <button type="button" class="vp-btn">Thêm nguồn</button>
+            </div>
+
+            <div class="vp-main">
+
+              <div class="vp-leftcol">
+
+                <div class="vp-panel" data-region="r-list">
+                  <div class="head">NGUỒN ĐANG KẾT NỐI <span class="count">4</span></div>
+                  <div class="vp-srow srow-zabbix sel">
+                    <div>
+                      <div class="t">Zabbix NOC</div>
+                      <div class="s">REST API · polling mỗi 60 giây</div>
+                    </div>
+                    <span class="vp-chip ok">ĐỒNG BỘ 14:34</span>
+                  </div>
+                  <div class="vp-srow srow-netflow">
+                    <div>
+                      <div class="t">NetFlow Collector</div>
+                      <div class="s">Message queue · topic netflow.events</div>
+                    </div>
+                    <span class="vp-chip ok">LUỒNG LIÊN TỤC</span>
+                  </div>
+                  <div class="vp-srow srow-crm">
+                    <div>
+                      <div class="t">Inventory CRM</div>
+                      <div class="s">REST API · polling mỗi 5 phút</div>
+                    </div>
+                    <span class="vp-chip bad">LỖI · TOKEN HẾT HẠN</span>
+                  </div>
+                  <div class="vp-srow srow-syslog">
+                    <div>
+                      <div class="t">Syslog Gateway</div>
+                      <div class="s">Message queue · topic syslog.raw</div>
+                    </div>
+                    <span class="vp-chip ok">LUỒNG LIÊN TỤC</span>
+                  </div>
+                  <div class="vp-listnote">Chỉ đọc một chiều — hệ thống không gửi gì ngược về nguồn.</div>
+                </div>
+
+                <div class="vp-panel vp-hist" data-region="r-hist">
+                  <div class="head">LỊCH SỬ ĐỒNG BỘ<span class="sp"></span><span class="count hn-a">Zabbix NOC</span><span class="count hn-q">NetFlow Collector</span><span class="count hn-e">Inventory CRM</span></div>
+
+                  <div class="vp-hrun"><span class="spin"></span>Đang đồng bộ lại từ đầu · 3/4 nguồn · đã 40 giây</div>
+
+                  <div class="hist-a">
+                    <div class="vp-hrow"><span class="tm">14:34</span><span class="vp-chip ok">THÀNH CÔNG</span><span class="rs">12.480 bản ghi · 0 lỗi</span></div>
+                    <div class="vp-hrow"><span class="tm">14:33</span><span class="vp-chip ok">THÀNH CÔNG</span><span class="rs">12.461 bản ghi · 0 lỗi</span></div>
+                    <div class="vp-hrow"><span class="tm">14:32</span><span class="vp-chip ok">THÀNH CÔNG</span><span class="rs">12.455 bản ghi · 0 lỗi</span></div>
+                  </div>
+
+                  <div class="vp-herr">
+                    <div class="vp-hrow"><span class="tm">13:58</span><span class="vp-chip bad">THẤT BẠI</span><span class="rs">token hết hạn · lần thử lại 3/5</span></div>
+                    <div class="vp-hrow"><span class="tm">13:53</span><span class="vp-chip ok">THÀNH CÔNG</span><span class="rs">12.390 bản ghi · 0 lỗi</span></div>
+                    <div class="vp-hrow"><span class="tm">13:48</span><span class="vp-chip ok">THÀNH CÔNG</span><span class="rs">12.388 bản ghi · 0 lỗi</span></div>
+                  </div>
+
+                  <div class="vp-hqueue">Nguồn message queue nhận sự kiện liên tục — không có lịch sử poll. Theo dõi độ trễ luồng: hiện tại dưới 2 giây.</div>
+
+                  <div class="act">
+                    <button type="button" class="vp-btn sm ghost btn-idle">Đồng bộ lại từ đầu</button>
+                    <button type="button" class="vp-btn sm btn-busy"><span class="spin light"></span>Đang đồng bộ…</button>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="vp-panel vp-cfg" data-region="r-cfg">
+                <div class="head">CẤU HÌNH NGUỒN</div>
+
+                <div class="cfg cfg-rest">
+                  <div class="cfg-name">Zabbix NOC</div>
+                  <div class="cfg-field">
+                    <div class="k">ĐỊA CHỈ</div>
+                    <div class="v">https://zabbix.noc.internal/api_jsonrpc.php</div>
+                  </div>
+                  <div class="cfg-field">
+                    <div class="k">PHƯƠNG THỨC ĐỒNG BỘ</div>
+                    <div class="cfg-seg"><span class="on">Polling</span><span>Messaging</span></div>
+                    <div class="cfg-sub">kéo dữ liệu mỗi 60 giây</div>
+                  </div>
+                  <div class="cfg-field">
+                    <div class="k">ÁNH XẠ TRƯỜNG DỮ LIỆU</div>
+                    <div class="cfg-map">
+                      <div class="m"><span class="src">host.name</span><span class="arr">→</span><span class="dst">Thiết bị · Tên</span></div>
+                      <div class="m"><span class="src">host.ip</span><span class="arr">→</span><span class="dst">Thiết bị · Địa chỉ IP</span></div>
+                      <div class="m"><span class="src">icmp.rtt_ms</span><span class="arr">→</span><span class="dst">Liên kết · Độ trễ</span></div>
+                      <div class="m"><span class="src">snmp.temp_c</span><span class="arr">→</span><span class="vp-chip warn">CHƯA ÁNH XẠ</span></div>
+                    </div>
+                  </div>
+                  <div class="cfg-btns">
+                    <button type="button" class="vp-btn sm ghost">Kiểm tra kết nối</button>
+                    <button type="button" class="vp-btn sm">Lưu thay đổi</button>
+                  </div>
+                </div>
+
+                <div class="cfg cfg-queue">
+                  <div class="cfg-name">NetFlow Collector</div>
+                  <div class="cfg-field">
+                    <div class="k">ĐỊA CHỈ BROKER</div>
+                    <div class="v">kafka-noc.internal:9092</div>
+                  </div>
+                  <div class="cfg-field">
+                    <div class="k">TOPIC / NHÓM ĐỌC</div>
+                    <div class="v">netflow.events · nhóm noc-topology-prod</div>
+                  </div>
+                  <div class="cfg-field">
+                    <div class="k">ÁNH XẠ TRƯỜNG DỮ LIỆU</div>
+                    <div class="cfg-map">
+                      <div class="m"><span class="src">flow.src_ip</span><span class="arr">→</span><span class="dst">Liên kết · Điểm đầu</span></div>
+                      <div class="m"><span class="src">flow.dst_ip</span><span class="arr">→</span><span class="dst">Liên kết · Điểm cuối</span></div>
+                      <div class="m"><span class="src">flow.bps</span><span class="arr">→</span><span class="dst">Liên kết · Băng thông</span></div>
+                    </div>
+                  </div>
+                  <div class="cfg-btns">
+                    <button type="button" class="vp-btn sm ghost">Kiểm tra kết nối</button>
+                    <button type="button" class="vp-btn sm">Lưu thay đổi</button>
+                  </div>
+                </div>
+
+                <div class="cfg cfg-err">
+                  <div class="cfg-name">Inventory CRM</div>
+                  <div class="cfg-banner">Lần đồng bộ gần nhất thất bại lúc 13:58 — token xác thực hết hạn. Hệ thống tự thử lại mỗi 5 phút (đã thử 3/5 lần).</div>
+                  <div class="cfg-field">
+                    <div class="k">ĐỊA CHỈ</div>
+                    <div class="v">https://crm.company.vn/api/v2</div>
+                  </div>
+                  <div class="cfg-field">
+                    <div class="k">PHƯƠNG THỨC ĐỒNG BỘ</div>
+                    <div class="cfg-seg"><span class="on">Polling</span><span>Messaging</span></div>
+                    <div class="cfg-sub">kéo dữ liệu mỗi 5 phút</div>
+                  </div>
+                  <div class="cfg-field">
+                    <div class="k">ÁNH XẠ TRƯỜNG DỮ LIỆU</div>
+                    <div class="cfg-map">
+                      <div class="m"><span class="src">cmdb.host_id</span><span class="arr">→</span><span class="dst">Thiết bị · Mã ngoài</span></div>
+                      <div class="m"><span class="src">cmdb.site</span><span class="arr">→</span><span class="dst">Thiết bị · Khu vực</span></div>
+                    </div>
+                  </div>
+                  <div class="cfg-btns">
+                    <button type="button" class="vp-btn sm">Cập nhật token</button>
+                    <button type="button" class="vp-btn sm ghost">Kiểm tra kết nối</button>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="vp-footer" data-region="r-footer">
+              NOC TOPOLOGY v0.4 · MÔI TRƯỜNG <span class="env">TEST</span> · HỖ TRỢ: IT NỘI BỘ
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-hint">Bấm một card ở sidebar hoặc một vùng trên miniature để soi tương ứng — Esc hoặc bấm nền để bỏ chốt.</div>
+    </main>
+
+    <aside class="sidebar right">
+      <div class="side-head">TƯƠNG TÁC</div>
+
+      <div class="card">
+        <h3>Bấm "Thêm nguồn"</h3>
+        <p>Mở form trống: chọn kiểu kết nối trước (REST hay message queue) rồi mới có địa chỉ + phương thức tương ứng (đề xuất chờ gật). Nguồn mới tạo ở trạng thái chờ đồng bộ đầu tiên.</p>
+      </div>
+
+      <div class="card">
+        <h3>Bấm một nguồn</h3>
+        <p>Panel phải chuyển sang cấu hình của nguồn đó — hai kiểu kết nối có bộ cấu hình khác nhau (xem trạng thái "Nguồn hàng đợi"). Thay đổi chỉ có hiệu lực sau khi bấm "Lưu thay đổi", không áp dụng nửa chừng.</p>
+      </div>
+
+      <div class="card">
+        <h3>Bấm "Kiểm tra kết nối"</h3>
+        <p>Gọi thử nguồn và báo kết quả inline ngay panel — không alert. Lỗi đồng bộ hiện ở danh sách kèm lý do (xem trạng thái "Lỗi đồng bộ"); hệ thống tự thử lại theo chu kỳ, không cần người dùng can thiệp.</p>
+      </div>
+
+      <div class="card">
+        <h3>Ánh xạ trường dữ liệu</h3>
+        <p>Trường của nguồn ánh xạ vào mô hình của hệ thống (thiết bị, liên kết, cổng). Trường chưa ánh xạ cảnh báo vàng — dữ liệu vẫn nhận về nhưng chưa dùng đến. Sửa ánh xạ không đọc lại dữ liệu cũ (đề xuất).</p>
+      </div>
+
+      <div class="card">
+        <h3>Bấm "Đồng bộ lại từ đầu"</h3>
+        <p>Kéo lại toàn bộ lịch sử của nguồn; chỉ chạy khi không có lần đồng bộ nào đang chạy (xem trạng thái "Đang đồng bộ lại"). Chi phí lớn nên có bước xác nhận trước khi chạy (đề xuất).</p>
+      </div>
+
+      <div class="card">
+        <h3>Demo trạng thái (tài liệu này)</h3>
+        <p>Bốn nút TRẠNG THÁI trên topbar: Mặc định, Nguồn hàng đợi, Lỗi đồng bộ, Đang đồng bộ lại — chuyển thẳng trạng thái của miniature.</p>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<script src="js/app-pages.js"></script>
+<script src="js/sources.js"></script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+/* ================= sources page (miniature, design space 1440x900) ================= */
+.vp-sources {
+  width: 100%;
+  height: 100%;
+  background: var(--paper-soft);
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 26px 26px;
+  position: relative;
+  font-family: var(--sans);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- tiêu đề + nút thêm nguồn ---- */
+.vp-head {
+  padding: 30px 48px 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+.vp-head h1 { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.01em; }
+.vp-head .sub { margin-top: 6px; font-size: 13px; color: var(--ink-soft); }
+
+/* ---- thân: danh sách + lịch sử trái, cấu hình phải ---- */
+.vp-main {
+  display: grid;
+  grid-template-columns: 1fr 480px;
+  gap: 16px;
+  padding: 18px 48px 0;
+  align-items: start;
+}
+.vp-leftcol { display: flex; flex-direction: column; gap: 16px; }
+
+.vp-panel { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; }
+.vp-panel .head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 800 11px var(--mono);
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+}
+.vp-panel .head .sp { margin-left: auto; }
+.vp-panel .head .count {
+  font: 700 11px var(--mono);
+  color: var(--ink-mid);
+  background: var(--paper-dim);
+  border-radius: 999px;
+  padding: 2px 8px;
+  letter-spacing: 0;
+}
+.hn-q, .hn-e { display: none; }
+.vp-sources[data-state="queue"] .hn-a { display: none; }
+.vp-sources[data-state="queue"] .hn-q { display: inline-block; }
+.vp-sources[data-state="error"] .hn-a { display: none; }
+.vp-sources[data-state="error"] .hn-e { display: inline-block; }
+
+/* ---- dòng nguồn ---- */
+.vp-srow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+.vp-srow:last-of-type { border-bottom: 0; }
+.vp-srow .t { font-weight: 700; font-size: 13.5px; color: var(--ink); }
+.vp-srow .s { margin-top: 3px; font-size: 12px; color: var(--ink-soft); }
+.vp-srow .vp-chip { margin-left: auto; }
+.vp-srow.sel { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.vp-sources[data-state="queue"] .vp-srow.sel { background: transparent; box-shadow: none; }
+.vp-sources[data-state="queue"] .srow-netflow { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.vp-sources[data-state="error"] .vp-srow.sel { background: transparent; box-shadow: none; }
+.vp-sources[data-state="error"] .srow-crm { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+
+.vp-listnote {
+  padding: 10px 18px;
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  border-top: 1px solid var(--line);
+}
+
+/* ---- lịch sử đồng bộ ---- */
+.vp-hrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12.5px;
+}
+.vp-hrow:last-child { border-bottom: 0; }
+.vp-hrow .tm { font: 700 12px var(--mono); color: var(--ink-mid); flex: 0 0 46px; }
+.vp-hrow .rs { color: var(--ink-soft); }
+
+.vp-hrun {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--accent-soft);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.vp-sources[data-state="syncing"] .vp-hrun { display: flex; }
+
+.vp-herr, .vp-hqueue { display: none; }
+.vp-sources[data-state="error"] .hist-a { display: none; }
+.vp-sources[data-state="error"] .vp-herr { display: block; }
+.vp-sources[data-state="queue"] .hist-a { display: none; }
+.vp-sources[data-state="queue"] .vp-hqueue { display: block; }
+.vp-hqueue { padding: 16px 18px; font-size: 12.5px; color: var(--ink-soft); line-height: 1.6; }
+
+.vp-hist .act { padding: 12px 18px; border-top: 1px solid var(--line); }
+.vp-sources[data-state="queue"] .vp-hist .act { display: none; }
+.btn-busy { display: none; background: #64748b; cursor: default; }
+.vp-sources[data-state="syncing"] .btn-idle { display: none; }
+.vp-sources[data-state="syncing"] .btn-busy { display: inline-flex; }
+
+.spin {
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(29, 78, 216, .25);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: src-spin .8s linear infinite;
+  flex: 0 0 13px;
+}
+.spin.light { border-color: rgba(255, 255, 255, .35); border-top-color: #ffffff; }
+@keyframes src-spin { to { transform: rotate(360deg); } }
+
+/* ---- panel cấu hình ---- */
+.cfg { padding: 16px 18px 18px; }
+.cfg-queue, .cfg-err { display: none; }
+.vp-sources[data-state="queue"] .cfg-rest { display: none; }
+.vp-sources[data-state="queue"] .cfg-queue { display: block; }
+.vp-sources[data-state="error"] .cfg-rest { display: none; }
+.vp-sources[data-state="error"] .cfg-err { display: block; }
+
+.cfg-name { font-size: 16px; font-weight: 800; }
+.cfg-banner {
+  margin-top: 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 12.5px;
+  border-radius: 8px;
+  padding: 10px 12px;
+  line-height: 1.55;
+}
+.cfg-field { margin-top: 13px; }
+.cfg-field .k { font: 800 10px var(--mono); letter-spacing: 0.12em; color: var(--ink-soft); margin-bottom: 5px; }
+.cfg-field .v {
+  font: 600 12.5px var(--mono);
+  background: var(--paper-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: var(--ink-mid);
+}
+.cfg-seg {
+  display: inline-flex;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.cfg-seg span { padding: 5px 12px; font: 700 12px var(--sans); color: var(--ink-soft); }
+.cfg-seg span.on { background: var(--accent); color: #ffffff; }
+.cfg-sub { margin-top: 6px; font-size: 11.5px; color: var(--ink-faint); }
+
+.cfg-map { margin-top: 2px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.cfg-map .m {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+.cfg-map .m:last-child { border-bottom: 0; }
+.cfg-map .src { font: 700 11.5px var(--mono); color: var(--ink-mid); flex: 1; }
+.cfg-map .arr { color: var(--ink-faint); }
+.cfg-map .dst { font-weight: 700; color: var(--ink-mid); flex: 1; text-align: right; }
+.cfg-map .vp-chip { margin-left: auto; }
+
+.cfg-btns { display: flex; gap: 10px; margin-top: 16px; }
+.cfg-btns .vp-btn { flex: 1; }
