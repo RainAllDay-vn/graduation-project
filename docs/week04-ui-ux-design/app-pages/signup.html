@@ -43,32 +43,32 @@
       <div class="side-head">BỐ CỤC &amp; VÙNG</div>
 
       <div class="card" data-region="r-mark">
-        <h3>Khối nhận diện — đầu cột trái</h3>
+        <h3>Khối nhận diện</h3>
         <p>Giống hệt trang Đăng nhập: logo tròn nền xanh nhạt + tiêu đề "Tạo tài khoản" + dòng chuyển hướng "Đã có tài khoản? Đăng nhập" — hai trang xác thực dùng chung một vỏ ngoài.</p>
       </div>
 
       <div class="card" data-region="r-fields">
-        <h3>Bốn trường nhập — placeholder trong trường</h3>
+        <h3>Bốn trường nhập</h3>
         <p>Họ và tên, Email công ty, Mật khẩu (gợi ý mờ "tối thiểu 8 ký tự" ngay dưới trường) và Xác nhận mật khẩu. Không hỏi thêm gì khác — đơn vị/site gán sau bởi quản trị (đề xuất).</p>
       </div>
 
       <div class="card" data-region="r-submit">
-        <h3>Nút chính — viên thuốc giữa cột</h3>
+        <h3>Nút chính</h3>
         <p>Nút "Tạo tài khoản" nền xanh hệ thống, bo tròn hoàn toàn, đặt giữa cột — cùng hình dáng với nút Đăng nhập.</p>
       </div>
 
       <div class="card" data-region="r-side">
-        <h3>Panel phải — nền tối, tạm để trống</h3>
-        <p>Giống trang Đăng nhập: khoảng một phần ba bên phải nền navy đặc, tạm để trống chờ quyết định nội dung.</p>
+        <h3>Panel phải</h3>
+        <p>Giống trang Đăng nhập: nền navy đặc với hoạt ảnh topology mờ (nút nhấp nháy, liên kết chảy dữ liệu, sóng quét) — thuần SVG + CSS, tôn trọng giảm chuyển động.</p>
       </div>
 
-      <div class="card">
-        <h3>Chuyển ngôn ngữ — góc trên phải</h3>
-        <p>Giống trang Đăng nhập: cặp nút mono VI/EN trên panel tối, mặc định tiếng Việt (đề xuất chờ gật). Nút chức năng — không tham gia soi vùng.</p>
+      <div class="card" data-region="r-lang">
+        <h3>Chuyển ngôn ngữ</h3>
+        <p>Giống trang Đăng nhập: cặp nút mono VI/EN trên panel tối, mặc định tiếng Việt (đề xuất chờ gật). Rê/bấm card soi badge; bấm VI/EN vẫn đổi ngôn ngữ bình thường.</p>
       </div>
 
       <div class="card" data-region="r-footer">
-        <h3>Chân trang — đáy cột trái</h3>
+        <h3>Chân trang</h3>
         <p>Một dòng mono giống Đăng nhập: phiên bản + môi trường TEST màu vàng + hỗ trợ IT nội bộ.</p>
       </div>
     </aside>
@@ -78,7 +78,7 @@
         <div class="viewport">
           <div class="vp-signup" id="vp-signup" data-state="default" translate="no">
 
-            <div class="vp-lang">
+            <div class="vp-lang" data-region="r-lang">
               <button type="button" class="lg active" data-lang="vi">VI</button>
               <button type="button" class="lg" data-lang="en">EN</button>
             </div>
@@ -124,12 +124,31 @@
               </div>
             </div>
 
-            <div class="vp-side" data-region="r-side"></div>
+            <div class="vp-side" data-region="r-side">
+              <svg class="vp-anim" viewBox="0 0 400 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+                <line class="w" x1="60" y1="120" x2="200" y2="210"/>
+                <line class="w" x1="330" y1="110" x2="200" y2="210" style="animation-delay:-1.1s"/>
+                <line class="w" x1="200" y1="210" x2="310" y2="330" style="animation-delay:-2.2s"/>
+                <line class="w" x1="310" y1="330" x2="120" y2="380" style="animation-delay:-.6s"/>
+                <line class="w" x1="120" y1="380" x2="60" y2="120" style="animation-delay:-1.7s"/>
+                <line class="w" x1="200" y1="210" x2="250" y2="480" style="animation-delay:-2.8s"/>
+                <line class="w" x1="250" y1="480" x2="90" y2="540" style="animation-delay:-1.4s"/>
+                <line class="w" x1="310" y1="330" x2="250" y2="480" style="animation-delay:-2.4s"/>
+                <circle class="n n-ok" cx="60" cy="120" r="5" style="animation-delay:-.4s"/>
+                <circle class="n n-acc" cx="200" cy="210" r="7" style="animation-delay:-2.1s"/>
+                <circle class="n n-warn" cx="330" cy="110" r="5" style="animation-delay:-3.3s"/>
+                <circle class="n n-ok" cx="310" cy="330" r="5" style="animation-delay:-1.5s"/>
+                <circle class="n n-acc" cx="120" cy="380" r="5" style="animation-delay:-2.7s"/>
+                <circle class="n n-ok" cx="250" cy="480" r="5" style="animation-delay:-.9s"/>
+                <circle class="n n-warn" cx="90" cy="540" r="5" style="animation-delay:-3.8s"/>
+                <circle class="ping" cx="200" cy="210" r="12"/>
+              </svg>
+            </div>
 
           </div>
         </div>
       </div>
-      <div class="stage-hint">Bấm một card ở sidebar trái để soi vùng tương ứng trên miniature — bấm lại card, Esc hoặc bấm nền để bỏ chốt. Bấm lên miniature không đổi vùng soi.</div>
+      <div class="stage-hint">Rê chuột lên card là soi thử vùng ngay — bấm card để chốt, bấm lại card, Esc hoặc bấm nền để bỏ chốt. Bấm lên miniature không đổi vùng soi.</div>
     </main>
 
     <aside class="sidebar right">

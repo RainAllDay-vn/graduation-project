@@ -42,37 +42,37 @@
       <div class="side-head">BỐ CỤC &amp; VÙNG</div>
 
       <div class="card" data-region="r-mark">
-        <h3>Khối nhận diện — đầu cột trái</h3>
+        <h3>Khối nhận diện</h3>
         <p>Logo tròn nền xanh nhạt (chữ N mono) + tiêu đề lớn "Đăng nhập" + dòng "Chưa có tài khoản? Đăng ký" dẫn sang trang Đăng ký (đề xuất chờ gật). Không còn brand góc trên — nhận diện gói gọn ở đầu cột.</p>
       </div>
 
       <div class="card" data-region="r-fields">
-        <h3>Hai trường nhập — placeholder trong trường</h3>
+        <h3>Hai trường nhập</h3>
         <p>Tài khoản và Mật khẩu, gợi ý viết mờ ngay trong trường (không có label phía trên — theo mẫu tham chiếu). Dưới hai trường là hàng "Ghi nhớ tôi" + "Quên mật khẩu?" (đề xuất chờ gật — mật khẩu nội bộ do IT cấp, quên thì chuyển hướng liên hệ, không tự reset trong bản này).</p>
       </div>
 
       <div class="card" data-region="r-submit">
-        <h3>Nút chính — viên thuốc giữa cột</h3>
+        <h3>Nút chính</h3>
         <p>Nút "Đăng nhập" nền xanh hệ thống, bo tròn hoàn toàn, đặt giữa cột và không trải hết bề ngang — điểm nhấn duy nhất của trang.</p>
       </div>
 
       <div class="card" data-region="r-sso">
-        <h3>SSO — dưới phân cách "HOẶC"</h3>
+        <h3>SSO</h3>
         <p>Link chữ "Đăng nhập bằng SSO công ty" đặt giữa. Đây là <b>đề xuất chờ gật</b>: doanh nghiệp viễn thông thường đã có SSO/LDAP; link phụ giữ vai trò đường tắt, form nội bộ vẫn là đường chính để hệ thống chạy được độc lập.</p>
       </div>
 
       <div class="card" data-region="r-side">
-        <h3>Panel phải — nền tối, tạm để trống</h3>
-        <p>Chiếm khoảng một phần ba bên phải, nền navy đặc — tạm để trống theo yêu cầu. Về sau có thể đặt mẫu hình trang trí hoặc thông điệp sản phẩm (chờ quyết định).</p>
+        <h3>Panel phải</h3>
+        <p>Chiếm khoảng một phần ba bên phải, nền navy đặc với hoạt ảnh topology mờ: vài nút mạng nhấp nháy chậm, liên kết chảy dữ liệu, nút trung tâm phát sóng quét định kỳ. Vẽ thuần SVG + CSS (không JS), tự tắt khi hệ điều hành bật giảm chuyển động. Nội dung thật (mẫu hình trang trí hoặc thông điệp sản phẩm) chờ quyết định.</p>
       </div>
 
-      <div class="card">
-        <h3>Chuyển ngôn ngữ — góc trên phải</h3>
-        <p>Cặp nút mono VI/EN viền mảnh nổi trên panel tối. Mặc định tiếng Việt — người dùng chính là kỹ sư nội bộ; EN phục vụ đối tác, tài liệu tích hợp hoặc tình huống đào tạo (đề xuất chờ gật). Nút chức năng — không tham gia soi vùng.</p>
+      <div class="card" data-region="r-lang">
+        <h3>Chuyển ngôn ngữ</h3>
+        <p>Cặp nút mono VI/EN viền mảnh nổi trên panel tối. Mặc định tiếng Việt — người dùng chính là kỹ sư nội bộ; EN phục vụ đối tác, tài liệu tích hợp hoặc tình huống đào tạo (đề xuất chờ gật). Rê/bấm card soi badge; bấm VI/EN vẫn đổi ngôn ngữ bình thường.</p>
       </div>
 
       <div class="card" data-region="r-footer">
-        <h3>Chân trang — đáy cột trái</h3>
+        <h3>Chân trang</h3>
         <p>Một dòng mono nhỏ: phiên bản hệ thống + môi trường (TEST màu vàng để phân biệt với PROD) + điểm hỗ trợ. Đề xuất chờ gật — giúp kỹ sư biết mình đang đăng nhập vào môi trường nào trước khi tác động.</p>
       </div>
     </aside>
@@ -82,7 +82,7 @@
         <div class="viewport">
           <div class="vp-login" id="vp-login" data-state="default" translate="no">
 
-            <div class="vp-lang">
+            <div class="vp-lang" data-region="r-lang">
               <button type="button" class="lg active" data-lang="vi">VI</button>
               <button type="button" class="lg" data-lang="en">EN</button>
             </div>
@@ -132,13 +132,32 @@
               </div>
             </div>
 
-            <div class="vp-side" data-region="r-side"></div>
+            <div class="vp-side" data-region="r-side">
+              <svg class="vp-anim" viewBox="0 0 400 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+                <line class="w" x1="60" y1="120" x2="200" y2="210"/>
+                <line class="w" x1="330" y1="110" x2="200" y2="210" style="animation-delay:-1.1s"/>
+                <line class="w" x1="200" y1="210" x2="310" y2="330" style="animation-delay:-2.2s"/>
+                <line class="w" x1="310" y1="330" x2="120" y2="380" style="animation-delay:-.6s"/>
+                <line class="w" x1="120" y1="380" x2="60" y2="120" style="animation-delay:-1.7s"/>
+                <line class="w" x1="200" y1="210" x2="250" y2="480" style="animation-delay:-2.8s"/>
+                <line class="w" x1="250" y1="480" x2="90" y2="540" style="animation-delay:-1.4s"/>
+                <line class="w" x1="310" y1="330" x2="250" y2="480" style="animation-delay:-2.4s"/>
+                <circle class="n n-ok" cx="60" cy="120" r="5" style="animation-delay:-.4s"/>
+                <circle class="n n-acc" cx="200" cy="210" r="7" style="animation-delay:-2.1s"/>
+                <circle class="n n-warn" cx="330" cy="110" r="5" style="animation-delay:-3.3s"/>
+                <circle class="n n-ok" cx="310" cy="330" r="5" style="animation-delay:-1.5s"/>
+                <circle class="n n-acc" cx="120" cy="380" r="5" style="animation-delay:-2.7s"/>
+                <circle class="n n-ok" cx="250" cy="480" r="5" style="animation-delay:-.9s"/>
+                <circle class="n n-warn" cx="90" cy="540" r="5" style="animation-delay:-3.8s"/>
+                <circle class="ping" cx="200" cy="210" r="12"/>
+              </svg>
+            </div>
 
           </div>
         </div>
       </div>
 
-      <div class="stage-hint">Bấm một card ở sidebar trái để soi vùng tương ứng trên miniature — bấm lại card, Esc hoặc bấm nền để bỏ chốt. Bấm lên miniature không đổi vùng soi.</div>
+      <div class="stage-hint">Rê chuột lên card là soi thử vùng ngay — bấm card để chốt, bấm lại card, Esc hoặc bấm nền để bỏ chốt. Bấm lên miniature không đổi vùng soi.</div>
     </main>
 
     <aside class="sidebar right">

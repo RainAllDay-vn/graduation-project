@@ -51,6 +51,12 @@
   }
 
   cards.forEach(function (card) {
+    card.addEventListener("mouseenter", function () {
+      applyHl(card.getAttribute("data-region"));
+    });
+    card.addEventListener("mouseleave", function () {
+      applyHl(pinnedCard ? pinnedCard.getAttribute("data-region") : null);
+    });
     card.addEventListener("click", function (e) {
       e.stopPropagation();
       setPinned(card === pinnedCard ? null : card);
