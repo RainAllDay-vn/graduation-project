@@ -1,19 +1,4 @@
-:root {
-  --paper: #ffffff;
-  --paper-soft: #f8fafc;
-  --paper-dim: #f1f5f9;
-  --ink: #0f172a;
-  --ink-mid: #334155;
-  --ink-soft: #64748b;
-  --ink-faint: #94a3b8;
-  --line: #e2e8f0;
-  --line-strong: #cbd5e1;
-  --accent: #1d4ed8;
-  --accent-soft: #eff6ff;
-  --ok: #10b981;
-  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
+/* token màu & font: nguồn duy nhất tại ../design-tokens.css */
 
 * { box-sizing: border-box; }
 
@@ -54,8 +39,9 @@ body {
 .topbar .sep { width: 1px; height: 22px; background: var(--line-strong); }
 .page-tabs { display: flex; gap: 6px; overflow: hidden; }
 .page-tab {
-  font: 700 11px var(--sans);
-  padding: 4px 8px;
+  font: 600 11px var(--mono);
+  letter-spacing: 0.04em;
+  padding: 4px 9px;
   border-radius: 999px;
   border: 1px solid var(--line);
   color: var(--ink-faint);
@@ -63,8 +49,8 @@ body {
   white-space: nowrap;
 }
 .page-tab.active {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--ink);
+  border-color: var(--ink);
   color: #ffffff;
 }
 .page-tab.todo { cursor: not-allowed; }
@@ -146,9 +132,9 @@ a.page-tab:hover { border-color: var(--line-strong); color: var(--ink-mid); }
   margin-right: 4px;
 }
 .seg {
-  font: 700 12px var(--sans);
-  padding: 5px 10px;
-  border-radius: 8px;
+  font: 600 11px var(--mono);
+  padding: 4px 11px;
+  border-radius: 6px;
   border: 1px solid var(--line-strong);
   background: var(--paper);
   color: var(--ink-mid);
@@ -216,15 +202,15 @@ a.page-tab:hover { border-color: var(--line-strong); color: var(--ink-mid); }
 }
 .vp-login[data-state="error"] .vp-banner.err {
   display: block;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #b91c1c;
+  background: var(--bad-soft);
+  border: 1px solid var(--bad-line);
+  color: var(--bad-text);
 }
 .vp-login[data-state="success"] .vp-banner.ok {
   display: block;
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  color: #047857;
+  background: var(--ok-soft);
+  border: 1px solid var(--ok-line);
+  color: var(--ok-text);
 }
 
 .vp-field { margin-bottom: 14px; }
@@ -248,7 +234,7 @@ a.page-tab:hover { border-color: var(--line-strong); color: var(--ink-mid); }
   outline: none;
 }
 .vp-field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(29, 78, 216, .12); }
-.vp-login[data-state="error"] .vp-field input { border-color: #ef4444; }
+.vp-login[data-state="error"] .vp-field input { border-color: var(--bad); }
 
 .vp-submit {
   width: 100%;
@@ -265,7 +251,7 @@ a.page-tab:hover { border-color: var(--line-strong); color: var(--ink-mid); }
   justify-content: center;
   gap: 9px;
 }
-.vp-submit:hover { background: #1e40af; }
+.vp-submit:hover { background: var(--accent-strong); }
 
 .vp-divider {
   display: flex;
@@ -306,7 +292,7 @@ a.page-tab:hover { border-color: var(--line-strong); color: var(--ink-mid); }
 
 .vp-login[data-state="loading"] .vp-field input,
 .vp-login[data-state="loading"] .vp-sso { opacity: .55; pointer-events: none; }
-.vp-login[data-state="loading"] .vp-submit { background: #64748b; cursor: default; }
+.vp-login[data-state="loading"] .vp-submit { background: var(--ink-soft); cursor: default; }
 .vp-spinner {
   display: none;
   width: 14px;
@@ -332,7 +318,7 @@ a.page-tab:hover { border-color: var(--line-strong); color: var(--ink-mid); }
   letter-spacing: 0.1em;
   color: var(--ink-faint);
 }
-.vp-footer .env { color: var(--st-warn, #f59e0b); }
+.vp-footer .env { color: var(--warn); }
 
 /* ---- khối dùng chung cho các trang app full-page (landing, tổng quan, …) ---- */
 .vp-topnav {
@@ -365,7 +351,7 @@ a.page-tab:hover { border-color: var(--line-strong); color: var(--ink-mid); }
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #ef4444;
+  background: var(--bad);
   margin-left: 6px;
   vertical-align: 1px;
 }
@@ -400,7 +386,7 @@ a.page-tab:hover { border-color: var(--line-strong); color: var(--ink-mid); }
   text-decoration: none;
   white-space: nowrap;
 }
-.vp-btn:not(.ghost):hover { background: #1e40af; }
+.vp-btn:not(.ghost):hover { background: var(--accent-strong); }
 .vp-btn.ghost {
   background: var(--paper);
   color: var(--ink-mid);
@@ -440,6 +426,6 @@ a.page-tab:hover { border-color: var(--line-strong); color: var(--ink-mid); }
   padding: 3px 7px;
   white-space: nowrap;
 }
-.vp-chip.ok { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
-.vp-chip.warn { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
-.vp-chip.bad { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+.vp-chip.ok { background: var(--ok-soft); color: var(--ok-text); border: 1px solid var(--ok-line); }
+.vp-chip.warn { background: var(--warn-soft); color: var(--warn-text); border: 1px solid var(--warn-line); }
+.vp-chip.bad { background: var(--bad-soft); color: var(--bad-text); border: 1px solid var(--bad-line); }

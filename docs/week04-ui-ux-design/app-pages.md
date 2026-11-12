@@ -26,6 +26,7 @@ Tài liệu liệt kê toàn bộ trang của hệ thống, quy ước điều h
 - Dashboard điều tra là **một trang duy nhất** với các trạng thái theo hành trình điều tra (tiếp nhận → điều tra → soi thiết bị → đánh giá ảnh hưởng → xử lý xong). Năm file prototype giai đoạn trong README (01→05) là năm trạng thái của cùng một trang, không phải năm trang riêng.
 - Đã thiết kế đủ 9 trang: Dashboard (`dashboard-page-stylebook/` ch0–ch5), Đăng nhập, Đăng ký, Trang chủ, Tổng quan mạng, Tra cứu, Quản lý tài liệu, Nguồn dữ liệu, Cài đặt.
 - **Bảng + panel chi tiết** là pattern dùng chung của Tra cứu và Quản lý tài liệu (khối `.vp-thead`/`.vp-trow`/`.vp-chip` chia sẻ trong `css/app-pages.css`) — chip trạng thái một ngôn ngữ trên cả hai trang.
+- **Token màu & font dùng chung một nguồn** (`design-tokens.css` đặt cạnh hai thư mục thiết kế, thêm 13-11): cả stylebook dashboard lẫn các trang tương tác đều link cùng một file token — palette giấy/mực, màu nhấn, bộ ba trạng thái (gốc + nền mờ/viền/chữ cho chip & băng), màu canvas topology, site/tier, và hai họ font. Sửa giá trị chỉ tại file này để style không lệch giữa các trang; từng trang chỉ còn CSS bố cục & thành phần riêng. Chrome điều hướng của tài liệu (tab trang, nút trạng thái) theo ngôn ngữ stylebook: nhãn mono, trạng thái chọn nền mực.
 
 # II. Sơ đồ điều hướng
 

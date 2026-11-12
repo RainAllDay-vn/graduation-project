@@ -1,0 +1,61 @@
+/* ============================================================
+   NGUỒN TOKEN DUY NHẤT — dashboard-page-stylebook + app-pages
+   Sửa giá trị chỉ tại đây; mọi trang tham chiếu qua var().
+   Link file này TRƯỚC css riêng của từng trang.
+   ============================================================ */
+:root {
+  /* giấy & mực (slate) */
+  --paper: #ffffff;
+  --paper-soft: #f8fafc;
+  --paper-dim: #f1f5f9;
+  --ink: #0f172a;
+  --ink-mid: #334155;
+  --ink-soft: #64748b;
+  --ink-faint: #94a3b8;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+
+  /* nhấn & liên kết */
+  --accent: #1d4ed8;
+  --accent-soft: #eff6ff;
+  --accent-line: #bfdbfe;
+  --accent-strong: #1e40af;
+
+  /* trạng thái: màu gốc */
+  --ok: #10b981;
+  --warn: #f59e0b;
+  --bad: #ef4444;
+
+  /* trạng thái: bộ ba nền-mờ / viền / chữ cho chip & băng */
+  --ok-soft: #ecfdf5;
+  --ok-line: #a7f3d0;
+  --ok-text: #047857;
+  --warn-soft: #fffbeb;
+  --warn-line: #fde68a;
+  --warn-text: #b45309;
+  --bad-soft: #fef2f2;
+  --bad-line: #fecaca;
+  --bad-text: #b91c1c;
+
+  /* topology canvas (đặc tả ở stylebook ch1–3) */
+  --bg-canvas: #070a10;
+  --bg-panel: #0f172a;
+  --st-healthy: var(--ok);
+  --st-warning: var(--warn);
+  --st-critical: var(--bad);
+  --site-1: #38bdf8;
+  --site-2: #a78bfa;
+  --site-3: #f472b6;
+  --site-4: #facc15;
+  --tier-1: #a855f7;
+  --tier-2: #f97316;
+  --tier-3: #06b6d4;
+  --tier-4: #3b82f6;
+  --tier-5: #10b981;
+  --tier-6: #64748b;
+  --focus: #38bdf8;
+
+  /* font */
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
