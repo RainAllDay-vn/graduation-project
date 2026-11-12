@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trang Tổng quan mạng — Bản đồ trang ứng dụng</title>
+<link rel="stylesheet" href="css/app-pages.css">
+<link rel="stylesheet" href="css/overview.css">
+</head>
+<body>
+<div class="shell">
+
+  <header class="topbar">
+    <div class="brand"><span class="dot"></span><span class="doc-tag">BẢN ĐỒ TRANG</span></div>
+    <div class="sep"></div>
+    <nav class="page-tabs">
+      <a class="page-tab" href="landing.html">Trang chủ</a>
+      <a class="page-tab" href="login.html">Đăng nhập</a>
+      <a class="page-tab" href="signup.html">Đăng ký</a>
+      <span class="page-tab active">Tổng quan</span>
+      <span class="page-tab todo" title="Đã thiết kế — dashboard-page-stylebook/">Điều tra</span>
+      <span class="page-tab todo" title="Chưa thiết kế — xem app-pages.md">Tra cứu</span>
+      <span class="page-tab todo" title="Chưa thiết kế — xem app-pages.md">Tài liệu</span>
+      <span class="page-tab todo" title="Chưa thiết kế — xem app-pages.md">Nguồn dữ liệu</span>
+      <span class="page-tab todo" title="Chưa thiết kế — xem app-pages.md">Cài đặt</span>
+    </nav>
+    <div class="controls">
+      <span class="lbl">TRẠNG THÁI</span>
+      <button class="seg active" data-state="default">Mặc định</button>
+      <button class="seg" data-state="resume">Có phiên dở</button>
+      <button class="seg" data-state="loading">Đang tải</button>
+      <button class="seg" data-state="empty">Mới thiết lập</button>
+    </div>
+  </header>
+
+  <div class="cols">
+
+    <aside class="sidebar left">
+      <div class="side-head">BỐ CỤC &amp; VÙNG</div>
+
+      <div class="card" data-region="r-topnav">
+        <h3>Thanh điều hướng ứng dụng</h3>
+        <p>Brand + 6 tab: Tổng quan (active) · Điều tra · Tra cứu · Tài liệu · Nguồn dữ liệu · Cài đặt. Tab "Điều tra" có chấm đỏ khi còn sự cố đang mở. Phải là chip người dùng. Giống topbar ch0 của Dashboard nhưng không có chip sự cố — vì chưa chọn sự cố nào.</p>
+      </div>
+
+      <div class="card" data-region="r-greet">
+        <h3>Tiêu đề + thời điểm dữ liệu</h3>
+        <p>"Tổng quan mạng" + dòng "Cập nhật 14:35 · tự làm mới mỗi 30 giây" + nút "Làm mới". Người dùng luôn biết mình đang nhìn dữ liệu lúc nào — điều kiện tiên quyết trước khi quyết định xử lý gì.</p>
+      </div>
+
+      <div class="card" data-region="r-kpi">
+        <h3>Bốn thẻ chỉ số sức khỏe</h3>
+        <p>Nút hoạt động 15/16 · Cảnh báo đang mở 1 · Sự cố đang xử lý 1 · Cổng mất kết nối 2. Màu số: đen = ổn, vàng = chú ý, đỏ = cần hành động. Mỗi thẻ kèm một dòng phụ chỉ đúng đối tượng (ALM 58.2°C · SITE-2) để không phải đoán số đếm từ đâu ra.</p>
+      </div>
+
+      <div class="card" data-region="r-open">
+        <h3>Sự cố đang mở</h3>
+        <p>Sắp theo mức độ ưu tiên; mỗi dòng có chip mức độ (CAO) + thời điểm mở + nút "Mở Dashboard →". Đây là <b>lối vào chính của Dashboard</b> — bấm một sự cố là mở Dashboard với sự cố đó ở trạng thái tiếp nhận.</p>
+      </div>
+
+      <div class="card" data-region="r-recent">
+        <h3>Đã xử lý gần đây</h3>
+        <p>Sự cố đã khôi phục kèm thời gian khôi phục — trả lời "hệ thống có ổn định không" bằng lịch sử gần nhất. Không mở lại được sự cố cũ từ đây (đề xuất chờ gật) — để tránh nhầm với luồng xử lý dở.</p>
+      </div>
+
+      <div class="card" data-region="r-footer">
+        <h3>Chân trang</h3>
+        <p>Một dòng mono: phiên bản + môi trường TEST + hỗ trợ IT nội bộ — giống mọi trang.</p>
+      </div>
+    </aside>
+
+    <main class="stage" id="stage">
+      <div class="viewport-frame">
+        <div class="viewport">
+          <div class="vp-overview" id="vp-overview" data-state="default">
+
+            <div class="vp-topnav" data-region="r-topnav">
+              <div class="row"><span class="dot"></span><span class="name">NOC TOPOLOGY</span></div>
+              <div class="tabs">
+                <span class="tab active">Tổng quan</span>
+                <span class="tab">Điều tra<span class="b-dot"></span></span>
+                <span class="tab">Tra cứu</span>
+                <span class="tab">Tài liệu</span>
+                <span class="tab">Nguồn dữ liệu</span>
+                <span class="tab">Cài đặt</span>
+              </div>
+              <div class="right user">
+                <div class="ava">AN</div>
+                <div class="uname">N.V. An</div>
+              </div>
+            </div>
+
+            <div class="vp-banner-resume">
+              <span>Bạn còn phiên điều tra dở <b>INC-07</b> (SITE-2).</span>
+              <span class="sp"></span>
+              <button type="button" class="vp-btn sm">Tiếp tục điều tra</button>
+              <button type="button" class="vp-btn sm ghost">Để sau</button>
+            </div>
+
+            <div class="vp-body">
+
+              <div class="vp-greet" data-region="r-greet">
+                <div>
+                  <h1>Tổng quan mạng</h1>
+                  <div class="sub">Cập nhật 14:35 · tự làm mới mỗi 30 giây</div>
+                </div>
+                <button type="button" class="vp-btn sm ghost">Làm mới</button>
+              </div>
+
+              <div class="vp-kpis" data-region="r-kpi">
+                <div class="vp-kpi">
+                  <div class="k">NÚT HOẠT ĐỘNG</div>
+                  <div class="num">15/16</div>
+                  <div class="num-load">—</div>
+                  <div class="sub">1 cảnh báo · 0 lỗi nghiêm trọng</div>
+                  <div class="sub2">chưa có dữ liệu</div>
+                </div>
+                <div class="vp-kpi">
+                  <div class="k">CẢNH BÁO ĐANG MỞ</div>
+                  <div class="num warn">1</div>
+                  <div class="num-load">—</div>
+                  <div class="sub">ALM 58.2°C · SITE-2</div>
+                  <div class="sub2">chưa có dữ liệu</div>
+                </div>
+                <div class="vp-kpi">
+                  <div class="k">SỰ CỐ ĐANG XỬ LÝ</div>
+                  <div class="num bad">1</div>
+                  <div class="num-load">—</div>
+                  <div class="sub">INC-07 · mở 13:52</div>
+                  <div class="sub2">chưa có dữ liệu</div>
+                </div>
+                <div class="vp-kpi">
+                  <div class="k">CỔNG MẤT KẾT NỐI</div>
+                  <div class="num bad">2</div>
+                  <div class="num-load">—</div>
+                  <div class="sub">liên quan INC-07</div>
+                  <div class="sub2">chưa có dữ liệu</div>
+                </div>
+              </div>
+
+              <div class="vp-mid">
+
+                <div class="vp-panel" data-region="r-open">
+                  <div class="head">SỰ CỐ ĐANG MỞ <span class="count">1</span></div>
+                  <div class="vp-row">
+                    <span class="chip hi">CAO</span>
+                    <div>
+                      <div class="t">INC-07 · Mất tín hiệu quang liên kết SITE-2 ⇄ CORE-1</div>
+                      <div class="meta">mở 13:52 · đang xử lý · 1 cảnh báo liên quan</div>
+                    </div>
+                    <a href="#" class="go">Mở Dashboard →</a>
+                  </div>
+                  <div class="vp-skel">
+                    <div class="bar s1"></div>
+                    <div class="bar s2"></div>
+                    <div class="bar s3"></div>
+                  </div>
+                  <div class="vp-empty">
+                    <div class="t">Chưa có sự cố nào đang mở.</div>
+                    <div class="s">Mọi thứ hoạt động bình thường — danh sách sẽ tự xuất hiện khi có sự cố.</div>
+                  </div>
+                </div>
+
+                <div class="vp-panel" data-region="r-recent">
+                  <div class="head">ĐÃ XỬ LÝ GẦN ĐÂY</div>
+                  <div class="vp-row">
+                    <span class="chip done">XONG</span>
+                    <div>
+                      <div class="t">INC-06 · CRC lỗi tăng đột biến tại AGG-02</div>
+                      <div class="meta">khôi phục 18 phút · 11:20 hôm nay</div>
+                    </div>
+                  </div>
+                  <div class="vp-row">
+                    <span class="chip done">XONG</span>
+                    <div>
+                      <div class="t">INC-05 · Mất SNMP tới SITE-4</div>
+                      <div class="meta">khôi phục 42 phút · hôm qua</div>
+                    </div>
+                  </div>
+                  <div class="vp-skel">
+                    <div class="bar s2"></div>
+                    <div class="bar s1"></div>
+                  </div>
+                  <div class="vp-empty">
+                    <div class="t">Chưa có lịch sử.</div>
+                    <div class="s">Sự cố đã xử lý sẽ liệt kê ở đây kèm thời gian khôi phục.</div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="vp-footer" data-region="r-footer">
+              NOC TOPOLOGY v0.4 · MÔI TRƯỜNG <span class="env">TEST</span> · HỖ TRỢ: IT NỘI BỘ
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-hint">Bấm một card ở sidebar hoặc một vùng trên miniature để soi tương ứng — Esc hoặc bấm nền để bỏ chốt.</div>
+    </main>
+
+    <aside class="sidebar right">
+      <div class="side-head">TƯƠNG TÁC</div>
+
+      <div class="card">
+        <h3>Bấm một sự cố đang mở</h3>
+        <p>Mở Dashboard với sự cố đó ở trạng thái tiếp nhận. Nếu đang có phiên điều tra dở, Tổng quan hỏi tiếp tục trước (xem trạng thái "Có phiên dở") — đồng ý thì vào thẳng Dashboard.</p>
+      </div>
+
+      <div class="card">
+        <h3>Bấm "Làm mới"</h3>
+        <p>Kéo dữ liệu mới nhất ngay lập tức; nút quay spinner ngắn, phần còn lại của trang không khóa. Kèm dòng "Cập nhật 14:35" luôn phản ánh thời điểm số liệu — không làm mới âm thầm (đề xuất).</p>
+      </div>
+
+      <div class="card">
+        <h3>Bấm thẻ chỉ số</h3>
+        <p>Thẻ "Sự cố đang xử lý" và "Cảnh báo đang mở" cuộn tới / làm nổi danh sách tương ứng. Thẻ "Nút hoạt động" mở Tra cứu với bộ lọc theo trạng thái (đề xuất chờ gật).</p>
+      </div>
+
+      <div class="card">
+        <h3>Phiên điều tra dở</h3>
+        <p>Băng trên cùng hỏi "Tiếp tục điều tra INC-07?": đồng ý → vào thẳng Dashboard với INC-07; để sau → ở lại Tổng quan, băng biến mất đến lần tải trang sau. Quy ước chung ở mục II của bản đồ trang.</p>
+      </div>
+
+      <div class="card">
+        <h3>Demo trạng thái (tài liệu này)</h3>
+        <p>Bốn nút TRẠNG THÁI trên topbar: Mặc định, Có phiên dở, Đang tải, Mới thiết lập — chuyển thẳng trạng thái của miniature.</p>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<script src="js/app-pages.js"></script>
+<script src="js/overview.js"></script>
+</body>
+</html>
