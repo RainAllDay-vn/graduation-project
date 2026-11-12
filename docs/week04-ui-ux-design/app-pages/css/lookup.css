@@ -1,0 +1,131 @@
+/* ================= lookup page (miniature, design space 1440x900) ================= */
+.vp-lookup {
+  width: 100%;
+  height: 100%;
+  background: var(--paper-soft);
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 26px 26px;
+  position: relative;
+  font-family: var(--sans);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- hàng công cụ: tìm kiếm + lọc ---- */
+.vp-toolrow { display: flex; gap: 10px; padding: 24px 48px 0; }
+.vp-search {
+  flex: 1;
+  height: 40px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--paper);
+  padding: 0 14px;
+  font-size: 13.5px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vp-search .ph { color: var(--ink-faint); }
+.vp-select {
+  height: 40px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--paper);
+  padding: 0 14px;
+  font: 700 12.5px var(--sans);
+  color: var(--ink-mid);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.vp-select .cv { color: var(--ink-faint); font-size: 10px; }
+
+/* ---- tab theo loại ---- */
+.vp-tabs {
+  display: flex;
+  gap: 24px;
+  margin: 18px 48px 0;
+  padding: 0 4px;
+  border-bottom: 1px solid var(--line);
+}
+.vp-tab {
+  font: 700 13px var(--sans);
+  color: var(--ink-soft);
+  padding: 8px 2px 10px;
+  border-bottom: 2px solid transparent;
+}
+.vp-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.vp-tab .n { font: 700 11px var(--mono); color: var(--ink-faint); margin-left: 5px; }
+
+/* ---- thân: bảng + chi tiết ---- */
+.vp-main {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 16px;
+  padding: 16px 48px 0;
+  align-items: start;
+}
+
+.vp-colhead { display: flex; gap: 12px; }
+.col-name { flex: 2.2; }
+.col-type { flex: 1; }
+.col-zone { flex: 1; }
+.col-st { flex: 0 0 130px; }
+
+.vp-table .vp-chip { margin-left: auto; }
+.vp-table .col-st { display: flex; justify-content: flex-end; }
+
+/* ---- panel chi tiết (ngôn ngữ Inspector ch5) ---- */
+.vp-detail { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; }
+.vp-detail .head {
+  font: 800 11px var(--mono);
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+}
+.vp-detail-full { padding: 16px 18px 18px; }
+.vp-detail .drow1 { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.vp-detail .dn { font-size: 19px; font-weight: 800; letter-spacing: -0.01em; }
+.vp-detail .ds { margin-top: 3px; font-size: 12.5px; color: var(--ink-soft); }
+.vp-detail .props { margin-top: 16px; border: 1px solid var(--line); border-radius: 8px; }
+.vp-detail .p {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12.5px;
+}
+.vp-detail .p:last-child { border-bottom: 0; }
+.vp-detail .p .k { font: 800 10px var(--mono); letter-spacing: 0.1em; color: var(--ink-soft); padding-top: 2px; }
+.vp-detail .p .v { font-weight: 700; color: var(--ink-mid); text-align: right; }
+.vp-detail .p .v.warn-t { color: #b45309; }
+.vp-detail .p .v.bad-t { color: #b91c1c; }
+.vp-detail .rel { margin-top: 14px; }
+.vp-detail .rk { font: 800 10px var(--mono); letter-spacing: 0.1em; color: var(--ink-soft); margin-bottom: 8px; }
+.vp-detail .rrow { display: flex; align-items: flex-start; gap: 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 12px; }
+.vp-detail .rt { font-size: 12.5px; font-weight: 700; color: #b91c1c; }
+.vp-detail .rs { margin-top: 2px; font-size: 11.5px; font-weight: 400; color: var(--ink-soft); }
+.vp-detail .vp-btn { width: 100%; margin-top: 16px; }
+
+.vp-detail-empty { display: none; padding: 40px 18px; text-align: center; }
+.vp-detail-empty .t { font-weight: 700; font-size: 13.5px; color: var(--ink); }
+.vp-detail-empty .s { margin-top: 6px; font-size: 12.5px; color: var(--ink-soft); }
+
+/* ---- trạng thái ---- */
+.vp-noresult { display: none; padding: 42px 18px; text-align: center; }
+.vp-noresult .t { font-weight: 700; font-size: 13.5px; color: var(--ink); }
+.vp-noresult .s { margin-top: 6px; font-size: 12.5px; color: var(--ink-soft); }
+.vp-noresult .vp-btn { margin-top: 16px; }
+
+.vp-lookup[data-state="noselect"] .vp-trow.sel { background: transparent; box-shadow: none; }
+.vp-lookup[data-state="noselect"] .vp-detail-full { display: none; }
+.vp-lookup[data-state="noselect"] .vp-detail-empty { display: block; }
+.vp-lookup[data-state="noresult"] .vp-trow { display: none; }
+.vp-lookup[data-state="noresult"] .vp-noresult { display: block; }
+.vp-lookup[data-state="noresult"] .vp-detail-full { display: none; }
+.vp-lookup[data-state="noresult"] .vp-detail-empty { display: block; }

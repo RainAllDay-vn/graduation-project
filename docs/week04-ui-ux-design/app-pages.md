@@ -22,9 +22,10 @@ Tài liệu liệt kê toàn bộ trang của hệ thống, quy ước điều h
 # I. Nguyên tắc
 
 - Ứng dụng gồm **9 trang** (Đăng ký thêm 11-11; Trang chủ + Tổng quan mạng thêm 12-11). Dashboard điều tra sự cố là trang trung tâm và phức tạp nhất; các trang còn lại phục vụ một tác vụ đơn lẻ mỗi trang.
-- **Format đặc tả một trang — trang thiết kế tương tác** trong `app-pages/` (một HTML mỗi trang, dùng chung `css/app-pages.css` + `js/app-pages.js`): **miniature của trang (khung thiết kế 1440×900, tự scale lấp vùng giữa) đặt giữa**, hai sidebar card hai bên — trái = **bố cục & vùng**, phải = **tương tác** (liệt kê thao tác của người dùng trên trang); bấm card hoặc vùng trên miniature để soi tương ứng (bấm chốt, Esc hoặc bấm nền bỏ chốt), các nút trạng thái chạy demo ngay trên miniature. **Trang phức tạp** (hiện chỉ Dashboard) tách thư mục thiết kế riêng theo mẫu `dashboard-page-stylebook/`. Ứng viên dễ phức tạp hóa tiếp theo là Tra cứu.
+- **Format đặc tả một trang — trang thiết kế tương tác** trong `app-pages/` (một HTML mỗi trang, dùng chung `css/app-pages.css` + `js/app-pages.js`): **miniature của trang (khung thiết kế 1440×900, tự scale lấp vùng giữa) đặt giữa**, hai sidebar card hai bên — trái = **bố cục & vùng**, phải = **tương tác** (liệt kê thao tác của người dùng trên trang); bấm card hoặc vùng trên miniature để soi tương ứng (bấm chốt, Esc hoặc bấm nền bỏ chốt), các nút trạng thái chạy demo ngay trên miniature. **Trang phức tạp** (hiện chỉ Dashboard) tách thư mục thiết kế riêng theo mẫu `dashboard-page-stylebook/`. Ứng viên dễ phức tạp hóa tiếp theo là Nguồn dữ liệu.
 - Dashboard điều tra là **một trang duy nhất** với các trạng thái theo hành trình điều tra (tiếp nhận → điều tra → soi thiết bị → đánh giá ảnh hưởng → xử lý xong). Năm file prototype giai đoạn trong README (01→05) là năm trạng thái của cùng một trang, không phải năm trang riêng.
-- Đã thiết kế: Dashboard (`dashboard-page-stylebook/` ch0–ch5), Đăng nhập, Đăng ký, Trang chủ, Tổng quan mạng. Tiếp theo: Tra cứu → còn lại theo nhu cầu.
+- Đã thiết kế: Dashboard (`dashboard-page-stylebook/` ch0–ch5), Đăng nhập, Đăng ký, Trang chủ, Tổng quan mạng, Tra cứu, Quản lý tài liệu. Tiếp theo: Nguồn dữ liệu → Cài đặt.
+- **Bảng + panel chi tiết** là pattern dùng chung của Tra cứu và Quản lý tài liệu (khối `.vp-thead`/`.vp-trow`/`.vp-chip` chia sẻ trong `css/app-pages.css`) — chip trạng thái một ngôn ngữ trên cả hai trang.
 
 # II. Sơ đồ điều hướng
 
@@ -58,8 +59,8 @@ flowchart LR
 | 3 | Đăng ký tài khoản | Tự đăng ký tài khoản kỹ sư vận hành | Người dùng mới | Đơn giản | Khung đề xuất — [`app-pages/signup.html`](app-pages/signup.html) |
 | 4 | Tổng quan mạng | Nhìn nhanh sức khỏe mạng và chọn sự cố để điều tra | Kỹ sư, quản lý vận hành | Trung bình | Khung đề xuất — [`app-pages/overview.html`](app-pages/overview.html) |
 | 5 | Dashboard điều tra | Theo dõi, khoanh vùng và xử lý một sự cố trên topology | Kỹ sư trực | Cao | **Đã thiết kế** — `dashboard-page-stylebook/` ch0–ch5 |
-| 6 | Tra cứu | Tra cứu thiết bị, liên kết, dịch vụ không gắn với sự cố đang mở | Kỹ sư | Trung bình | Chưa thiết kế |
-| 7 | Quản lý tài liệu | Nạp và quản lý tài liệu kỹ thuật, nghiệp vụ cho AI | Kỹ sư, người phụ trách nội dung | Đơn giản | Chưa thiết kế |
+| 6 | Tra cứu | Tra cứu thiết bị, liên kết, dịch vụ không gắn với sự cố đang mở | Kỹ sư | Trung bình | Khung đề xuất — [`app-pages/lookup.html`](app-pages/lookup.html) |
+| 7 | Quản lý tài liệu | Nạp và quản lý tài liệu kỹ thuật, nghiệp vụ cho AI | Kỹ sư, người phụ trách nội dung | Đơn giản | Khung đề xuất — [`app-pages/documents.html`](app-pages/documents.html) |
 | 8 | Nguồn dữ liệu | Cấu hình hệ thống nguồn bên thứ ba và mapping dữ liệu | Quản trị hệ thống | Trung bình | Chưa thiết kế |
 | 9 | Cài đặt chung | Tùy chỉnh giao diện toàn ứng dụng, lưu vĩnh viễn | Mọi người dùng | Đơn giản | Chưa thiết kế |
 
@@ -99,19 +100,15 @@ Tóm tắt thiết kế: trả lời "mạng đang thế nào, việc gì cần 
 
 ## 6. Tra cứu thiết bị, liên kết, dịch vụ
 
-- **Mục đích**: tra cứu tài nguyên khi không có sự cố đang mở — kiểm tra một thiết bị, xem một liên kết thuộc tuyến nào, một dịch vụ phụ thuộc những gì.
-- **Vùng chính**:
-  - Bảng tài nguyên có tab theo loại (thiết bị, liên kết, dịch vụ), tìm kiếm và lọc theo lớp, khu vực, trạng thái.
-  - Chọn một dòng → panel chi tiết dùng ngôn ngữ hiển thị giống Inspector (ch5) để nhất quán.
-  - Hành động "xem trong topology" mở Dashboard với đối tượng được chọn (quy ước ở mục II).
+**Đã đặc tả: [`app-pages/lookup.html`](app-pages/lookup.html)** — miniature trang tra cứu ở giữa (6 vùng: thanh điều hướng, tìm kiếm + bộ lọc, tab theo loại, bảng tài nguyên, panel chi tiết, chân trang), hai sidebar giải thích, demo 3 trạng thái (mặc định, chưa chọn, không có kết quả).
+
+Tóm tắt thiết kế: tra cứu tài nguyên khi không có sự cố đang mở — ô tìm kiếm lớn (lọc ngay khi gõ, không nút "Tìm") + ba bộ lọc (Lớp, Khu vực, Trạng thái) và tab theo loại kèm số lượng (Thiết bị, Liên kết, Dịch vụ) đứng trên bảng. Chọn một dòng → panel chi tiết bên phải dùng ngôn ngữ hiển thị giống Inspector (ch5) để nhất quán; nút chính "Xem trong topology" mở Dashboard với đối tượng được chọn, hoặc về Tổng quan nếu không có sự cố đang mở (quy ước ở mục II).
 
 ## 7. Quản lý tài liệu
 
-- **Mục đích**: nơi kỹ sư nạp tài liệu kỹ thuật, nghiệp vụ để AI trích dẫn khi điều tra (kho tài liệu trong kiến trúc đề xuất).
-- **Vùng chính**:
-  - Bảng tài liệu: tên, nguồn, loại, thời điểm cập nhật, trạng thái lập chỉ mục (đã sẵn sàng cho AI tra cứu hay chưa).
-  - Tải lên, thay thế, xem trước nội dung.
-  - Tài liệu được AI trích dẫn trong Dashboard (khối wiki trong Inspector) phải tìm được về đây theo nguồn.
+**Đã đặc tả: [`app-pages/documents.html`](app-pages/documents.html)** — miniature trang quản lý tài liệu ở giữa (5 vùng: thanh điều hướng, tiêu đề + nút tải lên, bảng tài liệu, xem trước, chân trang), hai sidebar giải thích, demo 3 trạng thái (mặc định, chưa chọn, vừa tải lên).
+
+Tóm tắt thiết kế: nơi kỹ sư nạp tài liệu kỹ thuật, nghiệp vụ cho AI trích dẫn khi điều tra (kho tài liệu trong kiến trúc đề xuất). Bảng liệt kê tên, nguồn, loại, thời điểm cập nhật và **trạng thái lập chỉ mục** — SẴN SÀNG (AI trích dẫn được), ĐANG LẬP CHỈ MỤC, LỖI kèm lý do (tài liệu lỗi không bị AI trích dẫn để tránh dẫn chứng sai). Tải lên xong hiện băng xác nhận + dòng mới với chip "đang lập chỉ mục". Chọn một dòng → xem trước nội dung + meta nguồn + nút thay thế tệp (bản cũ giữ lại — đề xuất). Tài liệu AI trích dẫn trong Dashboard (khối wiki Inspector) phải tìm được về đây theo nguồn. Bố cục bảng + panel dùng chung pattern với Tra cứu.
 
 ## 8. Cấu hình nguồn dữ liệu
 
