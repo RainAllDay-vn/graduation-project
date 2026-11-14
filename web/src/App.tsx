@@ -31,12 +31,14 @@ export default function App() {
       <AppProviders>
         <BrowserRouter>
           <Routes>
-            {/* Public / Guest Routes */}
+            {/* Public Landing with Topbar */}
             <Route element={<PublicLayout />}>
               <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
             </Route>
+
+            {/* Standalone Split-Screen Auth Pages */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
 
             {/* Authenticated Application Routes */}
             <Route element={<AppLayout />}>
