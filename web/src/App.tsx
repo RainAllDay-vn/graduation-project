@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { AppProviders } from '@/context'
 
 import AppLayout from '@/components/layout/AppLayout'
 import PublicLayout from '@/components/layout/PublicLayout'
@@ -27,29 +28,31 @@ const queryClient = new QueryClient({
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          {/* Public / Guest Routes */}
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-          </Route>
+      <AppProviders>
+        <BrowserRouter>
+          <Routes>
+            {/* Public / Guest Routes */}
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+            </Route>
 
-          {/* Authenticated Application Routes */}
-          <Route element={<AppLayout />}>
-            <Route path="/overview" element={<OverviewPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/lookup" element={<LookupPage />} />
-            <Route path="/documents" element={<DocumentsPage />} />
-            <Route path="/sources" element={<SourcesPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-          </Route>
+            {/* Authenticated Application Routes */}
+            <Route element={<AppLayout />}>
+              <Route path="/overview" element={<OverviewPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/lookup" element={<LookupPage />} />
+              <Route path="/documents" element={<DocumentsPage />} />
+              <Route path="/sources" element={<SourcesPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Route>
 
-          {/* Fallback 404 Route */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </BrowserRouter>
+            {/* Fallback 404 Route */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </BrowserRouter>
+      </AppProviders>
     </QueryClientProvider>
   )
 }
