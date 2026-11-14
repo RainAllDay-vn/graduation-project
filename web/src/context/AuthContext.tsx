@@ -1,35 +1,55 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { getMe, logout as apiLogout, type UserDetails } from '@/api/auth'
 
-export interface User {
-  id: string
-  name: string
-  email: string
-  role: string
-}
+export type { UserDetails }
 
 interface AuthContextType {
-  user: User | null
+  user: UserDetails | null
   isAuthenticated: boolean
-  login: (email: string) => void
-  logout: () => void
+  isLoading: boolean
+  setUser: (user: UserDetails | null) => void
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<UserDetails | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const login = (email: string) => {
-    setUser({
-      id: '1',
-      name: 'NOC Engineer',
-      email,
-      role: 'engineer',
-    })
-  }
+  useEffect(() => {
+    let isMounted = true
 
-  const logout = () => {
-    setUser(null)
+    getMe()
+      .then((data) => {
+        if (isMounted) {
+          setUser(data)
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setUser(null)
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false)
+        }
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  const logout = async () => {
+    try {
+      await apiLogout()
+    } catch {
+      // Invalidate local session state even if network call fails
+    } finally {
+      setUser(null)
+    }
   }
 
   return (
@@ -37,7 +57,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         isAuthenticated: !!user,
-        login,
+        isLoading,
+        setUser,
         logout,
       }}
     >
