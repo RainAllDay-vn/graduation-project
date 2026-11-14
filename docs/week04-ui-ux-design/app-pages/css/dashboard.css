@@ -347,9 +347,7 @@
 .vr-a02 .area { fill: rgba(56,189,248,0.08); }
 .vr-a02 .line { fill: none; stroke: #38bdf8; stroke-width: 1.6; }
 
-/* 4.3B — khoanh vùng nghi vấn + beacon hai đầu liên kết CORE-02↔AGG-02 (fig 4.3B/C), layer riêng */
-.zone { display: none; }
-.zone ellipse { fill: none; stroke: #f59e0b; stroke-width: 1.6; stroke-dasharray: 7 6; }
+/* 4.3B — beacon hai đầu liên kết CORE-02↔AGG-02 (fig 4.3B/C), layer riêng */
 .bh { display: none; }
 .bh circle { fill: none; stroke: #e2e8f0; stroke-width: 2; }
 .bh .bc1 { opacity: .8; }
@@ -365,4 +363,3 @@
 [data-state="hyp"] .d2 { opacity: .16; }
 [data-state="hyp"] .beacons { display: block; }
 [data-state="hyp"] .bh { display: block; }
-[data-state="hyp"] .zone { display: block; }
