@@ -13,8 +13,24 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark')
-  const [locale, setLocale] = useState<Locale>('vi')
+  const [theme, setThemeState] = useState<Theme>(() => {
+    const saved = localStorage.getItem('noc_theme')
+    return (saved as Theme) || 'dark'
+  })
+  const [locale, setLocaleState] = useState<Locale>(() => {
+    const saved = localStorage.getItem('noc_locale')
+    return (saved as Locale) || 'vi'
+  })
+
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme)
+    localStorage.setItem('noc_theme', newTheme)
+  }
+
+  const setLocale = (newLocale: Locale) => {
+    setLocaleState(newLocale)
+    localStorage.setItem('noc_locale', newLocale)
+  }
 
   return (
     <ThemeContext.Provider
