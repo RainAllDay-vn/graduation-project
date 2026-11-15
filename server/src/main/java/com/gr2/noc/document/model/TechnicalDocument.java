@@ -5,6 +5,7 @@ import com.gr2.noc.document.enums.DocumentSource;
 import com.gr2.noc.document.enums.IndexingStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.lang.NonNull;
 
 import java.time.Instant;
 
@@ -68,6 +69,11 @@ public class TechnicalDocument {
 
     @Column(name = "updated_at")
     private Instant updatedAt;
+
+    @NonNull
+    public String getId() {
+        return id;
+    }
 
     @PreUpdate
     public void preUpdate() {

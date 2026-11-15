@@ -247,6 +247,9 @@ public class NetworkServiceServiceImpl implements NetworkServiceService {
     }
 
     private NetworkService saveService(NetworkService service) {
+        if (service == null) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to save service");
+        }
         inMemoryStore.put(service.getId(), service);
         if (serviceRepository != null) {
             try {

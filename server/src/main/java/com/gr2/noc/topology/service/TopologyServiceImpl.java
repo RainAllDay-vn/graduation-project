@@ -324,6 +324,9 @@ public class TopologyServiceImpl implements TopologyService {
     }
 
     private boolean existsDeviceById(String id) {
+        if (id == null) {
+            return false;
+        }
         if (inMemoryStore.containsKey(id)) {
             return true;
         }
@@ -338,6 +341,9 @@ public class TopologyServiceImpl implements TopologyService {
     }
 
     private NetworkDevice saveDevice(NetworkDevice device) {
+        if (device == null) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to save device");
+        }
         inMemoryStore.put(device.getId(), device);
         if (networkDeviceRepository != null) {
             try {

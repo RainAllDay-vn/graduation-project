@@ -1,4 +1,5 @@
 {
+  "java.compile.nullAnalysis.mode": "disabled",
   "markdown-pdf.displayHeaderFooter": true,
   "markdown-pdf.headerTemplate": "<span></span>",
   "markdown-pdf.sanitize": "gfm-allow-style",

@@ -74,6 +74,9 @@ public class TelemetryServiceImpl implements TelemetryService {
                 .memoryPercent(request.memoryPercent())
                 .temperatureCelsius(request.temperatureCelsius())
                 .build();
+        if (snapshot == null) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to record telemetry snapshot");
+        }
 
         DeviceTelemetrySnapshot saved = telemetryRepository.save(snapshot);
         return DeviceTelemetrySnapshotDetails.from(saved);

@@ -58,6 +58,9 @@ public class HypothesisServiceImpl implements HypothesisService {
     @Override
     @Transactional
     public HypothesisDetails createHypothesis(String incidentId, CreateHypothesisRequest request) {
+        if (incidentId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incident id is required");
+        }
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -84,6 +87,9 @@ public class HypothesisServiceImpl implements HypothesisService {
                 .contradictingEvidence(request.contradictingEvidence() != null ? new ArrayList<>(request.contradictingEvidence()) : new ArrayList<>())
                 .createdAt(Instant.now())
                 .build();
+        if (hypothesis == null) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create hypothesis");
+        }
 
         Hypothesis saved = hypothesisRepository.save(hypothesis);
         return HypothesisDetails.from(saved);
@@ -117,6 +123,13 @@ public class HypothesisServiceImpl implements HypothesisService {
             hypothesis.setRejectionReason(null);
         }
 
+        if (hypothesis == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Hypothesis " + hypothesisId + " not found under incident " + incidentId
+            );
+        }
+
         Hypothesis updated = hypothesisRepository.save(hypothesis);
         return HypothesisDetails.from(updated);
     }
@@ -131,11 +144,20 @@ public class HypothesisServiceImpl implements HypothesisService {
                         HttpStatus.NOT_FOUND,
                         "Hypothesis " + hypothesisId + " not found under incident " + incidentId
                 ));
+        if (hypothesis == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Hypothesis " + hypothesisId + " not found under incident " + incidentId
+            );
+        }
 
         hypothesisRepository.delete(hypothesis);
     }
 
     private void ensureIncidentExists(String incidentId) {
+        if (incidentId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incident id is required");
+        }
         if (!incidentRepository.existsById(incidentId)) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,

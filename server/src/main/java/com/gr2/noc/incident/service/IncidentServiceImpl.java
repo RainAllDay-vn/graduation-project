@@ -45,6 +45,9 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     public IncidentDetails getIncidentById(String id) {
+        if (id == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incident id is required");
+        }
         return incidentRepository.findById(id)
                 .map(IncidentDetails::from)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Incident not found with ID: " + id));
@@ -53,12 +56,16 @@ public class IncidentServiceImpl implements IncidentService {
     @Override
     @Transactional
     public IncidentDetails createIncident(CreateIncidentRequest request) {
-        if (incidentRepository.existsById(request.id())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Incident already exists with ID: " + request.id());
+        String requestedId = request.id();
+        if (requestedId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incident id is required");
+        }
+        if (incidentRepository.existsById(requestedId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Incident already exists with ID: " + requestedId);
         }
 
         Incident incident = Incident.builder()
-                .id(request.id())
+                .id(requestedId)
                 .title(request.title())
                 .description(request.description())
                 .status(request.status() != null ? request.status() : IncidentStatus.OPEN)
@@ -67,6 +74,9 @@ public class IncidentServiceImpl implements IncidentService {
                 .primaryDeviceId(request.primaryDeviceId())
                 .openedAt(Instant.now())
                 .build();
+        if (incident == null) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create incident");
+        }
 
         Incident saved = incidentRepository.save(incident);
         return IncidentDetails.from(saved);
@@ -75,6 +85,9 @@ public class IncidentServiceImpl implements IncidentService {
     @Override
     @Transactional
     public IncidentDetails updateIncidentStatus(String id, UpdateIncidentStatusRequest request) {
+        if (id == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incident id is required");
+        }
         Incident incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Incident not found with ID: " + id));
 
@@ -92,6 +105,9 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     public List<AlarmSummary> getAlarmsByIncidentId(String id) {
+        if (id == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incident id is required");
+        }
         if (!incidentRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Incident not found with ID: " + id);
         }

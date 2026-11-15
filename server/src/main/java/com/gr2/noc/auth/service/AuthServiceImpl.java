@@ -38,6 +38,9 @@ public class AuthServiceImpl implements AuthService {
                 .passwordHash(passwordEncoder.encode(request.password()))
                 .role(Role.ENGINEER)
                 .build();
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create account");
+        }
 
         User saved = userRepository.save(user);
         return UserDetails.from(saved);
