@@ -41,7 +41,7 @@ spring:
     vectorstore:
       pgvector:
         table-name: technical_doc_embeddings
-        distance-type: COSINE
+        distance-type: COSINE_DISTANCE
         dimensions: 1536
         initialize-schema: true
 
