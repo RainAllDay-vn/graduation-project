@@ -2,13 +2,16 @@ import type { ReactNode } from 'react'
 import { AuthProvider } from './AuthContext'
 import { ThemeProvider } from './ThemeContext'
 import { IncidentProvider } from './IncidentContext'
+import { SettingsProvider } from './SettingsContext'
 
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <IncidentProvider>{children}</IncidentProvider>
-      </AuthProvider>
+      <SettingsProvider>
+        <AuthProvider>
+          <IncidentProvider>{children}</IncidentProvider>
+        </AuthProvider>
+      </SettingsProvider>
     </ThemeProvider>
   )
 }
@@ -16,3 +19,4 @@ export function AppProviders({ children }: { children: ReactNode }) {
 export * from './AuthContext'
 export * from './ThemeContext'
 export * from './IncidentContext'
+export * from './SettingsContext'

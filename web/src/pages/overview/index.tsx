@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useTheme } from '@/context'
+import { useTheme, useSettings } from '@/context'
 import { getIncidents } from '@/api/incidents'
 import { getTopology } from '@/api/topology'
 import { ResumeBanner } from './components/ResumeBanner'
@@ -14,6 +14,7 @@ export default function OverviewPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { locale } = useTheme()
+  const { settings } = useSettings()
   const isEn = locale === 'en'
 
   const [dismissResumeBanner, setDismissResumeBanner] = useState(false)
@@ -145,8 +146,8 @@ export default function OverviewPage() {
   return (
     <div className="w-full flex-1 flex flex-col justify-between px-6 md:px-12 py-7">
       <div className="w-full">
-        {/* Top Resume Banner for in-progress investigation */}
-        {activeInvestigation && !dismissResumeBanner && (
+        {/* Top Resume Banner for in-progress investigation (controlled by settings) */}
+        {activeInvestigation && settings.promptResumeInvestigation && !dismissResumeBanner && (
           <ResumeBanner
             incidentId={activeInvestigation.id}
             regionOrSite={activeInvestigation.region || activeInvestigation.primaryDeviceId}
