@@ -72,3 +72,10 @@ app:
   documents:
     storage-dir: ${DOCUMENTS_STORAGE_DIR:./data/documents}
     max-file-size: 100MB
+  sources:
+    sync:
+      simulated: true
+    connect-timeout-seconds: 5
+    scheduler:
+      enabled: false
+    max-auto-retries: 5
