@@ -7,7 +7,13 @@ spring:
   profiles:
     default: dev
 
-  # PostgreSQL + JPA (Alarms, Telemetry, Incidents)
+  # File uploads (Document Management)
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 210MB
+
+  # PostgreSQL + JPA (Alarms, Telemetry, Incidents, Documents)
   datasource:
     url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/noc_db}
     username: ${POSTGRES_USER:postgres}
@@ -63,3 +69,6 @@ app:
       - "http://localhost:3000"
       - "http://127.0.0.1:5173"
       - "http://127.0.0.1:3000"
+  documents:
+    storage-dir: ${DOCUMENTS_STORAGE_DIR:./data/documents}
+    max-file-size: 100MB
