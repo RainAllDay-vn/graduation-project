@@ -8,6 +8,8 @@ import lombok.*;
 import org.springframework.lang.NonNull;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "documents", indexes = {
@@ -57,6 +59,12 @@ public class TechnicalDocument {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "document_fault_codes", joinColumns = @JoinColumn(name = "document_id"))
+    @Column(name = "fault_code", length = 64)
+    @Builder.Default
+    private Set<String> targetFaultCodes = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "indexing_status", nullable = false, length = 16)
