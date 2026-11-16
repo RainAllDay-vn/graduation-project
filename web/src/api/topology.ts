@@ -45,6 +45,10 @@ export interface TopologyGraph {
   links: LinkSummary[]
 }
 
+export interface DeviceDetails extends DeviceSummary {
+  links: LinkSummary[]
+}
+
 export interface GetTopologyParams {
   layer?: DeviceLayer
   region?: string
@@ -67,5 +71,13 @@ export async function getSubgraph(params?: {
   kHop?: number
 }): Promise<TopologyGraph> {
   const response = await apiClient.get<TopologyGraph>('/topology/subgraph', { params })
+  return response.data
+}
+
+/**
+ * Retrieve comprehensive details of a specific network device, including direct links.
+ */
+export async function getDeviceById(id: string): Promise<DeviceDetails> {
+  const response = await apiClient.get<DeviceDetails>(`/topology/devices/${encodeURIComponent(id)}`)
   return response.data
 }
