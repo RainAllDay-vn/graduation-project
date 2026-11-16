@@ -4,6 +4,7 @@ import { AppProviders } from '@/context'
 
 import AppLayout from '@/components/layout/AppLayout'
 import PublicLayout from '@/components/layout/PublicLayout'
+import ProtectedRoute from '@/components/auth/ProtectedRoute'
 
 import LandingPage from '@/pages'
 import LoginPage from '@/pages/login'
@@ -40,14 +41,16 @@ export default function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
 
-            {/* Authenticated Application Routes */}
-            <Route element={<AppLayout />}>
-              <Route path="/overview" element={<OverviewPage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/lookup" element={<LookupPage />} />
-              <Route path="/documents" element={<DocumentsPage />} />
-              <Route path="/sources" element={<SourcesPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
+            {/* Authenticated Application Routes (Secured Monitor Pages) */}
+            <Route element={<ProtectedRoute />}>
+              <Route element={<AppLayout />}>
+                <Route path="/overview" element={<OverviewPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/lookup" element={<LookupPage />} />
+                <Route path="/documents" element={<DocumentsPage />} />
+                <Route path="/sources" element={<SourcesPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+              </Route>
             </Route>
 
             {/* Fallback 404 Route */}

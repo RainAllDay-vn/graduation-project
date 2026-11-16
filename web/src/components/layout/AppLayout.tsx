@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate, Navigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth, useTheme } from '@/context'
 import { getIncidents } from '@/api/incidents'
@@ -33,7 +33,7 @@ const TABS = {
 
 export default function AppLayout() {
   const navigate = useNavigate()
-  const { user, logout } = useAuth()
+  const { user, isAuthenticated, isLoading, logout } = useAuth()
   const { locale, setLocale } = useTheme()
   const [showUserMenu, setShowUserMenu] = useState(false)
 
@@ -42,6 +42,7 @@ export default function AppLayout() {
     queryKey: ['incidents', 'badge'],
     queryFn: () => getIncidents(),
     refetchInterval: 30000,
+    enabled: isAuthenticated,
   })
 
   const hasActiveIncidents =
@@ -51,7 +52,28 @@ export default function AppLayout() {
 
   const handleLogout = async () => {
     await logout()
-    navigate('/login')
+    navigate('/')
+  }
+
+  // Show authenticating spinner while initial session check is in flight
+  if (isLoading) {
+    return (
+      <div
+        role="status"
+        aria-label="Checking authentication"
+        className="min-h-screen flex flex-col items-center justify-center bg-[#f8fafc] text-[#64748b]"
+      >
+        <div className="w-9 h-9 border-3 border-[#1d4ed8] border-t-transparent rounded-full animate-spin" />
+        <span className="font-mono text-xs font-bold tracking-widest uppercase mt-3 text-[#94a3b8]">
+          Authenticating...
+        </span>
+      </div>
+    )
+  }
+
+  // Force unauthenticated users to the landing page
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />
   }
 
   return (
