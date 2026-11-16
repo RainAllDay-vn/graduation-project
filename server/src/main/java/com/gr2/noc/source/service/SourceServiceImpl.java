@@ -40,7 +40,12 @@ public class SourceServiceImpl implements SourceService {
 
     @Override
     public ExternalSourceDetails getSourceById(String id) {
-        return ExternalSourceDetails.from(findEntity(id));
+        ExternalSource source = findEntity(id);
+        if (source == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Data source not found with ID: " + id);
+        }
+        return ExternalSourceDetails.from(source);
     }
 
     @Override
