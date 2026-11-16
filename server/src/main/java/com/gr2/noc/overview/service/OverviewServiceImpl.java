@@ -7,10 +7,11 @@ import com.gr2.noc.incident.model.Incident;
 import com.gr2.noc.incident.repository.IncidentRepository;
 import com.gr2.noc.overview.dto.HealthMetrics;
 import com.gr2.noc.overview.dto.OverviewResponse;
+import com.gr2.noc.topology.dto.get.DeviceSummary;
+import com.gr2.noc.topology.dto.get.LinkSummary;
+import com.gr2.noc.topology.dto.get.TopologyGraph;
 import com.gr2.noc.topology.enums.DeviceStatus;
-import com.gr2.noc.topology.model.NetworkDevice;
-import com.gr2.noc.topology.model.NetworkLink;
-import com.gr2.noc.topology.repository.NetworkDeviceRepository;
+import com.gr2.noc.topology.service.TopologyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,44 +30,43 @@ public class OverviewServiceImpl implements OverviewService {
     private static final double DEGRADED_RX_THRESHOLD_DBM = -20.0;
     private static final int RECENTLY_RESOLVED_LIMIT = 5;
 
-    private final NetworkDeviceRepository deviceRepository;
+    private final TopologyService topologyService;
     private final IncidentRepository incidentRepository;
 
     @Override
     @Transactional(readOnly = true)
     public OverviewResponse getOverview() {
-        List<NetworkDevice> devices = deviceRepository.findAllWithLinks();
-        if (devices == null) {
-            devices = Collections.emptyList();
-        }
+        TopologyGraph graph = topologyService.getTopology(null, null);
+        List<DeviceSummary> devices = graph != null && graph.nodes() != null
+                ? graph.nodes()
+                : Collections.emptyList();
+        List<LinkSummary> links = graph != null && graph.links() != null
+                ? graph.links()
+                : Collections.emptyList();
 
         int nodesTotal = devices.size();
         int nodesUp = 0;
         int nodesWarning = 0;
         int nodesCritical = 0;
-        Set<String> seenLinkIds = new HashSet<>();
-        int portsDown = 0;
 
-        for (NetworkDevice device : devices) {
-            if (device.getStatus() == DeviceStatus.ACTIVE) {
+        for (DeviceSummary device : devices) {
+            if (device.status() == DeviceStatus.ACTIVE) {
                 nodesUp++;
-            } else if (device.getStatus() == DeviceStatus.DEGRADED) {
+            } else if (device.status() == DeviceStatus.DEGRADED) {
                 nodesWarning++;
-            } else if (device.getStatus() == DeviceStatus.CRITICAL) {
+            } else if (device.status() == DeviceStatus.CRITICAL) {
                 nodesCritical++;
             }
+        }
 
-            List<NetworkLink> links = device.getLinks();
-            if (links == null) {
+        Set<String> seenLinkIds = new HashSet<>();
+        int portsDown = 0;
+        for (LinkSummary link : links) {
+            if (!seenLinkIds.add(link.linkId())) {
                 continue;
             }
-            for (NetworkLink link : links) {
-                if (!seenLinkIds.add(link.getLinkId())) {
-                    continue;
-                }
-                if (isPortDown(link)) {
-                    portsDown++;
-                }
+            if (isPortDown(link)) {
+                portsDown++;
             }
         }
 
@@ -75,7 +75,7 @@ public class OverviewServiceImpl implements OverviewService {
             incidents = Collections.emptyList();
         }
 
-        IncidentSummary topIncident = null;
+        List<IncidentSummary> openIncidentSummaries = new ArrayList<>();
         int openIncidents = 0;
         int openAlarms = 0;
         List<Incident> resolved = new ArrayList<>();
@@ -84,14 +84,14 @@ public class OverviewServiceImpl implements OverviewService {
             if (incident.getStatus() == IncidentStatus.RESOLVED) {
                 resolved.add(incident);
             } else {
-                if (topIncident == null) {
-                    topIncident = IncidentSummary.from(incident);
-                }
+                openIncidentSummaries.add(IncidentSummary.from(incident));
                 openIncidents++;
                 List<Alarm> alarms = incident.getAlarms();
                 openAlarms += alarms != null ? alarms.size() : 0;
             }
         }
+
+        IncidentSummary topIncident = openIncidentSummaries.isEmpty() ? null : openIncidentSummaries.get(0);
 
         resolved.sort((a, b) -> {
             Instant aAt = a.getResolvedAt();
@@ -126,19 +126,20 @@ public class OverviewServiceImpl implements OverviewService {
         return OverviewResponse.builder()
                 .metrics(metrics)
                 .topIncident(topIncident)
+                .openIncidents(openIncidentSummaries)
                 .recentlyResolved(recentlyResolved)
                 .build();
     }
 
-    private boolean isPortDown(NetworkLink link) {
+    private boolean isPortDown(LinkSummary link) {
         if (link == null) {
             return false;
         }
-        String operStatus = link.getOperStatus();
+        String operStatus = link.operStatus();
         if ("DOWN".equalsIgnoreCase(operStatus) || "DEGRADED".equalsIgnoreCase(operStatus)) {
             return true;
         }
-        Double rxPowerDbm = link.getRxPowerDbm();
+        Double rxPowerDbm = link.rxPowerDbm();
         return rxPowerDbm != null && rxPowerDbm < DEGRADED_RX_THRESHOLD_DBM;
     }
 }

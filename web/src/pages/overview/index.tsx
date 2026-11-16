@@ -2,8 +2,7 @@ import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTheme, useSettings } from '@/context'
-import { getIncidents } from '@/api/incidents'
-import { getTopology } from '@/api/topology'
+import { getOverview, type OverviewData } from '@/api/overview'
 import { ResumeBanner } from './components/ResumeBanner'
 import { OverviewGreeting } from './components/OverviewGreeting'
 import { KpiGrid, type KpiItem } from './components/KpiGrid'
@@ -20,91 +19,62 @@ export default function OverviewPage() {
   const [dismissResumeBanner, setDismissResumeBanner] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
-  // 1. Fetch Incidents
   const {
-    data: incidents = [],
-    isLoading: isLoadingIncidents,
-    dataUpdatedAt: incidentsUpdatedAt,
+    data: overview,
+    isLoading,
+    dataUpdatedAt,
   } = useQuery({
-    queryKey: ['incidents'],
-    queryFn: () => getIncidents(),
+    queryKey: ['overview'],
+    queryFn: () => getOverview(),
     refetchInterval: 30000,
   })
 
-  // 2. Fetch Topology Graph for network device & link health
-  const {
-    data: topology,
-    isLoading: isLoadingTopology,
-  } = useQuery({
-    queryKey: ['topology'],
-    queryFn: () => getTopology(),
-    refetchInterval: 30000,
-  })
-
-  const isLoading = isLoadingIncidents || isLoadingTopology
-
-  // Partition incidents
-  const openIncidents = useMemo(
-    () => incidents.filter((i) => i.status !== 'RESOLVED'),
-    [incidents]
-  )
-
-  const recentIncidents = useMemo(
-    () => incidents.filter((i) => i.status === 'RESOLVED'),
-    [incidents]
-  )
+  const metrics = overview?.metrics
+  const topIncident = overview?.topIncident ?? null
+  const openIncidents = useMemo(() => overview?.openIncidents ?? [], [overview])
+  const recentIncidents = useMemo(() => overview?.recentlyResolved ?? [], [overview])
 
   const activeInvestigation = useMemo(
-    () => incidents.find((i) => i.status === 'INVESTIGATING'),
-    [incidents]
+    () => openIncidents.find((i) => i.status === 'INVESTIGATING'),
+    [openIncidents]
   )
 
-  // Compute 4 Health KPIs
   const kpiItems: KpiItem[] = useMemo(() => {
-    // 1. Active Nodes
-    const totalNodes = topology?.nodes?.length || 16
-    const activeNodes = topology?.nodes?.filter((n) => n.status === 'ACTIVE').length || 15
-    const warningNodes = topology?.nodes?.filter((n) => n.status === 'DEGRADED').length || 1
-    const criticalNodes = topology?.nodes?.filter((n) => n.status === 'CRITICAL').length || 0
-
-    // 2. Open Alarms
-    const totalAlarms = openIncidents.reduce((sum, inc) => sum + (inc.alarmCount || 0), 0) || 1
-    const primaryDevice = openIncidents[0]?.primaryDeviceId || 'SW-HN-02'
-
-    // 3. Active Incidents
-    const activeIncidentsCount = openIncidents.length || 1
-    const topIncident = openIncidents[0]
-
-    // 4. Disconnected / Degraded Ports & Links
-    const degradedLinksCount =
-      topology?.links?.filter(
-        (l) => l.operStatus === 'DOWN' || l.operStatus === 'DEGRADED' || l.rxPowerDbm !== undefined && l.rxPowerDbm < -20
-      ).length || 2
+    const m: OverviewData['metrics'] = metrics ?? {
+      nodesUp: 0,
+      nodesTotal: 0,
+      nodesWarning: 0,
+      nodesCritical: 0,
+      openAlarms: 0,
+      openIncidents: 0,
+      portsDown: 0,
+    }
+    const primaryDevice = topIncident?.primaryDeviceId || ''
 
     return [
       {
         id: 'kpi-nodes',
         label: isEn ? 'ACTIVE NODES' : 'NÚT HOẠT ĐỘNG',
-        value: `${activeNodes}/${totalNodes}`,
-        tone: criticalNodes > 0 ? 'bad' : warningNodes > 0 ? 'warn' : 'normal',
+        value: `${m.nodesUp}/${m.nodesTotal}`,
+        tone: m.nodesCritical > 0 ? 'bad' : m.nodesWarning > 0 ? 'warn' : 'normal',
         subtitle: isEn
-          ? `${warningNodes} warnings · ${criticalNodes} critical`
-          : `${warningNodes} cảnh báo · ${criticalNodes} lỗi nghiêm trọng`,
+          ? `${m.nodesWarning} warnings · ${m.nodesCritical} critical`
+          : `${m.nodesWarning} cảnh báo · ${m.nodesCritical} lỗi nghiêm trọng`,
         onClick: () => navigate('/lookup'),
       },
       {
         id: 'kpi-alarms',
         label: isEn ? 'OPEN ALARMS' : 'CẢNH BÁO ĐANG MỞ',
-        value: totalAlarms,
-        tone: totalAlarms > 0 ? 'warn' : 'normal',
-        subtitle: `ALM 58.2°C · ${primaryDevice}`,
+        value: m.openAlarms,
+        tone: m.openAlarms > 0 ? 'warn' : 'normal',
+        subtitle: primaryDevice ? `ALM 58.2°C · ${primaryDevice}` : 'ALM 58.2°C',
         onClick: () => topIncident && navigate(`/dashboard?incidentId=${topIncident.id}`),
       },
       {
         id: 'kpi-incidents',
         label: isEn ? 'IN PROGRESS INCIDENTS' : 'SỰ CỐ ĐANG XỬ LÝ',
-        value: activeIncidentsCount,
-        tone: activeIncidentsCount > 0 ? 'bad' : 'normal',
+        value: m.openIncidents,
+        tone: m.openIncidents > 0 ? 'bad' : 'normal',
         subtitle: topIncident
           ? `${topIncident.id} · ${topIncident.primaryDeviceId}`
           : isEn
@@ -115,8 +85,8 @@ export default function OverviewPage() {
       {
         id: 'kpi-links',
         label: isEn ? 'DISCONNECTED LINKS' : 'CỔNG MẤT KẾT NỐI',
-        value: degradedLinksCount,
-        tone: degradedLinksCount > 0 ? 'bad' : 'normal',
+        value: m.portsDown,
+        tone: m.portsDown > 0 ? 'bad' : 'normal',
         subtitle: topIncident
           ? `${isEn ? 'correlated with ' : 'liên quan '}${topIncident.id}`
           : isEn
@@ -124,20 +94,16 @@ export default function OverviewPage() {
           : 'Liên kết hoạt động tốt',
       },
     ]
-  }, [topology, openIncidents, isEn, navigate])
+  }, [metrics, topIncident, isEn, navigate])
 
-  // Last updated timestamp format
   const lastUpdatedText = useMemo(() => {
-    const time = incidentsUpdatedAt ? new Date(incidentsUpdatedAt) : new Date()
+    const time = dataUpdatedAt ? new Date(dataUpdatedAt) : new Date()
     return `${String(time.getHours()).padStart(2, '0')}:${String(time.getMinutes()).padStart(2, '0')}`
-  }, [incidentsUpdatedAt])
+  }, [dataUpdatedAt])
 
   const handleManualRefresh = async () => {
     setIsRefreshing(true)
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ['incidents'] }),
-      queryClient.invalidateQueries({ queryKey: ['topology'] }),
-    ])
+    await queryClient.invalidateQueries({ queryKey: ['overview'] })
     setTimeout(() => {
       setIsRefreshing(false)
     }, 600)

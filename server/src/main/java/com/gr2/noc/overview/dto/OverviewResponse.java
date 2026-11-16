@@ -9,6 +9,7 @@ import java.util.List;
 public record OverviewResponse(
     HealthMetrics metrics,
     IncidentSummary topIncident,
+    List<IncidentSummary> openIncidents,
     List<IncidentSummary> recentlyResolved
 ) {
 }
