@@ -1,0 +1,243 @@
+/* ==== Trang Bản đồ mạng (Topology) — miniature 1440x900 ====
+   Chia sẻ kiến trúc khung 3 cột với Dashboard điều tra nhưng tinh giản,
+   loại bỏ tab Timeline cảnh báo và Giả thuyết AI để phục vụ khám phá hạ tầng độc lập. */
+
+@import "dashboard.css";
+
+/* ---- Header điều hướng & chip trạng thái ---- */
+.vd-head .chip.topo {
+  color: #38bdf8;
+  border-color: #0284c7;
+  background: rgba(2, 132, 199, 0.08);
+}
+
+.vd-head .chip.focus {
+  color: #fbbf24;
+  border-color: #d97706;
+  background: rgba(217, 119, 6, 0.1);
+}
+
+/* ---- 2 Tab tinh giản ở sidebar trái: Thiết bị · Cài đặt ---- */
+.vd-left .vd-tabs.topo-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #1e293b;
+  margin-bottom: 14px;
+}
+.vd-left .vd-tabs.topo-tabs .tl-tab {
+  flex: 1;
+  text-align: center;
+  font: 700 11px var(--sans);
+  color: #64748b;
+  padding: 8px 0;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+.vd-left .vd-tabs.topo-tabs .tl-tab.on {
+  color: #e2e8f0;
+  border-bottom-color: var(--focus);
+}
+
+/* Panel Thiết bị & Danh mục */
+.tl-devices {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.tl-devices .se-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 7px;
+  padding: 0 10px;
+  height: 36px;
+  font: 700 12px var(--mono);
+  color: #e2e8f0;
+  margin-bottom: 10px;
+}
+.tl-devices .layer-filters {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.tl-devices .lf-btn {
+  font: 700 9px var(--mono);
+  padding: 3px 7px;
+  border-radius: 4px;
+  background: #111c31;
+  border: 1px solid #1e293b;
+  color: #94a3b8;
+}
+.tl-devices .lf-btn.on {
+  background: var(--focus);
+  color: #ffffff;
+  border-color: var(--focus);
+}
+.tl-devices .dev-list {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  background: #0b111e;
+  padding: 4px 0;
+}
+.tl-devices .dev-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 12px;
+  font: 700 11.5px var(--mono);
+  color: #cbd5e1;
+  cursor: pointer;
+}
+.tl-devices .dev-row + .dev-row {
+  border-top: 1px solid #141f33;
+}
+.tl-devices .dev-row i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.tl-devices .dev-row i.ok { background: var(--ok); }
+.tl-devices .dev-row i.crit { background: var(--bad); }
+.tl-devices .dev-row i.warn { background: var(--warn); }
+.tl-devices .dev-row .id { color: #e2e8f0; }
+.tl-devices .dev-row .sub { margin-left: auto; font: 500 9.5px var(--mono); color: #64748b; }
+.tl-devices .dev-row.sel {
+  background: #1e293b;
+  border-left: 3px solid var(--focus);
+  padding-left: 9px;
+}
+
+/* Panel Cài đặt hiển thị & k-Hop */
+.tl-settings {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.tl-settings .sg-block {
+  background: #0b111e;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 12px;
+}
+.tl-settings .sg-label {
+  font: 800 9.5px var(--mono);
+  letter-spacing: .08em;
+  color: #94a3b8;
+  margin-bottom: 8px;
+  display: block;
+}
+.tl-settings .khop-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.tl-settings .kh-btn {
+  text-align: center;
+  font: 700 11px var(--mono);
+  padding: 7px 0;
+  border-radius: 6px;
+  background: #111c31;
+  border: 1px solid #1e293b;
+  color: #94a3b8;
+}
+.tl-settings .kh-btn.on {
+  background: var(--focus);
+  color: #ffffff;
+  border-color: var(--focus);
+}
+.tl-settings .toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  font: 500 11px var(--sans);
+  color: #cbd5e1;
+}
+.tl-settings .toggle-row + .toggle-row {
+  border-top: 1px dashed #1e293b;
+}
+
+/* ---- Inspector bên phải: Chế độ Tổng quan (Khi chưa chọn node) ---- */
+.vr-overview {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 14px;
+}
+.vr-overview .ov-title {
+  font: 800 13px var(--mono);
+  letter-spacing: .06em;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vr-overview .ov-card {
+  background: #0b111e;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.vr-overview .ov-card .k {
+  font: 500 11px var(--sans);
+  color: #94a3b8;
+}
+.vr-overview .ov-card .v {
+  font: 800 16px var(--mono);
+  color: #f8fafc;
+}
+.vr-overview .ov-card .v.ok { color: var(--ok); }
+.vr-overview .ov-card .v.crit { color: var(--bad); }
+
+.vr-overview .ov-hint {
+  font: 500 11px var(--sans);
+  color: #64748b;
+  line-height: 1.5;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px dashed #1e293b;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 6px;
+}
+
+/* ---- Điều khiển hiển thị theo data-state ---- */
+/* State: default (Toàn mạng) */
+[data-state="default"] .tl-devices { display: flex; }
+[data-state="default"] .tl-settings { display: none; }
+[data-state="default"] .vr-overview { display: flex; }
+[data-state="default"] .vr-c02 { display: none; }
+[data-state="default"] .beacons { display: none; }
+[data-state="default"] .chip.topo { display: block; }
+[data-state="default"] .chip.focus { display: none; }
+
+/* State: focus (Tiêu điểm CORE-02) */
+[data-state="focus"] .tl-devices { display: flex; }
+[data-state="focus"] .tl-settings { display: none; }
+[data-state="focus"] .vr-overview { display: none; }
+[data-state="focus"] .vr-c02 { display: flex; }
+[data-state="focus"] .beacons { display: block; }
+[data-state="focus"] .chip.topo { display: none; }
+[data-state="focus"] .chip.focus { display: block; }
+[data-state="focus"] .d1 { opacity: .16; }
+
+/* State: settings (Cài đặt hiển thị) */
+[data-state="settings"] .tl-devices { display: none; }
+[data-state="settings"] .tl-settings { display: flex; }
+[data-state="settings"] .tl-tab[data-tab="inventory"] { color: #64748b; border-bottom-color: transparent; }
+[data-state="settings"] .tl-tab[data-tab="settings"] { color: #e2e8f0; border-bottom-color: var(--focus); }
+[data-state="settings"] .vr-overview { display: flex; }
+[data-state="settings"] .vr-c02 { display: none; }
+[data-state="settings"] .beacons { display: none; }
