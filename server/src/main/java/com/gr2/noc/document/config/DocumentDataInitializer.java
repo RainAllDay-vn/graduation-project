@@ -18,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Set;
 
 /**
  * Seeds the technical-document library with realistic telecom SOPs on startup (dev profile only).
@@ -48,6 +49,7 @@ public class DocumentDataInitializer implements CommandLineRunner {
                 DocType.OPERATION_RUNBOOK,
                 DocumentSource.INTERNAL_WIKI,
                 "quy-trinh-xu-ly-su-co-cap-quang.md",
+                Set.of("OPTICS_RX_POWER_LOW"),
                 """
                         # Quy trình xử lý sự cố cáp quang và mất tín hiệu RX
 
@@ -76,6 +78,7 @@ public class DocumentDataInitializer implements CommandLineRunner {
                 DocType.OPERATION_RUNBOOK,
                 DocumentSource.CONFLUENCE,
                 "quy-trinh-xu-ly-qua-nhiet-sfp.md",
+                Set.of("OPTICS_TEMP_HIGH"),
                 """
                         # Quy trình xử lý quá nhiệt module SFP
 
@@ -103,6 +106,7 @@ public class DocumentDataInitializer implements CommandLineRunner {
                 DocType.OPERATION_RUNBOOK,
                 DocumentSource.MANUAL,
                 "quy-trinh-chan-doan-bgp-flapping.md",
+                Set.of("BGP_FLAP"),
                 """
                         # Quy trình chẩn đoán BGP Flapping
 
@@ -130,7 +134,7 @@ public class DocumentDataInitializer implements CommandLineRunner {
     }
 
     private void seedReadyDocument(String id, String title, DocType docType, DocumentSource source,
-                                   String fileName, String content, Instant createdAt) {
+                                   String fileName, Set<String> targetFaultCodes, String content, Instant createdAt) {
         long fileSizeBytes = content.getBytes(StandardCharsets.UTF_8).length;
         String storagePath = documentStorageService.store(
                 id, 1, fileName, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
@@ -145,6 +149,7 @@ public class DocumentDataInitializer implements CommandLineRunner {
                 .storagePath(storagePath)
                 .version(1)
                 .content(content)
+                .targetFaultCodes(targetFaultCodes)
                 .indexingStatus(IndexingStatus.READY)
                 .createdAt(createdAt)
                 .build();
