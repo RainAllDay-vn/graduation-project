@@ -5,9 +5,22 @@ const meta: Meta<typeof UploadDocumentModal> = {
   title: 'Documents/UploadDocumentModal',
   component: UploadDocumentModal,
   parameters: {
-    layout: 'padded',
+    layout: 'fullscreen',
+    docs: {
+      story: {
+        inline: false,
+        iframeHeight: 520,
+      },
+    },
   },
   tags: ['autodocs'],
+  args: {
+    isOpen: true,
+    isUploading: false,
+    locale: 'vi',
+    onClose: () => alert('Modal closed'),
+    onSubmit: (params) => alert(`Submitted: ${params.title}`),
+  },
 }
 
 export default meta

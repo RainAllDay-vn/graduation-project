@@ -51,6 +51,7 @@ export const ReadyDocumentSelected: Story = {
     onReplaceFile: (doc) => alert(`Replace file for ${doc.title}`),
     onDownload: (doc) => alert(`Download ${doc.fileName}`),
     onDelete: (doc) => alert(`Delete ${doc.title}`),
+    onOpenViewer: (doc) => alert(`Open full reader for ${doc.title}`),
   },
 }
 
@@ -67,6 +68,7 @@ export const English: Story = {
     onReplaceFile: (doc) => alert(`Replace file for ${doc.title}`),
     onDownload: (doc) => alert(`Download ${doc.fileName}`),
     onDelete: (doc) => alert(`Delete ${doc.title}`),
+    onOpenViewer: (doc) => alert(`Open full reader for ${doc.title}`),
   },
 }
 

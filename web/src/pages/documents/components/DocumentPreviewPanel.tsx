@@ -11,6 +11,7 @@ import {
   Trash2,
   FileQuestion,
   ExternalLink,
+  Eye,
 } from 'lucide-react'
 
 export interface DocumentPreviewPanelProps {
@@ -20,6 +21,7 @@ export interface DocumentPreviewPanelProps {
   onReplaceFile: (doc: DocumentSummary | DocumentDetails) => void
   onDownload: (doc: DocumentSummary | DocumentDetails) => void
   onDelete: (doc: DocumentSummary | DocumentDetails) => void
+  onOpenViewer?: (doc: DocumentSummary | DocumentDetails) => void
 }
 
 export function DocumentPreviewPanel({
@@ -29,6 +31,7 @@ export function DocumentPreviewPanel({
   onReplaceFile,
   onDownload,
   onDelete,
+  onOpenViewer,
 }: DocumentPreviewPanelProps) {
   const isEn = locale === 'en'
 
@@ -41,9 +44,21 @@ export function DocumentPreviewPanel({
       <div className="font-mono text-[11px] font-extrabold tracking-[0.14em] text-[#64748b] uppercase px-4 py-3 border-b border-[#e2e8f0] bg-[#f8fafc]/50 flex items-center justify-between">
         <span>{isEn ? 'PREVIEW' : 'XEM TRƯỚC'}</span>
         {doc && (
-          <span className="font-mono text-[10px] text-[#94a3b8]">
-            ID: {doc.id}
-          </span>
+          <div className="flex items-center gap-2.5">
+            {onOpenViewer && (
+              <button
+                type="button"
+                onClick={() => onOpenViewer(doc)}
+                className="font-sans font-bold text-[11px] text-[#1d4ed8] hover:text-[#1e40af] hover:underline flex items-center gap-1 cursor-pointer tracking-normal normal-case"
+              >
+                <Eye className="w-3 h-3" />
+                <span>{isEn ? 'View' : 'Xem'}</span>
+              </button>
+            )}
+            <span className="font-mono text-[10px] text-[#94a3b8]">
+              ID: {doc.id}
+            </span>
+          </div>
         )}
       </div>
 
@@ -129,15 +144,47 @@ export function DocumentPreviewPanel({
             {/* Snippet / Content Preview Area */}
             <div className="mt-3.5">
               <div className="font-mono text-[10px] font-bold text-[#64748b] tracking-wider uppercase mb-1.5 flex items-center justify-between">
-                <span>{isEn ? 'CONTENT SNIPPET' : 'TRÍCH ĐOẠN NỘI DUNG'}</span>
-                {isLoadingDetails && (
-                  <span className="text-[10px] text-[#1d4ed8] animate-pulse">
-                    {isEn ? 'Loading snippet...' : 'Đang tải nội dung...'}
-                  </span>
+                <div className="flex items-center gap-1.5">
+                  <span>{isEn ? 'CONTENT SNIPPET' : 'TRÍCH ĐOẠN NỘI DUNG'}</span>
+                  {isLoadingDetails && (
+                    <span className="text-[10px] text-[#1d4ed8] animate-pulse">
+                      {isEn ? 'Loading snippet...' : 'Đang tải nội dung...'}
+                    </span>
+                  )}
+                </div>
+                {onOpenViewer && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenViewer(doc)}
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-[#1d4ed8] hover:text-[#1e40af] hover:underline cursor-pointer tracking-normal normal-case"
+                  >
+                    <Eye className="w-3 h-3" />
+                    <span>{isEn ? 'View full' : 'Xem toàn bộ'}</span>
+                  </button>
                 )}
               </div>
 
-              <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-lg p-3 text-[12px] text-[#334155] leading-relaxed max-h-[220px] overflow-y-auto whitespace-pre-wrap font-sans">
+              <div
+                onClick={() => onOpenViewer && onOpenViewer(doc)}
+                role={onOpenViewer ? 'button' : undefined}
+                tabIndex={onOpenViewer ? 0 : undefined}
+                onKeyDown={(e) => {
+                  if (onOpenViewer && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault()
+                    onOpenViewer(doc)
+                  }
+                }}
+                title={
+                  onOpenViewer
+                    ? isEn
+                      ? 'Click to open full document reader'
+                      : 'Bấm để đọc toàn bộ tài liệu'
+                    : undefined
+                }
+                className={`bg-[#f8fafc] border border-[#e2e8f0] rounded-lg p-3 text-[12px] text-[#334155] leading-relaxed max-h-[220px] overflow-y-auto whitespace-pre-wrap font-sans transition-colors ${
+                  onOpenViewer ? 'cursor-pointer hover:border-blue-300 hover:bg-slate-50' : ''
+                }`}
+              >
                 {'content' in doc && doc.content ? (
                   doc.content
                 ) : isLoadingDetails ? (
@@ -169,6 +216,17 @@ export function DocumentPreviewPanel({
 
           {/* Action Buttons Toolbar */}
           <div className="mt-5 pt-3 border-t border-[#f1f5f9] flex flex-col gap-2">
+            {onOpenViewer && (
+              <button
+                type="button"
+                onClick={() => onOpenViewer(doc)}
+                className="w-full h-8.5 px-3 text-xs font-bold text-white bg-[#1d4ed8] hover:bg-[#1e40af] rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs border-0"
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span>{isEn ? 'View Document' : 'Xem tài liệu'}</span>
+              </button>
+            )}
+
             <button
               type="button"
               onClick={() => onReplaceFile(doc)}
