@@ -36,17 +36,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           } catch {}
         }
       })
-      .catch(() => {
+      .catch((err) => {
         if (isMounted) {
-          const saved = localStorage.getItem('noc_user')
-          if (saved) {
+          // If server explicitly returns 401 Unauthorized, the session has expired or backend was restarted
+          if (err?.response?.status === 401) {
             try {
-              setUser(JSON.parse(saved))
-            } catch {
+              localStorage.removeItem('noc_user')
+            } catch {}
+            setUser(null)
+          } else {
+            // For temporary network glitches/offline mode, keep the cached user
+            const saved = localStorage.getItem('noc_user')
+            if (saved) {
+              try {
+                setUser(JSON.parse(saved))
+              } catch {
+                setUser(null)
+              }
+            } else {
               setUser(null)
             }
-          } else {
-            setUser(null)
           }
         }
       })
