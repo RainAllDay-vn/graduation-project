@@ -33,10 +33,10 @@ export function SettingsView({
       <div className="w-full">
         {/* Page Title & Subtitle */}
         <div className="text-center pt-2 pb-1">
-          <h1 className="text-2xl sm:text-[28px] font-extrabold text-[#0f172a] tracking-tight">
+          <h1 className="text-2xl sm:text-[28px] font-extrabold text-[#0f172a] dark:text-[#f8fafc] tracking-tight">
             {isEn ? 'Settings' : 'Cài đặt'}
           </h1>
-          <p className="text-[13px] text-[#64748b] mt-1.5">
+          <p className="text-[13px] text-[#64748b] dark:text-[#94a3b8] mt-1.5">
             {isEn
               ? 'App-wide UI preferences · saved to account, applied on all signed-in devices'
               : 'Tùy chọn giao diện toàn ứng dụng · lưu theo tài khoản, áp dụng mọi thiết bị đăng nhập'}
@@ -78,11 +78,11 @@ export function SettingsView({
       </div>
 
       {/* App Footnote */}
-      <footer className="text-center font-mono text-[11px] text-[#94a3b8] tracking-widest uppercase mt-8 pt-4 pb-2">
+      <footer className="text-center font-mono text-[11px] text-[#94a3b8] dark:text-[#64748b] tracking-widest uppercase mt-8 pt-4 pb-2">
         NOC TOPOLOGY v0.4 ·{' '}
-        <span className="text-[#64748b]">
+        <span className="text-[#64748b] dark:text-[#94a3b8]">
           {isEn ? 'ENVIRONMENT' : 'MÔI TRƯỜNG'}{' '}
-          <span className="bg-[#e2e8f0] px-1 py-0.5 rounded text-[10px] text-[#475569] font-bold">
+          <span className="bg-[#e2e8f0] dark:bg-[#1e293b] px-1 py-0.5 rounded text-[10px] text-[#475569] dark:text-[#cbd5e1] font-bold">
             TEST
           </span>
         </span>{' '}

@@ -109,10 +109,10 @@ export function DocumentsView({
         {/* Page Top Heading + Upload Action Button */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
           <div>
-            <h1 className="text-2xl sm:text-[28px] font-extrabold text-[#0f172a] tracking-tight">
+            <h1 className="text-2xl sm:text-[28px] font-extrabold text-[#0f172a] dark:text-[#f8fafc] tracking-tight">
               {isEn ? 'Document Management' : 'Quản lý tài liệu'}
             </h1>
-            <p className="text-[13px] text-[#64748b] mt-1">
+            <p className="text-[13px] text-[#64748b] dark:text-[#94a3b8] mt-1">
               {isEn
                 ? 'Reference knowledge base for AI citations during incident investigations'
                 : 'Nguồn tham khảo cho AI trích dẫn khi điều tra sự cố'}
@@ -134,10 +134,10 @@ export function DocumentsView({
           <div
             role="status"
             aria-live="polite"
-            className="w-full flex items-center justify-between gap-3 bg-[#f0fdf4] border border-[#bbf7d0] text-[#15803d] rounded-xl px-4 py-2.5 text-[13px] font-semibold my-4 shadow-xs animate-in fade-in"
+            className="w-full flex items-center justify-between gap-3 bg-[#f0fdf4] dark:bg-emerald-950/40 border border-[#bbf7d0] dark:border-emerald-800/50 text-[#15803d] dark:text-emerald-300 rounded-xl px-4 py-2.5 text-[13px] font-semibold my-4 shadow-xs animate-in fade-in"
           >
             <div className="flex items-center gap-2 min-w-0">
-              <CheckCircle2 className="w-4 h-4 text-[#16a34a] shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-[#16a34a] dark:text-emerald-400 shrink-0" />
               <span className="truncate">
                 {isEn
                   ? 'Uploaded — indexing in progress, AI will be able to query once complete.'
@@ -150,7 +150,7 @@ export function DocumentsView({
                 type="button"
                 onClick={onDismissToast}
                 aria-label={isEn ? 'Close notification' : 'Đóng thông báo'}
-                className="p-1 text-[#15803d]/70 hover:text-[#15803d] rounded transition-colors"
+                className="p-1 text-[#15803d]/70 dark:text-emerald-300/70 hover:text-[#15803d] dark:hover:text-emerald-300 rounded transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -201,30 +201,30 @@ export function DocumentsView({
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-modal-title"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-black/75 backdrop-blur-xs p-4 animate-in fade-in duration-150"
         >
           <div
-            className="bg-white rounded-2xl border border-[#e2e8f0] shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-150"
+            className="bg-white dark:bg-[#0f172a] rounded-2xl border border-[#e2e8f0] dark:border-[#1e293b] shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#fef2f2] border border-[#fee2e2] flex items-center justify-center text-[#dc2626] shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-[#fef2f2] dark:bg-red-950/40 border border-[#fee2e2] dark:border-red-900/50 flex items-center justify-center text-[#dc2626] dark:text-[#f87171] shrink-0">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <button
                 type="button"
                 onClick={onCloseDelete}
-                className="text-[#94a3b8] hover:text-[#475569] p-1 rounded-md transition-colors"
+                className="text-[#94a3b8] hover:text-[#475569] dark:hover:text-[#cbd5e1] p-1 rounded-md transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="mt-3.5">
-              <h3 id="delete-modal-title" className="text-base font-bold text-[#0f172a]">
+              <h3 id="delete-modal-title" className="text-base font-bold text-[#0f172a] dark:text-[#f8fafc]">
                 {isEn ? 'Delete Document?' : 'Xóa tài liệu này?'}
               </h3>
-              <p className="text-xs text-[#64748b] mt-1.5 leading-relaxed">
+              <p className="text-xs text-[#64748b] dark:text-[#94a3b8] mt-1.5 leading-relaxed">
                 {isEn
                   ? `Are you sure you want to delete "${deleteTarget.title}"? All stored file versions and vector embeddings will be permanently removed.`
                   : `Bạn có chắc muốn xóa "${deleteTarget.title}"? Toàn bộ các phiên bản tệp và vector embeddings sẽ bị xóa vĩnh viễn khỏi hệ thống.`}
@@ -235,7 +235,7 @@ export function DocumentsView({
               <button
                 type="button"
                 onClick={onCloseDelete}
-                className="h-8 px-4 text-xs font-bold text-[#475569] hover:text-[#0f172a] bg-white hover:bg-[#f8fafc] border border-[#cbd5e1] rounded-lg transition-colors cursor-pointer"
+                className="h-8 px-4 text-xs font-bold text-[#475569] dark:text-[#cbd5e1] hover:text-[#0f172a] dark:hover:text-white bg-white dark:bg-[#1e293b] hover:bg-[#f8fafc] dark:hover:bg-[#334155] border border-[#cbd5e1] dark:border-[#334155] rounded-lg transition-colors cursor-pointer"
               >
                 {isEn ? 'Cancel' : 'Hủy'}
               </button>
@@ -283,11 +283,11 @@ export function DocumentsView({
       />
 
       {/* Standard App Monospace Footer */}
-      <footer className="text-center font-mono text-[11px] text-[#94a3b8] tracking-widest uppercase mt-10 pt-4 pb-2">
+      <footer className="text-center font-mono text-[11px] text-[#94a3b8] dark:text-[#64748b] tracking-widest uppercase mt-10 pt-4 pb-2">
         NOC TOPOLOGY v0.4 ·{' '}
-        <span className="text-[#64748b]">
+        <span className="text-[#64748b] dark:text-[#94a3b8]">
           {isEn ? 'ENVIRONMENT' : 'MÔI TRƯỜNG'}{' '}
-          <span className="bg-[#e2e8f0] px-1 py-0.5 rounded text-[10px] text-[#475569] font-bold">
+          <span className="bg-[#e2e8f0] dark:bg-[#1e293b] px-1 py-0.5 rounded text-[10px] text-[#475569] dark:text-[#cbd5e1] font-bold">
             TEST
           </span>
         </span>{' '}

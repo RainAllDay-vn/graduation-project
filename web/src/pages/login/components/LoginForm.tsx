@@ -82,22 +82,22 @@ export function LoginForm({
   const t = TEXT[locale] || TEXT.vi
 
   return (
-    <div className="flex-1 min-w-0 relative flex flex-col items-center justify-center p-6 sm:p-12 md:p-16 lg:p-20 bg-white min-h-screen select-none">
+    <div className="flex-1 min-w-0 relative flex flex-col items-center justify-center p-6 sm:p-12 md:p-16 lg:p-20 bg-white dark:bg-[#0b0f19] min-h-screen select-none transition-colors">
       <div className="w-full max-w-[420px] my-auto">
         {/* Head Branding */}
         <div className="text-center">
-          <div className="w-14 h-14 rounded-full bg-[#eff6ff] text-[#1d4ed8] font-mono font-extrabold text-[22px] flex items-center justify-center mx-auto border border-[#bfdbfe]/50 shadow-sm">
+          <div className="w-14 h-14 rounded-full bg-[#eff6ff] dark:bg-blue-950/40 text-[#1d4ed8] dark:text-[#60a5fa] font-mono font-extrabold text-[22px] flex items-center justify-center mx-auto border border-[#bfdbfe]/50 dark:border-blue-900/50 shadow-sm">
             N
           </div>
-          <h1 className="mt-5 text-[28px] font-extrabold tracking-[-0.01em] text-[#0f172a] m-0">
+          <h1 className="mt-5 text-[28px] font-extrabold tracking-[-0.01em] text-[#0f172a] dark:text-[#f8fafc] m-0">
             {t.h1}
           </h1>
-          <p className="mt-2.5 text-[13.5px] text-[#64748b] m-0">
+          <p className="mt-2.5 text-[13.5px] text-[#64748b] dark:text-[#94a3b8] m-0">
             <span>{t.leadPre} </span>
             <button
               type="button"
               onClick={onSignupClick}
-              className="text-[#1d4ed8] font-bold hover:underline bg-transparent border-0 cursor-pointer p-0"
+              className="text-[#1d4ed8] dark:text-[#60a5fa] font-bold hover:underline bg-transparent border-0 cursor-pointer p-0"
             >
               {t.leadLink}
             </button>
@@ -106,14 +106,14 @@ export function LoginForm({
 
         {/* Status Banners */}
         {errors.general && (
-          <div className="mt-4 text-[12.5px] font-semibold rounded-lg px-3 py-2.5 bg-[#fef2f2] border border-[#fecaca] text-[#991b1b] flex items-center gap-2">
+          <div className="mt-4 text-[12.5px] font-semibold rounded-lg px-3 py-2.5 bg-[#fef2f2] dark:bg-red-950/40 border border-[#fecaca] dark:border-red-900/50 text-[#991b1b] dark:text-red-300 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#ef4444] shrink-0" />
             <span>{errors.general || t.bannerErr}</span>
           </div>
         )}
 
         {isSuccess && (
-          <div className="mt-4 text-[12.5px] font-semibold rounded-lg px-3 py-2.5 bg-[#ecfdf5] border border-[#a7f3d0] text-[#065f46] flex items-center gap-2">
+          <div className="mt-4 text-[12.5px] font-semibold rounded-lg px-3 py-2.5 bg-[#ecfdf5] dark:bg-emerald-950/40 border border-[#a7f3d0] dark:border-emerald-800/50 text-[#065f46] dark:text-emerald-300 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#10b981] shrink-0" />
             <span>{t.bannerOk}</span>
           </div>
@@ -134,10 +134,10 @@ export function LoginForm({
                 autoComplete="username"
                 autoCapitalize="none"
                 spellCheck="false"
-                className={`w-full h-12 border rounded-lg px-4 text-sm font-sans text-[#0f172a] bg-white outline-none transition-all placeholder:text-[#94a3b8] ${
+                className={`w-full h-12 border rounded-lg px-4 text-sm font-sans text-[#0f172a] dark:text-[#f8fafc] bg-white dark:bg-[#0f172a] outline-none transition-all placeholder:text-[#94a3b8] dark:placeholder:text-[#64748b] ${
                   errors.email
                     ? 'border-[#ef4444] ring-2 ring-[#ef4444]/20'
-                    : 'border-[#cbd5e1] focus:border-[#1d4ed8] focus:ring-3 focus:ring-[#1d4ed8]/12'
+                    : 'border-[#cbd5e1] dark:border-[#334155] focus:border-[#1d4ed8] focus:ring-3 focus:ring-[#1d4ed8]/12'
                 }`}
               />
               {errors.email && (
@@ -159,10 +159,10 @@ export function LoginForm({
                 autoComplete="current-password"
                 autoCapitalize="none"
                 spellCheck="false"
-                className={`w-full h-12 border rounded-lg px-4 text-sm font-sans text-[#0f172a] bg-white outline-none transition-all placeholder:text-[#94a3b8] ${
+                className={`w-full h-12 border rounded-lg px-4 text-sm font-sans text-[#0f172a] dark:text-[#f8fafc] bg-white dark:bg-[#0f172a] outline-none transition-all placeholder:text-[#94a3b8] dark:placeholder:text-[#64748b] ${
                   errors.password
                     ? 'border-[#ef4444] ring-2 ring-[#ef4444]/20'
-                    : 'border-[#cbd5e1] focus:border-[#1d4ed8] focus:ring-3 focus:ring-[#1d4ed8]/12'
+                    : 'border-[#cbd5e1] dark:border-[#334155] focus:border-[#1d4ed8] focus:ring-3 focus:ring-[#1d4ed8]/12'
                 }`}
               />
               {errors.password && (
@@ -174,13 +174,13 @@ export function LoginForm({
 
             {/* Aux Row: Remember me + Forgot password */}
             <div className="mt-3.5 flex items-center justify-between">
-              <label className="flex items-center gap-2 text-[13px] font-semibold text-[#334155] cursor-pointer">
+              <label className="flex items-center gap-2 text-[13px] font-semibold text-[#334155] dark:text-[#cbd5e1] cursor-pointer">
                 <input
                   type="checkbox"
                   checked={formData.rememberMe}
                   disabled={isLoading || isSuccess}
                   onChange={(e) => onChange('rememberMe', e.target.checked)}
-                  className="w-4 h-4 rounded border-[#cbd5e1] text-[#1d4ed8] focus:ring-[#1d4ed8] cursor-pointer accent-[#1d4ed8]"
+                  className="w-4 h-4 rounded border-[#cbd5e1] dark:border-[#334155] text-[#1d4ed8] focus:ring-[#1d4ed8] cursor-pointer accent-[#1d4ed8]"
                 />
                 <span>{t.remember}</span>
               </label>
@@ -188,7 +188,7 @@ export function LoginForm({
               <button
                 type="button"
                 onClick={() => setShowForgotModal(true)}
-                className="text-[13px] font-semibold text-[#1d4ed8] hover:underline bg-transparent border-0 cursor-pointer p-0"
+                className="text-[13px] font-semibold text-[#1d4ed8] dark:text-[#60a5fa] hover:underline bg-transparent border-0 cursor-pointer p-0"
               >
                 {t.forgot}
               </button>
@@ -215,7 +215,7 @@ export function LoginForm({
         </form>
 
         {/* Divider */}
-        <div className="flex items-center gap-3 max-w-[220px] mx-auto my-4 text-[#94a3b8] text-[11px] font-mono tracking-[0.08em] before:flex-1 before:h-[1px] before:bg-[#e2e8f0] after:flex-1 after:h-[1px] after:bg-[#e2e8f0]">
+        <div className="flex items-center gap-3 max-w-[220px] mx-auto my-4 text-[#94a3b8] dark:text-[#64748b] text-[11px] font-mono tracking-[0.08em] before:flex-1 before:h-[1px] before:bg-[#e2e8f0] dark:before:bg-[#1e293b] after:flex-1 after:h-[1px] after:bg-[#e2e8f0] dark:after:bg-[#1e293b]">
           {t.divider}
         </div>
 
@@ -223,14 +223,14 @@ export function LoginForm({
         <button
           type="button"
           onClick={onSsoClick}
-          className="block mx-auto text-[14px] font-bold text-[#1d4ed8] hover:underline bg-transparent border-0 cursor-pointer p-0 transition-colors"
+          className="block mx-auto text-[14px] font-bold text-[#1d4ed8] dark:text-[#60a5fa] hover:underline bg-transparent border-0 cursor-pointer p-0 transition-colors"
         >
           {t.sso}
         </button>
       </div>
 
       {/* Technical Footer */}
-      <footer className="mt-8 lg:absolute lg:bottom-6 left-0 right-0 text-center font-mono text-[11px] font-bold tracking-[0.1em] text-[#94a3b8]">
+      <footer className="mt-8 lg:absolute lg:bottom-6 left-0 right-0 text-center font-mono text-[11px] font-bold tracking-[0.1em] text-[#94a3b8] dark:text-[#64748b]">
         <span>NOC TOPOLOGY v0.4 · {t.ftEnv} </span>
         <span className="text-[#f59e0b] font-extrabold">TEST</span>
         <span> · {t.ftSupport}</span>
@@ -238,19 +238,19 @@ export function LoginForm({
 
       {/* Forgot Password Modal */}
       {showForgotModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 border border-[#e2e8f0] animate-in fade-in zoom-in-95">
-            <h3 className="text-lg font-bold text-[#0f172a] m-0">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-black/75 backdrop-blur-xs p-4">
+          <div className="bg-white dark:bg-[#0f172a] rounded-xl shadow-xl max-w-md w-full p-6 border border-[#e2e8f0] dark:border-[#1e293b] animate-in fade-in zoom-in-95">
+            <h3 className="text-lg font-bold text-[#0f172a] dark:text-[#f8fafc] m-0">
               {t.forgotModalTitle}
             </h3>
-            <p className="mt-3 text-sm text-[#475569] leading-relaxed">
+            <p className="mt-3 text-sm text-[#475569] dark:text-[#cbd5e1] leading-relaxed">
               {t.forgotModalDesc}
             </p>
             <div className="mt-6 flex justify-end">
               <button
                 type="button"
                 onClick={() => setShowForgotModal(false)}
-                className="h-9 px-4 rounded-lg bg-[#0f172a] hover:bg-[#1e293b] text-white text-xs font-bold transition-colors cursor-pointer"
+                className="h-9 px-4 rounded-lg bg-[#0f172a] dark:bg-[#1e293b] hover:bg-[#1e293b] dark:hover:bg-[#334155] text-white text-xs font-bold transition-colors cursor-pointer"
               >
                 {t.forgotModalClose}
               </button>

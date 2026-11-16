@@ -56,13 +56,13 @@ export function DocumentFilterBar({
           placeholder={
             isEn ? 'Search documents by title...' : 'Tìm kiếm theo tên tài liệu...'
           }
-          className="w-full h-9 pl-9 pr-8 bg-white border border-[#cbd5e1] rounded-lg text-xs text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-[#1d4ed8] focus:border-transparent transition shadow-xs"
+          className="w-full h-9 pl-9 pr-8 bg-white dark:bg-[#0f172a] border border-[#cbd5e1] dark:border-[#334155] rounded-lg text-xs text-[#0f172a] dark:text-[#f8fafc] placeholder-[#94a3b8] dark:placeholder-[#64748b] focus:outline-none focus:ring-2 focus:ring-[#1d4ed8] focus:border-transparent transition shadow-xs"
         />
         {searchQuery && (
           <button
             type="button"
             onClick={() => onSearchChange('')}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#475569] p-0.5"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#475569] dark:hover:text-[#cbd5e1] p-0.5 cursor-pointer"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -77,10 +77,10 @@ export function DocumentFilterBar({
           onChange={(e) =>
             onStatusChange(e.target.value as IndexingStatus | 'ALL')
           }
-          className="h-9 px-2.5 bg-white border border-[#cbd5e1] rounded-lg text-xs font-medium text-[#334155] focus:outline-none focus:ring-2 focus:ring-[#1d4ed8] shadow-xs cursor-pointer"
+          className="h-9 px-2.5 bg-white dark:bg-[#0f172a] border border-[#cbd5e1] dark:border-[#334155] rounded-lg text-xs font-medium text-[#334155] dark:text-[#cbd5e1] focus:outline-none focus:ring-2 focus:ring-[#1d4ed8] shadow-xs cursor-pointer"
         >
           {statusOptions.map((opt) => (
-            <option key={opt.value} value={opt.value}>
+            <option key={opt.value} value={opt.value} className="dark:bg-[#0f172a] dark:text-[#f8fafc]">
               {isEn ? opt.labelEn : opt.labelVi}
             </option>
           ))}
@@ -92,10 +92,10 @@ export function DocumentFilterBar({
           onChange={(e) =>
             onSourceChange(e.target.value as DocumentSource | 'ALL')
           }
-          className="h-9 px-2.5 bg-white border border-[#cbd5e1] rounded-lg text-xs font-medium text-[#334155] focus:outline-none focus:ring-2 focus:ring-[#1d4ed8] shadow-xs cursor-pointer"
+          className="h-9 px-2.5 bg-white dark:bg-[#0f172a] border border-[#cbd5e1] dark:border-[#334155] rounded-lg text-xs font-medium text-[#334155] dark:text-[#cbd5e1] focus:outline-none focus:ring-2 focus:ring-[#1d4ed8] shadow-xs cursor-pointer"
         >
           {sourceOptions.map((opt) => (
-            <option key={opt.value} value={opt.value}>
+            <option key={opt.value} value={opt.value} className="dark:bg-[#0f172a] dark:text-[#f8fafc]">
               {isEn ? opt.labelEn : opt.labelVi}
             </option>
           ))}
@@ -106,7 +106,7 @@ export function DocumentFilterBar({
           <button
             type="button"
             onClick={onResetFilters}
-            className="h-9 px-2.5 text-xs text-[#64748b] hover:text-[#0f172a] hover:bg-slate-100 rounded-lg transition-colors cursor-pointer shrink-0"
+            className="h-9 px-2.5 text-xs text-[#64748b] dark:text-[#94a3b8] hover:text-[#0f172a] dark:hover:text-[#f8fafc] hover:bg-slate-100 dark:hover:bg-[#1e293b] rounded-lg transition-colors cursor-pointer shrink-0"
           >
             {isEn ? 'Reset' : 'Đặt lại'}
           </button>

@@ -84,18 +84,18 @@ export function DashboardSettingsCard({
   ]
 
   return (
-    <section className="bg-white border border-[#e2e8f0] rounded-xl px-5 py-3 mb-3.5 shadow-xs">
-      <div className="font-mono text-[11px] font-extrabold tracking-[0.14em] text-[#64748b] uppercase py-2">
+    <section className="bg-white dark:bg-[#0f172a] border border-[#e2e8f0] dark:border-[#1e293b] rounded-xl px-5 py-3 mb-3.5 shadow-xs transition-colors">
+      <div className="font-mono text-[11px] font-extrabold tracking-[0.14em] text-[#64748b] dark:text-[#94a3b8] uppercase py-2">
         {isEn ? 'DEFAULT DISPLAY (DASHBOARD)' : 'HIỂN THỊ MẶC ĐỊNH (DASHBOARD)'}
       </div>
 
-      <div className="text-[12px] text-[#64748b] pb-2.5">
+      <div className="text-[12px] text-[#64748b] dark:text-[#94a3b8] pb-2.5">
         {isEn
           ? 'Initial values when opening Dashboard — quick toggles in section 4.4 only affect current session.'
           : 'Giá trị ban đầu khi mở Dashboard — phím chỉnh nhanh ở mục 4.4 chỉ tác động phiên đang mở.'}
       </div>
 
-      <div className="divide-y divide-[#f1f5f9]">
+      <div className="divide-y divide-[#f1f5f9] dark:divide-[#1e293b]">
         {items.map((item) => {
           const isChecked = !!settings[item.id]
 
@@ -105,10 +105,10 @@ export function DashboardSettingsCard({
               className="flex items-center justify-between gap-4 py-2.5"
             >
               <div className="flex-1 min-w-0 pr-2">
-                <div className="text-[13.5px] font-bold text-[#0f172a]">
+                <div className="text-[13.5px] font-bold text-[#0f172a] dark:text-[#f8fafc]">
                   {isEn ? item.titleEn : item.titleVi}
                 </div>
-                <div className="text-[12px] text-[#64748b] mt-0.5 truncate sm:text-wrap">
+                <div className="text-[12px] text-[#64748b] dark:text-[#94a3b8] mt-0.5 truncate sm:text-wrap">
                   {isEn ? item.descEn : item.descVi}
                 </div>
               </div>
@@ -123,7 +123,7 @@ export function DashboardSettingsCard({
                 className={`relative inline-flex h-[22px] w-[40px] shrink-0 cursor-pointer rounded-full border transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1d4ed8] focus-visible:ring-offset-2 ${
                   isChecked
                     ? 'bg-[#1d4ed8] border-[#1d4ed8]'
-                    : 'bg-[#e2e8f0] border-[#cbd5e1]'
+                    : 'bg-[#e2e8f0] dark:bg-[#334155] border-[#cbd5e1] dark:border-[#475569]'
                 }`}
               >
                 <span

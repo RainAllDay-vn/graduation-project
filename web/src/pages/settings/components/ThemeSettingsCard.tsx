@@ -28,18 +28,18 @@ export function ThemeSettingsCard({
   ]
 
   return (
-    <section className="bg-white border border-[#e2e8f0] rounded-xl px-5 py-3 mb-3.5 shadow-xs">
-      <div className="font-mono text-[11px] font-extrabold tracking-[0.14em] text-[#64748b] uppercase py-2">
+    <section className="bg-white dark:bg-[#0f172a] border border-[#e2e8f0] dark:border-[#1e293b] rounded-xl px-5 py-3 mb-3.5 shadow-xs transition-colors">
+      <div className="font-mono text-[11px] font-extrabold tracking-[0.14em] text-[#64748b] dark:text-[#94a3b8] uppercase py-2">
         {isEn ? 'APPEARANCE' : 'GIAO DIỆN'}
       </div>
 
       {/* Theme Selection Row */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3 border-t border-[#f1f5f9]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3 border-t border-[#f1f5f9] dark:border-[#1e293b]">
         <div className="flex-1">
-          <div className="text-[13.5px] font-bold text-[#0f172a]">
+          <div className="text-[13.5px] font-bold text-[#0f172a] dark:text-[#f8fafc]">
             {isEn ? 'Theme' : 'Chủ đề'}
           </div>
-          <div className="text-[12px] text-[#64748b] mt-0.5">
+          <div className="text-[12px] text-[#64748b] dark:text-[#94a3b8] mt-0.5">
             {isEn
               ? 'Applied immediately across all pages upon change'
               : 'Áp dụng ngay trên mọi trang sau khi đổi'}
@@ -50,7 +50,7 @@ export function ThemeSettingsCard({
         <div
           role="radiogroup"
           aria-label={isEn ? 'Select Theme' : 'Chọn chủ đề'}
-          className="inline-flex bg-[#f8fafc] border border-[#cbd5e1] rounded-lg p-0.5 gap-1 shrink-0 self-start sm:self-auto"
+          className="inline-flex bg-[#f8fafc] dark:bg-[#0b0f19] border border-[#cbd5e1] dark:border-[#334155] rounded-lg p-0.5 gap-1 shrink-0 self-start sm:self-auto"
         >
           {themeOptions.map((opt) => {
             const isActive = theme === opt.value
@@ -63,8 +63,8 @@ export function ThemeSettingsCard({
                 onClick={() => onThemeChange(opt.value)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12.5px] font-bold transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-[#0f172a] text-white shadow-xs'
-                    : 'text-[#64748b] hover:text-[#0f172a] hover:bg-slate-200/50'
+                    ? 'bg-[#0f172a] dark:bg-[#1e293b] text-white shadow-xs'
+                    : 'text-[#64748b] dark:text-[#94a3b8] hover:text-[#0f172a] dark:hover:text-[#f8fafc] hover:bg-slate-200/50 dark:hover:bg-[#1e293b]/70'
                 }`}
               >
                 {opt.icon}
@@ -76,13 +76,13 @@ export function ThemeSettingsCard({
       </div>
 
       {/* Language Selection Row */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3 border-t border-[#f1f5f9]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3 border-t border-[#f1f5f9] dark:border-[#1e293b]">
         <div className="flex-1">
-          <div className="text-[13.5px] font-bold text-[#0f172a] flex items-center gap-1.5">
-            <Globe className="w-4 h-4 text-[#64748b]" />
+          <div className="text-[13.5px] font-bold text-[#0f172a] dark:text-[#f8fafc] flex items-center gap-1.5">
+            <Globe className="w-4 h-4 text-[#64748b] dark:text-[#94a3b8]" />
             <span>{isEn ? 'Language' : 'Ngôn ngữ'}</span>
           </div>
-          <div className="text-[12px] text-[#64748b] mt-0.5">
+          <div className="text-[12px] text-[#64748b] dark:text-[#94a3b8] mt-0.5">
             {isEn ? 'Interface display language' : 'Ngôn ngữ hiển thị toàn ứng dụng'}
           </div>
         </div>
@@ -91,7 +91,7 @@ export function ThemeSettingsCard({
         <div
           role="radiogroup"
           aria-label={isEn ? 'Select Language' : 'Chọn ngôn ngữ'}
-          className="inline-flex bg-[#f8fafc] border border-[#cbd5e1] rounded-lg p-0.5 gap-1 shrink-0 self-start sm:self-auto"
+          className="inline-flex bg-[#f8fafc] dark:bg-[#0b0f19] border border-[#cbd5e1] dark:border-[#334155] rounded-lg p-0.5 gap-1 shrink-0 self-start sm:self-auto"
         >
           {localeOptions.map((opt) => {
             const isActive = locale === opt.value
@@ -104,8 +104,8 @@ export function ThemeSettingsCard({
                 onClick={() => onLocaleChange(opt.value)}
                 className={`px-3 py-1.5 rounded-md text-[12.5px] font-bold transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-[#0f172a] text-white shadow-xs'
-                    : 'text-[#64748b] hover:text-[#0f172a] hover:bg-slate-200/50'
+                    ? 'bg-[#0f172a] dark:bg-[#1e293b] text-white shadow-xs'
+                    : 'text-[#64748b] dark:text-[#94a3b8] hover:text-[#0f172a] dark:hover:text-[#f8fafc] hover:bg-slate-200/50 dark:hover:bg-[#1e293b]/70'
                 }`}
               >
                 {opt.label}

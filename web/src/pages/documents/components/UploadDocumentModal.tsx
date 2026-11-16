@@ -85,19 +85,19 @@ export function UploadDocumentModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="upload-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-black/75 backdrop-blur-xs p-4 animate-in fade-in duration-150"
     >
       <div
-        className="bg-white rounded-2xl border border-[#e2e8f0] shadow-xl max-w-lg w-full p-6 animate-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-[#0f172a] rounded-2xl border border-[#e2e8f0] dark:border-[#1e293b] shadow-xl max-w-lg w-full p-6 animate-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#f1f5f9]">
+        <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#f1f5f9] dark:border-[#1e293b]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1d4ed8] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-[#1d4ed8] dark:text-[#60a5fa] flex items-center justify-center">
               <UploadCloud className="w-4 h-4" />
             </div>
-            <h3 id="upload-modal-title" className="text-base font-bold text-[#0f172a]">
+            <h3 id="upload-modal-title" className="text-base font-bold text-[#0f172a] dark:text-[#f8fafc]">
               {isEn ? 'Upload Technical Document' : 'Tải lên tài liệu kỹ thuật'}
             </h3>
           </div>
@@ -105,7 +105,7 @@ export function UploadDocumentModal({
             type="button"
             onClick={onClose}
             disabled={isUploading}
-            className="p-1 rounded-md text-[#94a3b8] hover:text-[#475569] transition-colors"
+            className="p-1 rounded-md text-[#94a3b8] hover:text-[#475569] dark:hover:text-[#cbd5e1] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -115,7 +115,7 @@ export function UploadDocumentModal({
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           {/* Error Banner */}
           {(error || validationError) && (
-            <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg flex items-start gap-2">
+            <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300 text-xs rounded-lg flex items-start gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{validationError || error}</span>
             </div>
@@ -123,14 +123,14 @@ export function UploadDocumentModal({
 
           {/* File Dropzone Area */}
           <div>
-            <label className="block text-xs font-bold text-[#0f172a] mb-1.5">
+            <label className="block text-xs font-bold text-[#0f172a] dark:text-[#f8fafc] mb-1.5">
               {isEn ? 'Choose File' : 'Chọn tệp tài liệu'} <span className="text-red-500">*</span>
             </label>
             <div
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-[#cbd5e1] hover:border-[#1d4ed8] rounded-xl p-5 text-center cursor-pointer transition-colors bg-[#f8fafc]/50 hover:bg-blue-50/20"
+              className="border-2 border-dashed border-[#cbd5e1] dark:border-[#334155] hover:border-[#1d4ed8] dark:hover:border-blue-500 rounded-xl p-5 text-center cursor-pointer transition-colors bg-[#f8fafc]/50 dark:bg-[#0b0f19]/50 hover:bg-blue-50/20 dark:hover:bg-blue-950/20"
             >
               <input
                 ref={fileInputRef}
@@ -140,20 +140,20 @@ export function UploadDocumentModal({
                 onChange={handleFileChange}
               />
               {selectedFile ? (
-                <div className="flex items-center justify-center gap-2 text-xs font-bold text-[#1d4ed8]">
+                <div className="flex items-center justify-center gap-2 text-xs font-bold text-[#1d4ed8] dark:text-[#60a5fa]">
                   <FileText className="w-5 h-5" />
                   <span className="truncate max-w-[260px]">{selectedFile.name}</span>
-                  <span className="text-[#64748b] font-normal">
+                  <span className="text-[#64748b] dark:text-[#94a3b8] font-normal">
                     ({(selectedFile.size / 1024).toFixed(1)} KB)
                   </span>
                 </div>
               ) : (
                 <div className="space-y-1">
-                  <UploadCloud className="w-8 h-8 text-[#94a3b8] mx-auto" />
-                  <p className="text-xs font-bold text-[#334155]">
+                  <UploadCloud className="w-8 h-8 text-[#94a3b8] dark:text-[#64748b] mx-auto" />
+                  <p className="text-xs font-bold text-[#334155] dark:text-[#cbd5e1]">
                     {isEn ? 'Click to select or drag and drop file here' : 'Bấm để chọn tệp hoặc kéo thả vào đây'}
                   </p>
-                  <p className="text-[11px] text-[#94a3b8]">
+                  <p className="text-[11px] text-[#94a3b8] dark:text-[#64748b]">
                     {isEn ? 'Supported: .md, .txt, .docx, .pdf, .csv' : 'Định dạng hỗ trợ: .md, .txt, .docx, .pdf, .csv'}
                   </p>
                 </div>
@@ -163,7 +163,7 @@ export function UploadDocumentModal({
 
           {/* Title Input */}
           <div>
-            <label className="block text-xs font-bold text-[#0f172a] mb-1.5">
+            <label className="block text-xs font-bold text-[#0f172a] dark:text-[#f8fafc] mb-1.5">
               {isEn ? 'Document Title' : 'Tên tài liệu'} <span className="text-red-500">*</span>
             </label>
             <input
@@ -171,57 +171,57 @@ export function UploadDocumentModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder={isEn ? 'e.g., Optical Cable Incident Handling SOP' : 'Ví dụ: Quy trình xử lý đứt cáp quang'}
-              className="w-full h-9 px-3 rounded-lg border border-[#cbd5e1] text-xs text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-[#1d4ed8] focus:border-transparent transition"
+              className="w-full h-9 px-3 rounded-lg border border-[#cbd5e1] dark:border-[#334155] text-xs text-[#0f172a] dark:text-[#f8fafc] bg-white dark:bg-[#0b0f19] placeholder-[#94a3b8] dark:placeholder-[#64748b] focus:outline-none focus:ring-2 focus:ring-[#1d4ed8] focus:border-transparent transition"
             />
           </div>
 
           {/* DocType & Source Selectors */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-[#0f172a] mb-1.5">
+              <label className="block text-xs font-bold text-[#0f172a] dark:text-[#f8fafc] mb-1.5">
                 {isEn ? 'Document Type' : 'Loại tài liệu'}
               </label>
               <select
                 value={docType}
                 onChange={(e) => setDocType(e.target.value as DocType)}
-                className="w-full h-9 px-2.5 rounded-lg border border-[#cbd5e1] text-xs text-[#0f172a] bg-white focus:outline-none focus:ring-2 focus:ring-[#1d4ed8]"
+                className="w-full h-9 px-2.5 rounded-lg border border-[#cbd5e1] dark:border-[#334155] text-xs text-[#0f172a] dark:text-[#f8fafc] bg-white dark:bg-[#0b0f19] focus:outline-none focus:ring-2 focus:ring-[#1d4ed8]"
               >
-                <option value="OPERATION_RUNBOOK">
+                <option value="OPERATION_RUNBOOK" className="dark:bg-[#0b0f19]">
                   {isEn ? 'Operation Runbook (SOP)' : 'Quy trình vận hành (SOP)'}
                 </option>
-                <option value="VENDOR_SPECIFICATION">
+                <option value="VENDOR_SPECIFICATION" className="dark:bg-[#0b0f19]">
                   {isEn ? 'Vendor Specification' : 'Tài liệu kỹ thuật hãng'}
                 </option>
-                <option value="POST_MORTEM_REPORT">
+                <option value="POST_MORTEM_REPORT" className="dark:bg-[#0b0f19]">
                   {isEn ? 'Post-Mortem Report' : 'Báo cáo sự cố cũ'}
                 </option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#0f172a] mb-1.5">
+              <label className="block text-xs font-bold text-[#0f172a] dark:text-[#f8fafc] mb-1.5">
                 {isEn ? 'Source' : 'Nguồn gốc'}
               </label>
               <select
                 value={source}
                 onChange={(e) => setSource(e.target.value as DocumentSource)}
-                className="w-full h-9 px-2.5 rounded-lg border border-[#cbd5e1] text-xs text-[#0f172a] bg-white focus:outline-none focus:ring-2 focus:ring-[#1d4ed8]"
+                className="w-full h-9 px-2.5 rounded-lg border border-[#cbd5e1] dark:border-[#334155] text-xs text-[#0f172a] dark:text-[#f8fafc] bg-white dark:bg-[#0b0f19] focus:outline-none focus:ring-2 focus:ring-[#1d4ed8]"
               >
-                <option value="MANUAL">{isEn ? 'Direct Upload' : 'Tải lên trực tiếp'}</option>
-                <option value="INTERNAL_WIKI">{isEn ? 'Internal Wiki' : 'Wiki nội bộ'}</option>
-                <option value="CONFLUENCE">Confluence</option>
-                <option value="OPERATIONS_DRIVE">{isEn ? 'Operations Drive' : 'Drive vận hành'}</option>
+                <option value="MANUAL" className="dark:bg-[#0b0f19]">{isEn ? 'Direct Upload' : 'Tải lên trực tiếp'}</option>
+                <option value="INTERNAL_WIKI" className="dark:bg-[#0b0f19]">{isEn ? 'Internal Wiki' : 'Wiki nội bộ'}</option>
+                <option value="CONFLUENCE" className="dark:bg-[#0b0f19]">Confluence</option>
+                <option value="OPERATIONS_DRIVE" className="dark:bg-[#0b0f19]">{isEn ? 'Operations Drive' : 'Drive vận hành'}</option>
               </select>
             </div>
           </div>
 
           {/* Modal Actions */}
-          <div className="pt-3 border-t border-[#f1f5f9] flex items-center justify-end gap-2.5">
+          <div className="pt-3 border-t border-[#f1f5f9] dark:border-[#1e293b] flex items-center justify-end gap-2.5">
             <button
               type="button"
               onClick={onClose}
               disabled={isUploading}
-              className="h-8 px-4 text-xs font-bold text-[#475569] hover:text-[#0f172a] bg-white hover:bg-[#f8fafc] border border-[#cbd5e1] rounded-lg transition-colors cursor-pointer"
+              className="h-8 px-4 text-xs font-bold text-[#475569] dark:text-[#cbd5e1] hover:text-[#0f172a] dark:hover:text-white bg-white dark:bg-[#1e293b] hover:bg-[#f8fafc] dark:hover:bg-[#334155] border border-[#cbd5e1] dark:border-[#334155] rounded-lg transition-colors cursor-pointer"
             >
               {isEn ? 'Cancel' : 'Hủy'}
             </button>

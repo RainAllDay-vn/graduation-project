@@ -37,23 +37,23 @@ export function SignupForm({
   const isEn = locale === 'en'
 
   return (
-    <div className="flex-1 min-w-0 flex flex-col justify-between items-center py-10 px-6 sm:px-12 md:px-20 bg-white relative">
+    <div className="flex-1 min-w-0 flex flex-col justify-between items-center py-10 px-6 sm:px-12 md:px-20 bg-white dark:bg-[#0b0f19] relative transition-colors">
       {/* Centered Form Card */}
       <div className="w-full max-w-[460px] my-auto">
         {/* Head Branding */}
         <div className="text-center mb-6">
-          <div className="w-14 h-14 rounded-full bg-[#eff6ff] text-[#1d4ed8] font-mono font-extrabold text-2xl flex items-center justify-center mx-auto mb-4 border border-[#bfdbfe]/50 shadow-sm">
+          <div className="w-14 h-14 rounded-full bg-[#eff6ff] dark:bg-blue-950/40 text-[#1d4ed8] dark:text-[#60a5fa] font-mono font-extrabold text-2xl flex items-center justify-center mx-auto mb-4 border border-[#bfdbfe]/50 dark:border-blue-900/50 shadow-sm">
             N
           </div>
-          <h1 className="text-2xl sm:text-[28px] font-extrabold tracking-[-0.01em] text-[#0f172a] m-0">
+          <h1 className="text-2xl sm:text-[28px] font-extrabold tracking-[-0.01em] text-[#0f172a] dark:text-[#f8fafc] m-0">
             {isEn ? 'Create Account' : 'Tạo tài khoản'}
           </h1>
-          <p className="mt-2 text-[13.5px] text-[#64748b]">
+          <p className="mt-2 text-[13.5px] text-[#64748b] dark:text-[#94a3b8]">
             <span>{isEn ? 'Already have an account?' : 'Đã có tài khoản?'}</span>{' '}
             <button
               type="button"
               onClick={onLoginClick}
-              className="text-[#1d4ed8] font-bold hover:underline cursor-pointer bg-transparent border-none p-0 inline"
+              className="text-[#1d4ed8] dark:text-[#60a5fa] font-bold hover:underline cursor-pointer bg-transparent border-none p-0 inline"
             >
               {isEn ? 'Sign In' : 'Đăng nhập'}
             </button>
@@ -62,14 +62,14 @@ export function SignupForm({
 
         {/* Global Error Banner */}
         {errors.general && (
-          <div className="mb-4 bg-[#fef2f2] border border-[#fecaca] text-[#b91c1c] rounded-xl p-3 text-[12.5px] font-semibold leading-relaxed">
+          <div className="mb-4 bg-[#fef2f2] dark:bg-red-950/40 border border-[#fecaca] dark:border-red-900/50 text-[#b91c1c] dark:text-red-300 rounded-xl p-3 text-[12.5px] font-semibold leading-relaxed">
             {errors.general}
           </div>
         )}
 
         {/* Success Banner */}
         {isSuccess && (
-          <div className="mb-4 bg-[#ecfdf5] border border-[#a7f3d0] text-[#047857] rounded-xl p-3 text-[12.5px] font-semibold leading-relaxed">
+          <div className="mb-4 bg-[#ecfdf5] dark:bg-emerald-950/40 border border-[#a7f3d0] dark:border-emerald-800/50 text-[#047857] dark:text-emerald-300 rounded-xl p-3 text-[12.5px] font-semibold leading-relaxed">
             {isEn
               ? 'Account created successfully! You can now log in.'
               : 'Tạo tài khoản thành công — bạn có thể đăng nhập ngay bây giờ.'}
@@ -87,10 +87,10 @@ export function SignupForm({
               placeholder={isEn ? 'Full name' : 'Họ và tên'}
               required
               disabled={isLoading || isSuccess}
-              className={`w-full h-12 px-4 rounded-xl border text-sm text-[#0f172a] bg-white placeholder-[#94a3b8] outline-none transition-all ${
+              className={`w-full h-12 px-4 rounded-xl border text-sm text-[#0f172a] dark:text-[#f8fafc] bg-white dark:bg-[#0f172a] placeholder-[#94a3b8] dark:placeholder-[#64748b] outline-none transition-all ${
                 errors.fullName
                   ? 'border-[#ef4444] ring-2 ring-[#ef4444]/20'
-                  : 'border-[#cbd5e1] focus:border-[#1d4ed8] focus:ring-3 focus:ring-[#1d4ed8]/12'
+                  : 'border-[#cbd5e1] dark:border-[#334155] focus:border-[#1d4ed8] focus:ring-3 focus:ring-[#1d4ed8]/12'
               }`}
             />
             {errors.fullName && (
@@ -107,10 +107,10 @@ export function SignupForm({
               placeholder={isEn ? 'Corporate email — user@company.vn' : 'Email công ty — ten@congty.vn'}
               required
               disabled={isLoading || isSuccess}
-              className={`w-full h-12 px-4 rounded-xl border text-sm text-[#0f172a] bg-white placeholder-[#94a3b8] outline-none transition-all ${
+              className={`w-full h-12 px-4 rounded-xl border text-sm text-[#0f172a] dark:text-[#f8fafc] bg-white dark:bg-[#0f172a] placeholder-[#94a3b8] dark:placeholder-[#64748b] outline-none transition-all ${
                 errors.email
                   ? 'border-[#ef4444] ring-2 ring-[#ef4444]/20'
-                  : 'border-[#cbd5e1] focus:border-[#1d4ed8] focus:ring-3 focus:ring-[#1d4ed8]/12'
+                  : 'border-[#cbd5e1] dark:border-[#334155] focus:border-[#1d4ed8] focus:ring-3 focus:ring-[#1d4ed8]/12'
               }`}
             />
             {errors.email && (
@@ -128,13 +128,13 @@ export function SignupForm({
               required
               minLength={8}
               disabled={isLoading || isSuccess}
-              className={`w-full h-12 px-4 rounded-xl border text-sm text-[#0f172a] bg-white placeholder-[#94a3b8] outline-none transition-all ${
+              className={`w-full h-12 px-4 rounded-xl border text-sm text-[#0f172a] dark:text-[#f8fafc] bg-white dark:bg-[#0f172a] placeholder-[#94a3b8] dark:placeholder-[#64748b] outline-none transition-all ${
                 errors.password
                   ? 'border-[#ef4444] ring-2 ring-[#ef4444]/20'
-                  : 'border-[#cbd5e1] focus:border-[#1d4ed8] focus:ring-3 focus:ring-[#1d4ed8]/12'
+                  : 'border-[#cbd5e1] dark:border-[#334155] focus:border-[#1d4ed8] focus:ring-3 focus:ring-[#1d4ed8]/12'
               }`}
             />
-            <p className="text-[11px] text-[#94a3b8] mt-1.5">
+            <p className="text-[11px] text-[#94a3b8] dark:text-[#64748b] mt-1.5">
               {isEn ? 'minimum 8 characters' : 'tối thiểu 8 ký tự'}
             </p>
             {errors.password && (
@@ -151,10 +151,10 @@ export function SignupForm({
               placeholder={isEn ? 'Confirm password' : 'Nhập lại mật khẩu'}
               required
               disabled={isLoading || isSuccess}
-              className={`w-full h-12 px-4 rounded-xl border text-sm text-[#0f172a] bg-white placeholder-[#94a3b8] outline-none transition-all ${
+              className={`w-full h-12 px-4 rounded-xl border text-sm text-[#0f172a] dark:text-[#f8fafc] bg-white dark:bg-[#0f172a] placeholder-[#94a3b8] dark:placeholder-[#64748b] outline-none transition-all ${
                 errors.confirmPassword
                   ? 'border-[#ef4444] ring-2 ring-[#ef4444]/20'
-                  : 'border-[#cbd5e1] focus:border-[#1d4ed8] focus:ring-3 focus:ring-[#1d4ed8]/12'
+                  : 'border-[#cbd5e1] dark:border-[#334155] focus:border-[#1d4ed8] focus:ring-3 focus:ring-[#1d4ed8]/12'
               }`}
             />
             {errors.confirmPassword && (
@@ -182,7 +182,7 @@ export function SignupForm({
       </div>
 
       {/* Pane Footer */}
-      <footer className="w-full text-center font-mono text-[11px] font-bold tracking-[0.1em] text-[#94a3b8] pt-8">
+      <footer className="w-full text-center font-mono text-[11px] font-bold tracking-[0.1em] text-[#94a3b8] dark:text-[#64748b] pt-8">
         NOC TOPOLOGY v0.4 · MÔI TRƯỜNG <span className="text-[#f59e0b] font-extrabold">TEST</span> · HỖ TRỢ: IT NỘI BỘ
       </footer>
     </div>

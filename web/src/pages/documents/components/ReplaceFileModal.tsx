@@ -66,19 +66,19 @@ export function ReplaceFileModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="replace-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-black/75 backdrop-blur-xs p-4 animate-in fade-in duration-150"
     >
       <div
-        className="bg-white rounded-2xl border border-[#e2e8f0] shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-150"
+        className="bg-white dark:bg-[#0f172a] rounded-2xl border border-[#e2e8f0] dark:border-[#1e293b] shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#f1f5f9]">
+        <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#f1f5f9] dark:border-[#1e293b]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1d4ed8] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-[#1d4ed8] dark:text-[#60a5fa] flex items-center justify-center">
               <RefreshCw className="w-4 h-4" />
             </div>
-            <h3 id="replace-modal-title" className="text-base font-bold text-[#0f172a]">
+            <h3 id="replace-modal-title" className="text-base font-bold text-[#0f172a] dark:text-[#f8fafc]">
               {isEn ? 'Replace Document File' : 'Thay thế tệp tài liệu'}
             </h3>
           </div>
@@ -86,7 +86,7 @@ export function ReplaceFileModal({
             type="button"
             onClick={onClose}
             disabled={isReplacing}
-            className="p-1 rounded-md text-[#94a3b8] hover:text-[#475569] transition-colors"
+            className="p-1 rounded-md text-[#94a3b8] hover:text-[#475569] dark:hover:text-[#cbd5e1] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -95,20 +95,20 @@ export function ReplaceFileModal({
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           {/* Target Document Info Box */}
-          <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-3 text-xs">
-            <span className="font-mono text-[10px] text-[#64748b] tracking-wider uppercase block">
+          <div className="bg-[#f8fafc] dark:bg-[#0b0f19] border border-[#e2e8f0] dark:border-[#1e293b] rounded-xl p-3 text-xs">
+            <span className="font-mono text-[10px] text-[#64748b] dark:text-[#94a3b8] tracking-wider uppercase block">
               {isEn ? 'TARGET DOCUMENT' : 'TÀI LIỆU ĐƯỢC CHỌN'}
             </span>
-            <div className="font-bold text-[#0f172a] mt-0.5 truncate">{doc.title}</div>
-            <div className="text-[11px] text-[#64748b] mt-0.5">
+            <div className="font-bold text-[#0f172a] dark:text-[#f8fafc] mt-0.5 truncate">{doc.title}</div>
+            <div className="text-[11px] text-[#64748b] dark:text-[#94a3b8] mt-0.5">
               {isEn ? 'Current Version:' : 'Phiên bản hiện tại:'}{' '}
-              <strong className="text-[#334155]">v{doc.version || 1}</strong>
+              <strong className="text-[#334155] dark:text-[#cbd5e1]">v{doc.version || 1}</strong>
             </div>
           </div>
 
           {/* Error Message */}
           {(error || validationError) && (
-            <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg flex items-start gap-2">
+            <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300 text-xs rounded-lg flex items-start gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{validationError || error}</span>
             </div>
@@ -116,7 +116,7 @@ export function ReplaceFileModal({
 
           {/* Replacement File Dropzone */}
           <div>
-            <label className="block text-xs font-bold text-[#0f172a] mb-1.5">
+            <label className="block text-xs font-bold text-[#0f172a] dark:text-[#f8fafc] mb-1.5">
               {isEn ? 'Select Revised File' : 'Chọn tệp thay thế'}{' '}
               <span className="text-red-500">*</span>
             </label>
@@ -124,7 +124,7 @@ export function ReplaceFileModal({
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-[#cbd5e1] hover:border-[#1d4ed8] rounded-xl p-5 text-center cursor-pointer transition-colors bg-[#f8fafc]/50 hover:bg-blue-50/20"
+              className="border-2 border-dashed border-[#cbd5e1] dark:border-[#334155] hover:border-[#1d4ed8] dark:hover:border-blue-500 rounded-xl p-5 text-center cursor-pointer transition-colors bg-[#f8fafc]/50 dark:bg-[#0b0f19]/50 hover:bg-blue-50/20 dark:hover:bg-blue-950/20"
             >
               <input
                 ref={fileInputRef}
@@ -134,20 +134,20 @@ export function ReplaceFileModal({
                 onChange={handleFileChange}
               />
               {selectedFile ? (
-                <div className="flex items-center justify-center gap-2 text-xs font-bold text-[#1d4ed8]">
+                <div className="flex items-center justify-center gap-2 text-xs font-bold text-[#1d4ed8] dark:text-[#60a5fa]">
                   <FileText className="w-5 h-5" />
                   <span className="truncate max-w-[200px]">{selectedFile.name}</span>
-                  <span className="text-[#64748b] font-normal">
+                  <span className="text-[#64748b] dark:text-[#94a3b8] font-normal">
                     ({(selectedFile.size / 1024).toFixed(1)} KB)
                   </span>
                 </div>
               ) : (
                 <div className="space-y-1">
-                  <RefreshCw className="w-6 h-6 text-[#94a3b8] mx-auto" />
-                  <p className="text-xs font-bold text-[#334155]">
+                  <RefreshCw className="w-6 h-6 text-[#94a3b8] dark:text-[#64748b] mx-auto" />
+                  <p className="text-xs font-bold text-[#334155] dark:text-[#cbd5e1]">
                     {isEn ? 'Choose new version file' : 'Bấm để chọn tệp phiên bản mới'}
                   </p>
-                  <p className="text-[11px] text-[#94a3b8]">
+                  <p className="text-[11px] text-[#94a3b8] dark:text-[#64748b]">
                     {isEn ? 'Old version will be kept' : 'Phiên bản cũ sẽ được giữ lại'}
                   </p>
                 </div>
@@ -156,7 +156,7 @@ export function ReplaceFileModal({
           </div>
 
           {/* Information Notice */}
-          <p className="text-[11px] text-[#64748b] leading-relaxed">
+          <p className="text-[11px] text-[#64748b] dark:text-[#94a3b8] leading-relaxed">
             {isEn
               ? 'Replacing the file creates a new version (v' +
                 ((doc.version || 1) + 1) +
@@ -167,12 +167,12 @@ export function ReplaceFileModal({
           </p>
 
           {/* Modal Actions */}
-          <div className="pt-3 border-t border-[#f1f5f9] flex items-center justify-end gap-2.5">
+          <div className="pt-3 border-t border-[#f1f5f9] dark:border-[#1e293b] flex items-center justify-end gap-2.5">
             <button
               type="button"
               onClick={onClose}
               disabled={isReplacing}
-              className="h-8 px-4 text-xs font-bold text-[#475569] hover:text-[#0f172a] bg-white hover:bg-[#f8fafc] border border-[#cbd5e1] rounded-lg transition-colors cursor-pointer"
+              className="h-8 px-4 text-xs font-bold text-[#475569] dark:text-[#cbd5e1] hover:text-[#0f172a] dark:hover:text-white bg-white dark:bg-[#1e293b] hover:bg-[#f8fafc] dark:hover:bg-[#334155] border border-[#cbd5e1] dark:border-[#334155] rounded-lg transition-colors cursor-pointer"
             >
               {isEn ? 'Cancel' : 'Hủy'}
             </button>

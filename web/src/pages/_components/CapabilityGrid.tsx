@@ -14,12 +14,12 @@ export function CapabilityGrid({ items }: CapabilityGridProps) {
         {items.map((item) => (
           <div
             key={item.numberTag}
-            className="bg-white border border-[#e2e8f0] rounded-xl p-[20px_22px] shadow-[0_4px_14px_rgba(15,23,42,0.05)] text-left flex flex-col"
+            className="bg-white dark:bg-[#0f172a] border border-[#e2e8f0] dark:border-[#1e293b] rounded-xl p-[20px_22px] shadow-[0_4px_14px_rgba(15,23,42,0.05)] dark:shadow-none text-left flex flex-col transition-colors"
           >
-            <div className="font-mono font-extrabold text-[11px] tracking-[0.16em] text-[#1d4ed8] uppercase">
+            <div className="font-mono font-extrabold text-[11px] tracking-[0.16em] text-[#1d4ed8] dark:text-[#60a5fa] uppercase">
               {item.numberTag}
             </div>
-            <p className="mt-2 text-[13.5px] text-[#334155] leading-[1.6]">
+            <p className="mt-2 text-[13.5px] text-[#334155] dark:text-[#cbd5e1] leading-[1.6]">
               {item.description}
             </p>
           </div>
