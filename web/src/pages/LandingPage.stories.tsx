@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import LandingPage from './index'
+import PublicLayout from '@/components/layout/PublicLayout'
 import { AppProviders } from '@/context'
 
 const meta: Meta<typeof LandingPage> = {
@@ -14,9 +15,11 @@ const meta: Meta<typeof LandingPage> = {
     (Story) => (
       <MemoryRouter>
         <AppProviders>
-          <div className="min-h-screen bg-[#f8fafc] text-[#0f172a] [background-image:radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:26px_26px]">
-            <Story />
-          </div>
+          <Routes>
+            <Route element={<PublicLayout />}>
+              <Route path="*" element={<Story />} />
+            </Route>
+          </Routes>
         </AppProviders>
       </MemoryRouter>
     ),

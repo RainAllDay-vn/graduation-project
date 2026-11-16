@@ -14,7 +14,14 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserDetails | null>(null)
+  const [user, setUser] = useState<UserDetails | null>(() => {
+    try {
+      const saved = localStorage.getItem('noc_user')
+      return saved ? JSON.parse(saved) : null
+    } catch {
+      return null
+    }
+  })
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -24,11 +31,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then((data) => {
         if (isMounted) {
           setUser(data)
+          try {
+            localStorage.setItem('noc_user', JSON.stringify(data))
+          } catch {}
         }
       })
       .catch(() => {
         if (isMounted) {
-          setUser(null)
+          const saved = localStorage.getItem('noc_user')
+          if (saved) {
+            try {
+              setUser(JSON.parse(saved))
+            } catch {
+              setUser(null)
+            }
+          } else {
+            setUser(null)
+          }
         }
       })
       .finally(() => {
@@ -48,6 +67,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       // Invalidate local session state even if network call fails
     } finally {
+      try {
+        localStorage.removeItem('noc_user')
+      } catch {}
       setUser(null)
     }
   }
