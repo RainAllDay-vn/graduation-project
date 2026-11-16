@@ -7,11 +7,11 @@ import { SettingsProvider } from './SettingsContext'
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
-      <SettingsProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <SettingsProvider>
           <IncidentProvider>{children}</IncidentProvider>
-        </AuthProvider>
-      </SettingsProvider>
+        </SettingsProvider>
+      </AuthProvider>
     </ThemeProvider>
   )
 }

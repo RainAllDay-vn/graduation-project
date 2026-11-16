@@ -3,10 +3,14 @@ import {
   useContext,
   useState,
   useCallback,
+  useEffect,
   useMemo,
+  useRef,
   type ReactNode,
 } from 'react'
 import { useTheme, type Theme, type Locale } from './ThemeContext'
+import { useAuth } from './AuthContext'
+import { getSettings, saveSettings as saveSettingsApi } from '@/api/settings'
 
 export interface UserSettings {
   theme: Theme
@@ -87,12 +91,41 @@ function areSettingsEqual(a: UserSettings, b: UserSettings): boolean {
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const { theme, setTheme, locale, setLocale } = useTheme()
+  const { user, isAuthenticated } = useAuth()
 
   const [settings, setSettings] = useState<UserSettings>(() =>
     loadInitialSettings(theme, locale)
   )
   const [draftSettings, setDraftSettings] = useState<UserSettings>(settings)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const hydratedUserRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!isAuthenticated || !user) {
+      hydratedUserRef.current = null
+      return
+    }
+    if (hydratedUserRef.current === user.email) return
+    hydratedUserRef.current = user.email
+
+    getSettings()
+      .then((remote) => {
+        const merged: UserSettings = { ...DEFAULT_SETTINGS, ...remote }
+        setSettings(merged)
+        setDraftSettings(merged)
+        setSaveStatus('idle')
+        setTheme(merged.theme)
+        setLocale(merged.locale)
+        try {
+          localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(merged))
+        } catch (e) {
+          console.warn('Failed to mirror server settings to localStorage', e)
+        }
+      })
+      .catch((e) => {
+        console.warn('Failed to load settings from server', e)
+      })
+  }, [isAuthenticated, user, setTheme, setLocale])
 
   const isDirty = useMemo(() => !areSettingsEqual(settings, draftSettings), [
     settings,
@@ -118,19 +151,27 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     [settings, setTheme, setLocale]
   )
 
-  const saveSettings = useCallback(() => {
+  const saveSettings = useCallback(async () => {
+    const target = draftSettings
     try {
-      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(draftSettings))
+      await saveSettingsApi(target)
+    } catch (e) {
+      console.warn('Failed to save settings to server', e)
+      setSaveStatus('unsaved')
+      return
+    }
+
+    try {
+      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(target))
     } catch (e) {
       console.warn('Failed to save settings to localStorage', e)
     }
 
-    setSettings(draftSettings)
+    setSettings(target)
     setSaveStatus('saved')
 
-    // Ensure theme and locale are firmly synchronized
-    setTheme(draftSettings.theme)
-    setLocale(draftSettings.locale)
+    setTheme(target.theme)
+    setLocale(target.locale)
   }, [draftSettings, setTheme, setLocale])
 
   const discardDraft = useCallback(() => {
@@ -142,7 +183,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setLocale(settings.locale)
   }, [settings, setTheme, setLocale])
 
-  const resetToDefaults = useCallback(() => {
+  const resetToDefaults = useCallback(async () => {
+    try {
+      await saveSettingsApi(DEFAULT_SETTINGS)
+    } catch (e) {
+      console.warn('Failed to reset settings on server', e)
+    }
+
     try {
       localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(DEFAULT_SETTINGS))
     } catch (e) {
