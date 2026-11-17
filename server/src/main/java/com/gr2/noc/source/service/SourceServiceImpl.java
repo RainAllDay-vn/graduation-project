@@ -9,6 +9,7 @@ import com.gr2.noc.source.enums.SourceAuthType;
 import com.gr2.noc.source.enums.SourceStatus;
 import com.gr2.noc.source.enums.SourceType;
 import com.gr2.noc.source.model.ExternalSource;
+import com.gr2.noc.source.mq.MqConsumerRegistry;
 import com.gr2.noc.source.repository.ExternalSourceRepository;
 import com.gr2.noc.source.repository.SourceSyncRecordRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class SourceServiceImpl implements SourceService {
 
     private final ExternalSourceRepository sourceRepository;
     private final SourceSyncRecordRepository syncRecordRepository;
+    private final MqConsumerRegistry mqConsumerRegistry;
 
     @Override
     public List<ExternalSourceSummary> getSources(SourceType type, SourceStatus status, String q) {
@@ -73,7 +75,9 @@ public class SourceServiceImpl implements SourceService {
         if (source == null) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create data source");
         }
-        return ExternalSourceDetails.from(sourceRepository.save(source));
+        ExternalSourceDetails saved = ExternalSourceDetails.from(sourceRepository.save(source));
+        mqConsumerRegistry.refresh();
+        return saved;
     }
 
     @Override
@@ -116,7 +120,9 @@ public class SourceServiceImpl implements SourceService {
 
         validateTypeConfig(source.getType(), source.getEndpointUrl(), source.getPollIntervalSeconds(),
                 source.getBrokerAddress(), source.getTopic());
-        return ExternalSourceDetails.from(sourceRepository.save(source));
+        ExternalSourceDetails saved = ExternalSourceDetails.from(sourceRepository.save(source));
+        mqConsumerRegistry.refresh();
+        return saved;
     }
 
     @Override
@@ -129,6 +135,7 @@ public class SourceServiceImpl implements SourceService {
         }
         syncRecordRepository.deleteBySourceId(source.getId());
         sourceRepository.delete(source);
+        mqConsumerRegistry.refresh();
     }
 
     private ExternalSource findEntity(String id) {

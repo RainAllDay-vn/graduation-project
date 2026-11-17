@@ -127,7 +127,7 @@ class SourceControllerIntegrationTest {
             mockMvc.perform(get("/api/sources").param("q", "NetFlow"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(1)))
-                    .andExpect(jsonPath("$[0].brokerAddress", is("kafka-noc.internal:9092")))
+                    .andExpect(jsonPath("$[0].brokerAddress", is("localhost:5672")))
                     .andExpect(jsonPath("$[0].topic", is("netflow.events")))
                     .andExpect(jsonPath("$[0].streamLatencyMs", lessThan(2000)));
         }

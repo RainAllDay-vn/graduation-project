@@ -102,9 +102,9 @@ class AiInvestigationControllerIntegrationTest {
                                   "title": "AI investigation test incident",
                                   "severity": "WARNING",
                                   "region": "HN",
-                                  "primaryDeviceId": "SW-HN-02"
+                                  "primaryDeviceId": "DEV-AI-%s"
                                 }
-                                """.formatted(incidentId)))
+                                """.formatted(incidentId, incidentId)))
                 .andExpect(status().isCreated());
         return incidentId;
     }

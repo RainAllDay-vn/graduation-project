@@ -25,6 +25,16 @@ repositories {
 
 ext {
 	set('springAiVersion', "1.0.0")
+	set('testcontainers.version', "1.21.3")
+	set('docker-java.version', "3.5.0")
+}
+
+configurations.configureEach {
+	resolutionStrategy.eachDependency { details ->
+		if (details.requested.group == 'com.github.docker-java') {
+			details.useVersion '3.5.2'
+		}
+	}
 }
 
 dependencies {
@@ -48,6 +58,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'com.h2database:h2'
+	testImplementation 'org.testcontainers:rabbitmq'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.awaitility:awaitility'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -59,4 +72,6 @@ dependencyManagement {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	environment 'DOCKER_API_VERSION', System.getenv().getOrDefault('DOCKER_API_VERSION', '1.44')
+	systemProperty 'api.version', System.getenv().getOrDefault('DOCKER_API_VERSION', '1.44')
 }
