@@ -345,3 +345,31 @@ export const EdgeSelectionAndTooltip: Story = {
     </div>
   ),
 }
+
+/**
+ * Story 13: InteractiveNodeDragging (Step 5.5)
+ * Demonstrates free-form node dragging (Stylebook §3.3):
+ * - Grab and move any router across tiers
+ * - Connected upstream/downstream and ring edges follow dynamically in real-time
+ * - ViewportControls provides a 'ĐẶT LẠI' (Reset) button once nodes have moved
+ */
+export const InteractiveNodeDragging: Story = {
+  args: {
+    nodes: sampleNodes,
+    links: sampleLinks,
+    width: 1200,
+    height: 680,
+    locale: 'vi',
+    focusNodeId: 'CORE-02',
+    showLegend: true,
+    showControls: true,
+    showTooltip: true,
+  },
+  render: (args) => (
+    <div className="dark w-full h-[680px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[680px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+        <TopologyCanvas {...args} />
+      </div>
+    </div>
+  ),
+}

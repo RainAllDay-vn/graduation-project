@@ -13,9 +13,11 @@ export interface TopologyNodeProps {
   isDimmed?: boolean
   isExpanded?: boolean
   renderBeacon?: boolean
+  isDragging?: boolean
   locale?: 'vi' | 'en'
   onClick?: (node: DeviceSummary) => void
   onDoubleClick?: (node: DeviceSummary) => void
+  onMouseDown?: (node: DeviceSummary, event: React.MouseEvent<SVGGElement>) => void
   onMouseEnter?: (node: DeviceSummary, event: React.MouseEvent<SVGGElement>) => void
   onMouseMove?: (node: DeviceSummary, event: React.MouseEvent<SVGGElement>) => void
   onMouseLeave?: (node: DeviceSummary, event: React.MouseEvent<SVGGElement>) => void
@@ -33,8 +35,10 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
   isDimmed = false,
   isExpanded = false,
   renderBeacon = true,
+  isDragging = false,
   onClick,
   onDoubleClick,
+  onMouseDown,
   onMouseEnter,
   onMouseMove,
   onMouseLeave,
@@ -65,7 +69,8 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
   return (
     <g
       className={cn(
-        'topology-node-group cursor-pointer select-none transition-opacity duration-200',
+        'topology-node-group select-none transition-opacity duration-200',
+        isDragging ? 'cursor-grabbing z-50' : 'cursor-grab',
         isDimmed && 'opacity-20 hover:opacity-60',
         className
       )}
@@ -73,6 +78,10 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
       data-node-id={node.id}
       data-site={node.site}
       data-status={node.status}
+      data-is-dragging={isDragging ? 'true' : undefined}
+      onMouseDown={(e) => {
+        onMouseDown?.(node, e)
+      }}
       onClick={(e) => {
         e.stopPropagation()
         onClick?.(node)

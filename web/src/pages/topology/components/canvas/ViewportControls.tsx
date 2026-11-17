@@ -8,6 +8,10 @@ export interface ViewportControlsProps {
   onZoomOut?: () => void
   /** Callback fired when Fit (FIT) is clicked */
   onFit?: () => void
+  /** Callback fired when Reset Positions is clicked (Stylebook §3.3) */
+  onResetPositions?: () => void
+  /** Whether any node positions have been customized/dragged */
+  hasCustomPositions?: boolean
   /** Current zoom level as a fraction (e.g. 1.0 = 100%) */
   zoom?: number
   /** Whether zoom in is disabled (e.g. reached max zoom) */
@@ -30,6 +34,8 @@ export const ViewportControls: React.FC<ViewportControlsProps> = ({
   onZoomIn,
   onZoomOut,
   onFit,
+  onResetPositions,
+  hasCustomPositions = false,
   zoom,
   disableZoomIn = false,
   disableZoomOut = false,
@@ -121,6 +127,28 @@ export const ViewportControls: React.FC<ViewportControlsProps> = ({
       >
         FIT
       </button>
+
+      {/* Reset Custom Node Positions Button (Stylebook §3.3) */}
+      {hasCustomPositions && onResetPositions && (
+        <>
+          <div className="w-[1px] h-4 bg-slate-300 dark:bg-slate-700" />
+          <button
+            type="button"
+            onClick={onResetPositions}
+            className={cn(
+              'px-2 h-7 flex items-center justify-center rounded',
+              'font-mono text-[10px] font-extrabold tracking-wider transition-colors outline-none',
+              'focus-visible:ring-1 focus-visible:ring-amber-400',
+              'text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/40'
+            )}
+            title="Đặt lại vị trí các node về chuẩn ban đầu (Stylebook §3.3)"
+            aria-label="Đặt lại vị trí node"
+            data-testid="viewport-reset-positions"
+          >
+            ĐẶT LẠI
+          </button>
+        </>
+      )}
     </div>
   )
 }

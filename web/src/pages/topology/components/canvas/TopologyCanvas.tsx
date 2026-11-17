@@ -13,6 +13,7 @@ import { usePanZoom, type PanZoomTransform } from './usePanZoom'
 import { computeEgoNetwork, type KHopDistance, type KHopFilterMode } from './egoNetwork'
 import { KHopControls } from './KHopControls'
 import { TopologyTooltip, type TooltipTarget } from './TopologyTooltip'
+import { useNodeDrag } from './useNodeDrag'
 
 export interface TopologyCanvasProps {
   nodes?: DeviceSummary[]
@@ -51,6 +52,9 @@ export interface TopologyCanvasProps {
   maxZoom?: number
   onTransformChange?: (transform: PanZoomTransform) => void
   disablePanZoom?: boolean
+  disableNodeDrag?: boolean
+  onNodePositionChange?: (nodeId: string, pos: { x: number; y: number }) => void
+  onResetPositions?: () => void
   onZoomIn?: () => void
   onZoomOut?: () => void
   onFit?: () => void
@@ -103,6 +107,9 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   maxZoom,
   onTransformChange,
   disablePanZoom,
+  disableNodeDrag,
+  onNodePositionChange,
+  onResetPositions,
   onZoomIn,
   onZoomOut,
   onFit,
@@ -261,6 +268,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   )
 
   const { dimensions, tierBounds, nodePositions } = layout
+  const panZoomGroupRef = React.useRef<SVGGElement | null>(null)
 
   // Step 5.1: Pan & Zoom Engine
   const {
@@ -289,8 +297,26 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
     disabled: disablePanZoom,
   })
 
+  // Step 5.5: Interactive Node Dragging (Stylebook §3.3)
+  const {
+    effectiveNodePositions,
+    hasCustomPositions,
+    activeDragNodeId,
+    isDraggingNode,
+    handleNodeMouseDown,
+    resetPositions,
+    wasRecentlyDragged,
+  } = useNodeDrag({
+    nodePositions,
+    svgRef,
+    containerGroupRef: panZoomGroupRef,
+    disabled: disableNodeDrag,
+    onPositionChange: onNodePositionChange,
+  })
+
   // Single-click: Select node -> affects Inspector (Stylebook §3.5: "không đụng beacon")
   const handleSelectNode = (node: DeviceSummary) => {
+    if (wasRecentlyDragged()) return
     if (onSelectNode) {
       onSelectNode(node)
     } else {
@@ -311,10 +337,11 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
 
   // Double-click: Focus / Unfocus beacon toggle (Stylebook §3.5: "Bấm đúp một node → beacon... Bấm đúp lại → biến mất")
   const handleFocusNode = (node: DeviceSummary) => {
+    if (wasRecentlyDragged()) return
     const isCurrentlyFocused = activeFocusedNodeIds.has(node.id)
 
     if (!isCurrentlyFocused) {
-      const pos = nodePositions.get(node.id)
+      const pos = effectiveNodePositions.get(node.id)
       if (pos) {
         panToPoint(pos.x, pos.y)
       }
@@ -345,7 +372,13 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
       onDoubleClick={handleDoubleClick}
       className={cn(
         'relative w-full h-full min-w-0 min-h-0 overflow-hidden select-none',
-        disablePanZoom ? '' : isPanning ? 'cursor-grabbing' : 'cursor-grab',
+        isDraggingNode
+          ? 'cursor-grabbing'
+          : disablePanZoom
+          ? ''
+          : isPanning
+          ? 'cursor-grabbing'
+          : 'cursor-grab',
         'bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-[#f8fafc]',
         className
       )}
@@ -369,8 +402,9 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
           className="pointer-events-auto"
         />
 
-        {/* Pan & Zoom Transformed Container (Step 5.1) */}
+        {/* Pan & Zoom Transformed Container (Step 5.1 & Step 5.5) */}
         <g
+          ref={panZoomGroupRef}
           className="topology-pan-zoom-container"
           data-testid="topology-pan-zoom-container"
           transform={`translate(${transform.x}, ${transform.y}) scale(${transform.k})`}
@@ -390,8 +424,8 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
         {/* Layer 2: Physical & Logical Inter-tier Links (Edges behind nodes) */}
         <g className="topology-edges-layer" data-testid="topology-edges-layer">
           {links.map((link) => {
-            const sourcePos = nodePositions.get(link.sourceDeviceId)
-            const targetPos = nodePositions.get(link.targetDeviceId)
+            const sourcePos = effectiveNodePositions.get(link.sourceDeviceId)
+            const targetPos = effectiveNodePositions.get(link.targetDeviceId)
 
             if (!sourcePos || !targetPos) return null
 
@@ -451,7 +485,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
 
         {/* Layer 3: Concentric Beacon Rings for Focused Nodes (Stylebook §3.5: Layer riêng) */}
         <g className="topology-beacons-layer" data-testid="topology-beacons-layer">
-          {Array.from(nodePositions.values())
+          {Array.from(effectiveNodePositions.values())
             .filter((pos) => {
               if (!activeFocusedNodeIds.has(pos.id)) return false
               if (
@@ -476,7 +510,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
 
         {/* Layer 4: Network Node Cards (Positioned atop edges & beacon rings) */}
         <g className="topology-nodes-layer" data-testid="topology-nodes-layer">
-          {Array.from(nodePositions.values()).map((pos) => {
+          {Array.from(effectiveNodePositions.values()).map((pos) => {
             // Prune Mode filtering (Step 5.3)
             if (
               activeFilterMode === 'prune' &&
@@ -491,6 +525,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
             const isExpanded = expandedNodeIds?.includes(pos.id)
             const isDimmed = effectiveDimmedNodeIds.has(pos.id)
             const isHovered = activeHoveredNodeId === pos.id
+            const isDragging = activeDragNodeId === pos.id
 
             return (
               <TopologyNode
@@ -504,10 +539,13 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
                 isExpanded={isExpanded}
                 isDimmed={isDimmed}
                 isHovered={isHovered}
+                isDragging={isDragging}
                 locale={locale}
+                onMouseDown={handleNodeMouseDown}
                 onClick={handleSelectNode}
                 onDoubleClick={handleFocusNode}
                 onMouseEnter={(node, e) => {
+                  if (isDraggingNode) return
                   setInternalHoveredNodeId(node.id)
                   onNodeHover?.(node, e)
                   if (showTooltip) {
@@ -518,6 +556,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
                   }
                 }}
                 onMouseMove={(node, e) => {
+                  if (isDraggingNode) return
                   if (showTooltip) {
                     const rect = containerRef.current?.getBoundingClientRect()
                     const x = rect ? e.clientX - rect.left : e.clientX
@@ -550,6 +589,11 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
           onFit={onFit ?? resetZoom}
           disableZoomIn={!canZoomIn}
           disableZoomOut={!canZoomOut}
+          hasCustomPositions={hasCustomPositions}
+          onResetPositions={() => {
+            resetPositions()
+            onResetPositions?.()
+          }}
         />
       )}
 
