@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, Outlet, useNavigate, Navigate } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate, Navigate, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth, useTheme } from '@/context'
 import { getIncidents } from '@/api/incidents'
@@ -15,6 +15,7 @@ function getInitials(name?: string): string {
 const TABS = {
   vi: [
     { to: '/overview', label: 'Tổng quan' },
+    { to: '/topology', label: 'Bản đồ mạng' },
     { to: '/dashboard', label: 'Điều tra', hasDot: true },
     { to: '/lookup', label: 'Tra cứu' },
     { to: '/documents', label: 'Tài liệu' },
@@ -23,6 +24,7 @@ const TABS = {
   ],
   en: [
     { to: '/overview', label: 'Overview' },
+    { to: '/topology', label: 'Topology' },
     { to: '/dashboard', label: 'Investigation', hasDot: true },
     { to: '/lookup', label: 'Lookup' },
     { to: '/documents', label: 'Documents' },
@@ -33,9 +35,15 @@ const TABS = {
 
 export default function AppLayout() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, isAuthenticated, isLoading, logout } = useAuth()
   const { locale, setLocale } = useTheme()
   const [showUserMenu, setShowUserMenu] = useState(false)
+
+  // Topology and Investigation pages use a strict fixed-viewport canvas (no window scrolling)
+  const isFixedViewport =
+    location.pathname.startsWith('/topology') ||
+    location.pathname.startsWith('/dashboard')
 
   // Query open incidents to dynamically light up the red notification dot
   const { data: incidents } = useQuery({
@@ -77,7 +85,11 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-[#f8fafc] [background-image:radial-gradient(#e2e8f0_1px,transparent_1px)] dark:[background-image:radial-gradient(#1e293b_1px,transparent_1px)] [background-size:26px_26px]">
+    <div
+      className={`flex flex-col bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-[#f8fafc] [background-image:radial-gradient(#e2e8f0_1px,transparent_1px)] dark:[background-image:radial-gradient(#1e293b_1px,transparent_1px)] [background-size:26px_26px] ${
+        isFixedViewport ? 'h-screen h-[100dvh] overflow-hidden' : 'min-h-screen'
+      }`}
+    >
       {/* Top Navigation Bar matching vp-topnav */}
       <header className="h-[60px] shrink-0 flex items-center px-6 md:px-12 bg-white dark:bg-[#0f172a] border-b border-[#e2e8f0] dark:border-[#1e293b] relative z-20">
         {/* Brand */}
@@ -182,7 +194,11 @@ export default function AppLayout() {
       </header>
 
       {/* Main Page Content */}
-      <main className="flex-1 flex flex-col">
+      <main
+        className={`flex-1 flex flex-col ${
+          isFixedViewport ? 'min-h-0 h-[calc(100vh-60px)] h-[calc(100dvh-60px)] overflow-hidden' : ''
+        }`}
+      >
         <Outlet />
       </main>
     </div>

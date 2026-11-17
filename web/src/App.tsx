@@ -10,7 +10,7 @@ import LandingPage from '@/pages'
 import LoginPage from '@/pages/login'
 import SignupPage from '@/pages/signup'
 import OverviewPage from '@/pages/overview'
-import DashboardPage from '@/pages/dashboard'
+import TopologyPage from '@/pages/topology'
 import LookupPage from '@/pages/lookup'
 import DocumentsPage from '@/pages/documents'
 import SourcesPage from '@/pages/sources'
@@ -45,7 +45,8 @@ export default function App() {
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>
                 <Route path="/overview" element={<OverviewPage />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/topology" element={<TopologyPage />} />
+                <Route path="/dashboard" element={<TopologyPage />} />
                 <Route path="/lookup" element={<LookupPage />} />
                 <Route path="/documents" element={<DocumentsPage />} />
                 <Route path="/sources" element={<SourcesPage />} />

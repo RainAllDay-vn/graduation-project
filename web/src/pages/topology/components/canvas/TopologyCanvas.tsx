@@ -172,7 +172,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   return (
     <div
       className={cn(
-        'relative w-full h-full min-h-[500px] overflow-hidden select-none',
+        'relative w-full h-full min-w-0 min-h-0 overflow-hidden select-none',
         'bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-[#f8fafc]',
         className
       )}
