@@ -12,6 +12,7 @@ import { ViewportControls } from './ViewportControls'
 import { usePanZoom, type PanZoomTransform } from './usePanZoom'
 import { computeEgoNetwork, type KHopDistance, type KHopFilterMode } from './egoNetwork'
 import { KHopControls } from './KHopControls'
+import { TopologyTooltip, type TooltipTarget } from './TopologyTooltip'
 
 export interface TopologyCanvasProps {
   nodes?: DeviceSummary[]
@@ -27,6 +28,7 @@ export interface TopologyCanvasProps {
   showLegend?: boolean
   showControls?: boolean
   showKHopControls?: boolean
+  showTooltip?: boolean
   kHop?: KHopDistance
   filterMode?: KHopFilterMode
   onKHopChange?: (kHop: KHopDistance) => void
@@ -78,6 +80,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   showLegend = true,
   showControls = true,
   showKHopControls = true,
+  showTooltip = true,
   kHop: externalKHop,
   filterMode: externalFilterMode = 'ghost',
   onKHopChange: externalOnKHopChange,
@@ -118,6 +121,8 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   const [internalHoveredLinkId, setInternalHoveredLinkId] = useState<string | null>(null)
   const [internalSelectedSite, setInternalSelectedSite] = useState<string | null>(null)
   const [internalSelectedNodeId, setInternalSelectedNodeId] = useState<string | null>(null)
+  const [internalSelectedLinkId, setInternalSelectedLinkId] = useState<string | null>(null)
+  const [tooltipTarget, setTooltipTarget] = useState<TooltipTarget>(null)
   // Stylebook §3.5: Support multiple beacons simultaneously
   const [internalFocusedNodeIds, setInternalFocusedNodeIds] = useState<Set<string>>(() => {
     const s = new Set<string>(focusedNodeIds ?? [])
@@ -133,6 +138,8 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
     externalSelectedSite !== undefined ? externalSelectedSite : internalSelectedSite
   const activeSelectedNodeId =
     selectedNodeId !== undefined ? selectedNodeId : internalSelectedNodeId
+  const activeSelectedLinkId =
+    selectedLinkId !== undefined ? selectedLinkId : internalSelectedLinkId
 
   // Synchronize internalFocusedNodeIds when controlled props change
   React.useEffect(() => {
@@ -288,6 +295,17 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
       onSelectNode(node)
     } else {
       setInternalSelectedNodeId((prev) => (prev === node.id ? null : node.id))
+      setInternalSelectedLinkId(null)
+    }
+  }
+
+  // Single-click: Select link -> affects Inspector (Stylebook §5.4: Edge Inspector)
+  const handleSelectLink = (link: LinkSummary) => {
+    if (onSelectLink) {
+      onSelectLink(link)
+    } else {
+      setInternalSelectedLinkId((prev) => (prev === link.linkId ? null : link.linkId))
+      setInternalSelectedNodeId(null)
     }
   }
 
@@ -320,7 +338,10 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   return (
     <div
       ref={containerRef}
-      onMouseDown={handleMouseDown}
+      onMouseDown={(e) => {
+        setTooltipTarget(null)
+        handleMouseDown(e)
+      }}
       onDoubleClick={handleDoubleClick}
       className={cn(
         'relative w-full h-full min-w-0 min-h-0 overflow-hidden select-none',
@@ -383,7 +404,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
               return null
             }
 
-            const isSelected = selectedLinkId === link.linkId
+            const isSelected = activeSelectedLinkId === link.linkId
             const isHovered = activeHoveredLinkId === link.linkId
             const isDimmed = effectiveDimmedLinkIds.has(link.linkId)
             const isBlastRadius = blastRadiusLinkIds?.includes(link.linkId)
@@ -399,14 +420,29 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
                 isDimmed={isDimmed}
                 isBlastRadius={isBlastRadius}
                 showPortAnchors={showPortAnchors}
-                onClick={onSelectLink}
+                onClick={handleSelectLink}
                 onMouseEnter={(l, e) => {
                   setInternalHoveredLinkId(l.linkId)
                   onLinkHover?.(l, e)
+                  if (showTooltip) {
+                    const rect = containerRef.current?.getBoundingClientRect()
+                    const x = rect ? e.clientX - rect.left : e.clientX
+                    const y = rect ? e.clientY - rect.top : e.clientY
+                    setTooltipTarget({ type: 'link', link: l, cursor: { x, y } })
+                  }
+                }}
+                onMouseMove={(l, e) => {
+                  if (showTooltip) {
+                    const rect = containerRef.current?.getBoundingClientRect()
+                    const x = rect ? e.clientX - rect.left : e.clientX
+                    const y = rect ? e.clientY - rect.top : e.clientY
+                    setTooltipTarget({ type: 'link', link: l, cursor: { x, y } })
+                  }
                 }}
                 onMouseLeave={(_l, e) => {
                   setInternalHoveredLinkId(null)
                   onLinkHover?.(null, e)
+                  setTooltipTarget(null)
                 }}
               />
             )
@@ -474,10 +510,25 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
                 onMouseEnter={(node, e) => {
                   setInternalHoveredNodeId(node.id)
                   onNodeHover?.(node, e)
+                  if (showTooltip) {
+                    const rect = containerRef.current?.getBoundingClientRect()
+                    const x = rect ? e.clientX - rect.left : e.clientX
+                    const y = rect ? e.clientY - rect.top : e.clientY
+                    setTooltipTarget({ type: 'node', node, cursor: { x, y } })
+                  }
+                }}
+                onMouseMove={(node, e) => {
+                  if (showTooltip) {
+                    const rect = containerRef.current?.getBoundingClientRect()
+                    const x = rect ? e.clientX - rect.left : e.clientX
+                    const y = rect ? e.clientY - rect.top : e.clientY
+                    setTooltipTarget({ type: 'node', node, cursor: { x, y } })
+                  }
                 }}
                 onMouseLeave={(_node, e) => {
                   setInternalHoveredNodeId(null)
                   onNodeHover?.(null, e)
+                  setTooltipTarget(null)
                 }}
                 onToggleExpand={onToggleExpandNode}
               />
@@ -520,6 +571,15 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
           onKHopChange={handleKHopChange}
           onFilterModeChange={handleFilterModeChange}
           onClearFocus={handleClearFocus}
+          locale={locale}
+        />
+      )}
+
+      {/* HTML Floating Overlay 4: Rich Contextual Tooltip (Stylebook §3.4) */}
+      {showTooltip && (
+        <TopologyTooltip
+          target={tooltipTarget}
+          containerRef={containerRef}
           locale={locale}
         />
       )}

@@ -17,6 +17,7 @@ export interface TopologyNodeProps {
   onClick?: (node: DeviceSummary) => void
   onDoubleClick?: (node: DeviceSummary) => void
   onMouseEnter?: (node: DeviceSummary, event: React.MouseEvent<SVGGElement>) => void
+  onMouseMove?: (node: DeviceSummary, event: React.MouseEvent<SVGGElement>) => void
   onMouseLeave?: (node: DeviceSummary, event: React.MouseEvent<SVGGElement>) => void
   onToggleExpand?: (nodeId: string) => void
   className?: string
@@ -35,6 +36,7 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
   onClick,
   onDoubleClick,
   onMouseEnter,
+  onMouseMove,
   onMouseLeave,
   onToggleExpand,
   className,
@@ -80,6 +82,7 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
         onDoubleClick?.(node)
       }}
       onMouseEnter={(e) => onMouseEnter?.(node, e)}
+      onMouseMove={(e) => onMouseMove?.(node, e)}
       onMouseLeave={(e) => onMouseLeave?.(node, e)}
     >
       {/* 1. Double Concentric Beacon Rings for Focused Nodes (Stylebook 3.5) */}

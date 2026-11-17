@@ -19,6 +19,7 @@ export interface TopologyEdgeProps {
   showPortAnchors?: boolean
   onClick?: (link: LinkSummary) => void
   onMouseEnter?: (link: LinkSummary, event: React.MouseEvent<SVGPathElement>) => void
+  onMouseMove?: (link: LinkSummary, event: React.MouseEvent<SVGPathElement>) => void
   onMouseLeave?: (link: LinkSummary, event: React.MouseEvent<SVGPathElement>) => void
   className?: string
 }
@@ -34,6 +35,7 @@ export const TopologyEdge: React.FC<TopologyEdgeProps> = ({
   showPortAnchors = true,
   onClick,
   onMouseEnter,
+  onMouseMove,
   onMouseLeave,
   className,
 }) => {
@@ -125,8 +127,12 @@ export const TopologyEdge: React.FC<TopologyEdgeProps> = ({
         strokeWidth={Math.max(16, strokeWidth + 10)}
         strokeLinecap="round"
         className="cursor-pointer pointer-events-auto"
-        onClick={() => onClick?.(link)}
+        onClick={(e) => {
+          e.stopPropagation()
+          onClick?.(link)
+        }}
         onMouseEnter={(e) => onMouseEnter?.(link, e)}
+        onMouseMove={(e) => onMouseMove?.(link, e)}
         onMouseLeave={(e) => onMouseLeave?.(link, e)}
       />
     </g>

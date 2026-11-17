@@ -71,7 +71,7 @@ export function getEdgeHealthColor(
   }
 
   if (options?.isSelected) {
-    return { stroke: '#38bdf8', opacity: 1.0 } // Sky selected highlight
+    return { stroke: '#1d4ed8', opacity: 1.0 } // Vibrant Blue highlight for selected link (Step 5.4)
   }
 
   const upper = (status || '').toUpperCase().trim()

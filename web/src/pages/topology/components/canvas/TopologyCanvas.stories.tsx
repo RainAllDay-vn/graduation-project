@@ -319,3 +319,29 @@ export const KHop1HopPrune: Story = {
     </div>
   ),
 }
+
+/**
+ * Story 12: EdgeSelectionAndTooltip (Step 5.4)
+ * Demonstrates link selection (highlighted with #1d4ed8 stroke and pulsing #38bdf8 halo)
+ * along with rich contextual floating tooltips.
+ */
+export const EdgeSelectionAndTooltip: Story = {
+  args: {
+    nodes: sampleNodes,
+    links: sampleLinks,
+    width: 1200,
+    height: 680,
+    locale: 'vi',
+    selectedLinkId: 'L-P1-C2',
+    showLegend: true,
+    showControls: true,
+    showTooltip: true,
+  },
+  render: (args) => (
+    <div className="dark w-full h-[680px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[680px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+        <TopologyCanvas {...args} />
+      </div>
+    </div>
+  ),
+}
