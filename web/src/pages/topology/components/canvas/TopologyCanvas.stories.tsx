@@ -234,3 +234,88 @@ export const NodeSelectionAndBeacon: Story = {
     </div>
   ),
 }
+
+/**
+ * Story 9: KHop1HopGhost (Step 5.3)
+ * Demonstrates 1-Hop BFS Ego-Network around epicenter CORE-02:
+ * - Direct 1-hop neighbors (PEER-01, IGW-02, AGG-02, AGG-03) and connecting links remain at 100% opacity.
+ * - All devices and links beyond distance 1 are dimmed to 0.15 ghost opacity.
+ */
+export const KHop1HopGhost: Story = {
+  args: {
+    nodes: sampleNodes,
+    links: sampleLinks,
+    width: 1200,
+    height: 680,
+    locale: 'vi',
+    focusNodeId: 'CORE-02',
+    kHop: 1,
+    filterMode: 'ghost',
+    showLegend: true,
+    showControls: true,
+    showKHopControls: true,
+  },
+  render: (args) => (
+    <div className="dark w-full h-[680px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[680px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+        <TopologyCanvas {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/**
+ * Story 10: KHop2HopGhost (Step 5.3)
+ * Demonstrates 2-Hop BFS Ego-Network around epicenter CORE-02:
+ * - Expands visible perimeter to include 2nd-degree neighbors (CORE-01, IGW-01, AGG-01, EXCH-02, EXCH-03).
+ */
+export const KHop2HopGhost: Story = {
+  args: {
+    nodes: sampleNodes,
+    links: sampleLinks,
+    width: 1200,
+    height: 680,
+    locale: 'vi',
+    focusNodeId: 'CORE-02',
+    kHop: 2,
+    filterMode: 'ghost',
+    showLegend: true,
+    showControls: true,
+    showKHopControls: true,
+  },
+  render: (args) => (
+    <div className="dark w-full h-[680px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[680px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+        <TopologyCanvas {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/**
+ * Story 11: KHop1HopPrune (Step 5.3)
+ * Demonstrates 1-Hop Prune Mode:
+ * - Fully hides devices and links beyond 1-hop distance from the SVG canvas (display: 'none').
+ */
+export const KHop1HopPrune: Story = {
+  args: {
+    nodes: sampleNodes,
+    links: sampleLinks,
+    width: 1200,
+    height: 680,
+    locale: 'vi',
+    focusNodeId: 'CORE-02',
+    kHop: 1,
+    filterMode: 'prune',
+    showLegend: true,
+    showControls: true,
+    showKHopControls: true,
+  },
+  render: (args) => (
+    <div className="dark w-full h-[680px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[680px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+        <TopologyCanvas {...args} />
+      </div>
+    </div>
+  ),
+}

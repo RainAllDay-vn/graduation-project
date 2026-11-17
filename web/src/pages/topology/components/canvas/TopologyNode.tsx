@@ -64,7 +64,7 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
     <g
       className={cn(
         'topology-node-group cursor-pointer select-none transition-opacity duration-200',
-        isDimmed && 'opacity-20 pointer-events-none',
+        isDimmed && 'opacity-20 hover:opacity-60',
         className
       )}
       data-testid={`topology-node-${node.id}`}

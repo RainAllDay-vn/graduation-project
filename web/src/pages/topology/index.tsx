@@ -10,6 +10,7 @@ import {
   TopologyLeftSidebar,
   TopologyRightSidebar,
 } from './components'
+import type { KHopDistance, KHopFilterMode } from './components/canvas/egoNetwork'
 import { sampleNodes, sampleLinks } from './components/canvas/mockTopologyData'
 
 export interface TopologyPageProps {
@@ -73,10 +74,22 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
     return sampleLinks
   }, [mockData, remoteData])
 
-  // 3. Selection & Inspection State
+  // 3. Selection & Inspection State (Stylebook §3.5)
+  // Single click: Selected device or link that controls the Inspector (Chapter 5)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [selectedLinkId, setSelectedLinkId] = useState<string | null>(null)
-  const [localFocusNodeId, setLocalFocusNodeId] = useState<string | null>(null)
+
+  // Double click: Set of active beacon focus nodes (Stylebook §3.5: multiple beacons)
+  const [focusedNodeIds, setFocusedNodeIds] = useState<Set<string>>(() => {
+    const s = new Set<string>()
+    if (focusNodeId) s.add(focusNodeId)
+    if (incidentId) s.add('CORE-02')
+    return s
+  })
+  const [currentKHop, setCurrentKHop] = useState<KHopDistance>(
+    (parseInt(searchParams.get('kHop') || '2', 10) as KHopDistance) || 2
+  )
+  const [currentFilterMode, setCurrentFilterMode] = useState<KHopFilterMode>('ghost')
 
   const selectedNode = useMemo(
     () => (selectedNodeId ? nodes.find((n) => n.id === selectedNodeId) ?? null : null),
@@ -88,21 +101,34 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
     [selectedLinkId, links]
   )
 
-  // Incident blast radius and epicenter logic
-  const effectiveFocusNodeId = localFocusNodeId || focusNodeId || (incidentId ? 'CORE-02' : undefined)
+  // Incident blast radius logic
   const blastRadiusLinkIds = useMemo(() => {
     if (!incidentId) return undefined
     // Default affected blast radius links around CORE-02 epicenter
     return ['L-I2-C2', 'L-C2-A2', 'L-C2-A3']
   }, [incidentId])
 
+  // Single click: Only updates selection and inspector context (Stylebook §3.5: "không đụng beacon")
   const handleSelectNode = (node: DeviceSummary) => {
     setSelectedNodeId((prev) => (prev === node.id ? null : node.id))
     setSelectedLinkId(null)
   }
 
+  // Double click: Toggles beacon focus on / off (Stylebook §3.5: "Bấm đúp một node → beacon... Bấm đúp lại → biến mất")
   const handleFocusNode = (node: DeviceSummary) => {
-    setLocalFocusNodeId((prev) => (prev === node.id ? null : node.id))
+    setFocusedNodeIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(node.id)) {
+        next.delete(node.id)
+      } else {
+        next.add(node.id)
+      }
+      return next
+    })
+  }
+
+  const handleClearFocus = () => {
+    setFocusedNodeIds(new Set())
   }
 
   const handleSelectLink = (link: LinkSummary) => {
@@ -113,7 +139,6 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
   const handleCloseInspect = () => {
     setSelectedNodeId(null)
     setSelectedLinkId(null)
-    setLocalFocusNodeId(null)
   }
 
   return (
@@ -126,8 +151,14 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
         incidentId={incidentId}
         totalNodes={nodes.length}
         totalLinks={links.length}
-        focusNodeId={effectiveFocusNodeId}
-        focusHop={kHop}
+        focusNodeId={
+          focusedNodeIds.size === 1
+            ? Array.from(focusedNodeIds)[0]
+            : focusedNodeIds.size > 1
+              ? `${focusedNodeIds.size} TIÊU ĐIỂM`
+              : null
+        }
+        focusHop={typeof currentKHop === 'number' ? currentKHop : undefined}
         locale={locale}
       />
 
@@ -152,13 +183,19 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
               locale={locale}
               selectedNodeId={selectedNodeId || undefined}
               selectedLinkId={selectedLinkId || undefined}
-              focusNodeId={effectiveFocusNodeId}
+              focusedNodeIds={Array.from(focusedNodeIds)}
               blastRadiusLinkIds={blastRadiusLinkIds}
+              kHop={currentKHop}
+              filterMode={currentFilterMode}
+              onKHopChange={setCurrentKHop}
+              onFilterModeChange={setCurrentFilterMode}
               onSelectNode={handleSelectNode}
               onFocusNode={handleFocusNode}
+              onClearFocus={handleClearFocus}
               onSelectLink={handleSelectLink}
               showLegend={true}
               showControls={true}
+              showKHopControls={true}
             />
           )}
         </main>

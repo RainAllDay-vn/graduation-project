@@ -10,6 +10,8 @@ import { TopologyNode } from './TopologyNode'
 import type { StratifiedLayoutResult } from './types'
 import { ViewportControls } from './ViewportControls'
 import { usePanZoom, type PanZoomTransform } from './usePanZoom'
+import { computeEgoNetwork, type KHopDistance, type KHopFilterMode } from './egoNetwork'
+import { KHopControls } from './KHopControls'
 
 export interface TopologyCanvasProps {
   nodes?: DeviceSummary[]
@@ -24,6 +26,11 @@ export interface TopologyCanvasProps {
   showPortAnchors?: boolean
   showLegend?: boolean
   showControls?: boolean
+  showKHopControls?: boolean
+  kHop?: KHopDistance
+  filterMode?: KHopFilterMode
+  onKHopChange?: (kHop: KHopDistance) => void
+  onFilterModeChange?: (mode: KHopFilterMode) => void
   selectedSite?: string | null
   onSiteClick?: (site: string) => void
   selectedNodeId?: string
@@ -47,6 +54,7 @@ export interface TopologyCanvasProps {
   onFit?: () => void
   onSelectNode?: (node: DeviceSummary) => void
   onFocusNode?: (node: DeviceSummary) => void
+  onClearFocus?: () => void
   onToggleExpandNode?: (nodeId: string) => void
   onNodeHover?: (node: DeviceSummary | null, event?: React.MouseEvent) => void
   onSelectLink?: (link: LinkSummary) => void
@@ -69,6 +77,11 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   showPortAnchors = true,
   showLegend = true,
   showControls = true,
+  showKHopControls = true,
+  kHop: externalKHop,
+  filterMode: externalFilterMode = 'ghost',
+  onKHopChange: externalOnKHopChange,
+  onFilterModeChange: externalOnFilterModeChange,
   selectedSite: externalSelectedSite,
   onSiteClick: externalOnSiteClick,
   selectedNodeId,
@@ -92,6 +105,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   onFit,
   onSelectNode,
   onFocusNode,
+  onClearFocus,
   onToggleExpandNode,
   onNodeHover,
   onSelectLink,
@@ -104,7 +118,14 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   const [internalHoveredLinkId, setInternalHoveredLinkId] = useState<string | null>(null)
   const [internalSelectedSite, setInternalSelectedSite] = useState<string | null>(null)
   const [internalSelectedNodeId, setInternalSelectedNodeId] = useState<string | null>(null)
-  const [internalFocusNodeId, setInternalFocusNodeId] = useState<string | null>(null)
+  // Stylebook §3.5: Support multiple beacons simultaneously
+  const [internalFocusedNodeIds, setInternalFocusedNodeIds] = useState<Set<string>>(() => {
+    const s = new Set<string>(focusedNodeIds ?? [])
+    if (focusNodeId) s.add(focusNodeId)
+    return s
+  })
+  const [internalKHop, setInternalKHop] = useState<KHopDistance>(externalKHop ?? 2)
+  const [internalFilterMode, setInternalFilterMode] = useState<KHopFilterMode>(externalFilterMode)
 
   const activeHoveredNodeId = externalHoveredNodeId ?? internalHoveredNodeId
   const activeHoveredLinkId = externalHoveredLinkId ?? internalHoveredLinkId
@@ -112,8 +133,53 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
     externalSelectedSite !== undefined ? externalSelectedSite : internalSelectedSite
   const activeSelectedNodeId =
     selectedNodeId !== undefined ? selectedNodeId : internalSelectedNodeId
-  const activeFocusNodeId =
-    focusNodeId !== undefined ? focusNodeId : internalFocusNodeId
+
+  // Synchronize internalFocusedNodeIds when controlled props change
+  React.useEffect(() => {
+    if (focusedNodeIds !== undefined || focusNodeId !== undefined) {
+      const s = new Set<string>(focusedNodeIds ?? [])
+      if (focusNodeId) s.add(focusNodeId)
+      setInternalFocusedNodeIds(s)
+    }
+  }, [focusedNodeIds, focusNodeId])
+
+  const activeFocusedNodeIds = useMemo(() => {
+    if (focusedNodeIds !== undefined) {
+      const s = new Set<string>(focusedNodeIds)
+      if (focusNodeId) s.add(focusNodeId)
+      return s
+    }
+    return internalFocusedNodeIds
+  }, [focusedNodeIds, focusNodeId, internalFocusedNodeIds])
+
+  const activeKHop = externalKHop !== undefined ? externalKHop : internalKHop
+  const activeFilterMode = externalFilterMode !== undefined ? externalFilterMode : internalFilterMode
+
+  const handleKHopChange = (newKHop: KHopDistance) => {
+    if (externalOnKHopChange) {
+      externalOnKHopChange(newKHop)
+    } else {
+      setInternalKHop(newKHop)
+    }
+  }
+
+  const handleFilterModeChange = (newMode: KHopFilterMode) => {
+    if (externalOnFilterModeChange) {
+      externalOnFilterModeChange(newMode)
+    } else {
+      setInternalFilterMode(newMode)
+    }
+  }
+
+  const handleClearFocus = () => {
+    setInternalFocusedNodeIds(new Set())
+    onClearFocus?.()
+  }
+
+  // Stylebook §3.5: Multi-source BFS Ego-Network runs strictly around active BEACONS (focused nodes)
+  const egoNetwork = useMemo(() => {
+    return computeEgoNetwork(activeFocusedNodeIds, nodes, links, activeKHop, activeFilterMode)
+  }, [activeFocusedNodeIds, nodes, links, activeKHop, activeFilterMode])
 
   const handleSiteClick = (site: string) => {
     if (externalOnSiteClick) {
@@ -134,9 +200,10 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
     return counts
   }, [nodes])
 
-  // Derive dimmed nodes based on active site quick-focus (Stylebook §4.4)
+  // Derive dimmed nodes based on active site quick-focus (Stylebook §4.4) & BFS Ego-Network (Stylebook §3.5)
   const effectiveDimmedNodeIds = useMemo(() => {
     const set = new Set(explicitDimmedNodeIds ?? [])
+    // 1. Site Quick-Focus Dimming
     if (activeSelectedSite) {
       nodes.forEach((n) => {
         if (n.site?.toUpperCase() !== activeSelectedSite.toUpperCase()) {
@@ -144,12 +211,17 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
         }
       })
     }
+    // 2. BFS Ego-Network k-Hop Dimming (Stylebook §3.5: only active when at least one beacon exists)
+    if (activeKHop !== 'all' && egoNetwork.dimmedNodeIds.size > 0) {
+      egoNetwork.dimmedNodeIds.forEach((id) => set.add(id))
+    }
     return set
-  }, [explicitDimmedNodeIds, activeSelectedSite, nodes])
+  }, [explicitDimmedNodeIds, activeSelectedSite, nodes, activeKHop, egoNetwork.dimmedNodeIds])
 
-  // Derive dimmed links based on active site quick-focus
+  // Derive dimmed links based on active site quick-focus & BFS Ego-Network (Stylebook §3.5)
   const effectiveDimmedLinkIds = useMemo(() => {
     const set = new Set(explicitDimmedLinkIds ?? [])
+    // 1. Site Quick-Focus Dimming
     if (activeSelectedSite) {
       links.forEach((l) => {
         const sNode = nodes.find((n) => n.id === l.sourceDeviceId)
@@ -163,8 +235,12 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
         }
       })
     }
+    // 2. BFS Ego-Network k-Hop Dimming (Stylebook §3.5)
+    if (activeKHop !== 'all' && egoNetwork.dimmedLinkIds.size > 0) {
+      egoNetwork.dimmedLinkIds.forEach((id) => set.add(id))
+    }
     return set
-  }, [explicitDimmedLinkIds, activeSelectedSite, links, nodes])
+  }, [explicitDimmedLinkIds, activeSelectedSite, links, nodes, activeKHop, egoNetwork.dimmedLinkIds])
 
   const layout = useMemo(
     () =>
@@ -178,15 +254,6 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   )
 
   const { dimensions, tierBounds, nodePositions } = layout
-
-  // Focused node IDs list for Layer 3 beacon rings (Step 5.2)
-  const activeFocusedNodeIds = useMemo(() => {
-    const ids = new Set<string>(focusedNodeIds ?? [])
-    if (activeFocusNodeId) ids.add(activeFocusNodeId)
-    // Any actively selected node receives the beacon rings
-    if (activeSelectedNodeId) ids.add(activeSelectedNodeId)
-    return ids
-  }, [focusedNodeIds, activeFocusNodeId, activeSelectedNodeId])
 
   // Step 5.1: Pan & Zoom Engine
   const {
@@ -215,7 +282,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
     disabled: disablePanZoom,
   })
 
-  // Node Selection & Focus Handlers (Step 5.2)
+  // Single-click: Select node -> affects Inspector (Stylebook §3.5: "không đụng beacon")
   const handleSelectNode = (node: DeviceSummary) => {
     if (onSelectNode) {
       onSelectNode(node)
@@ -224,15 +291,29 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
     }
   }
 
+  // Double-click: Focus / Unfocus beacon toggle (Stylebook §3.5: "Bấm đúp một node → beacon... Bấm đúp lại → biến mất")
   const handleFocusNode = (node: DeviceSummary) => {
-    const pos = nodePositions.get(node.id)
-    if (pos) {
-      panToPoint(pos.x, pos.y)
+    const isCurrentlyFocused = activeFocusedNodeIds.has(node.id)
+
+    if (!isCurrentlyFocused) {
+      const pos = nodePositions.get(node.id)
+      if (pos) {
+        panToPoint(pos.x, pos.y)
+      }
     }
+
     if (onFocusNode) {
       onFocusNode(node)
     } else {
-      setInternalFocusNodeId((prev) => (prev === node.id ? null : node.id))
+      setInternalFocusedNodeIds((prev) => {
+        const next = new Set(prev)
+        if (next.has(node.id)) {
+          next.delete(node.id)
+        } else {
+          next.add(node.id)
+        }
+        return next
+      })
     }
   }
 
@@ -293,6 +374,15 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
 
             if (!sourcePos || !targetPos) return null
 
+            // Prune Mode filtering (Step 5.3)
+            if (
+              activeFilterMode === 'prune' &&
+              activeKHop !== 'all' &&
+              egoNetwork.dimmedLinkIds.has(link.linkId)
+            ) {
+              return null
+            }
+
             const isSelected = selectedLinkId === link.linkId
             const isHovered = activeHoveredLinkId === link.linkId
             const isDimmed = effectiveDimmedLinkIds.has(link.linkId)
@@ -326,7 +416,17 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
         {/* Layer 3: Concentric Beacon Rings for Focused Nodes (Stylebook §3.5: Layer riêng) */}
         <g className="topology-beacons-layer" data-testid="topology-beacons-layer">
           {Array.from(nodePositions.values())
-            .filter((pos) => activeFocusedNodeIds.has(pos.id))
+            .filter((pos) => {
+              if (!activeFocusedNodeIds.has(pos.id)) return false
+              if (
+                activeFilterMode === 'prune' &&
+                activeKHop !== 'all' &&
+                egoNetwork.dimmedNodeIds.has(pos.id)
+              ) {
+                return false
+              }
+              return true
+            })
             .map((pos) => (
               <TopologyBeacon
                 key={`beacon-${pos.id}`}
@@ -341,6 +441,15 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
         {/* Layer 4: Network Node Cards (Positioned atop edges & beacon rings) */}
         <g className="topology-nodes-layer" data-testid="topology-nodes-layer">
           {Array.from(nodePositions.values()).map((pos) => {
+            // Prune Mode filtering (Step 5.3)
+            if (
+              activeFilterMode === 'prune' &&
+              activeKHop !== 'all' &&
+              egoNetwork.dimmedNodeIds.has(pos.id)
+            ) {
+              return null
+            }
+
             const isSelected = activeSelectedNodeId === pos.id
             const isFocused = activeFocusedNodeIds.has(pos.id)
             const isExpanded = expandedNodeIds?.includes(pos.id)
@@ -399,6 +508,19 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
           selectedSite={activeSelectedSite}
           onSiteClick={handleSiteClick}
           siteCounts={siteCounts}
+        />
+      )}
+
+      {/* HTML Floating Overlay 3: Top-Left k-Hop Ego-Network Filter Toolbar (Stylebook §3.5) */}
+      {showKHopControls && activeFocusedNodeIds.size > 0 && (
+        <KHopControls
+          focusNodeIds={activeFocusedNodeIds}
+          kHop={activeKHop}
+          filterMode={activeFilterMode}
+          onKHopChange={handleKHopChange}
+          onFilterModeChange={handleFilterModeChange}
+          onClearFocus={handleClearFocus}
+          locale={locale}
         />
       )}
     </div>
