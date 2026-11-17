@@ -35,6 +35,17 @@ spring:
       username: ${NEO4J_USERNAME:neo4j}
       password: ${NEO4J_PASSWORD:password123}
 
+  # RabbitMQ (one-way sync from message-queue sources)
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        missing-queues-fatal: false
+        default-requeue-rejected: false
+
   # Spring AI & Vector Store
   ai:
     openai:

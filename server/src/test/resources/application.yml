@@ -8,6 +8,10 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
   ai:
     openai:
       api-key: test-dummy-key
