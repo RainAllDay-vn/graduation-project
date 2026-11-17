@@ -7,6 +7,7 @@ const meta: Meta<typeof SiteLegend> = {
   parameters: {
     layout: 'centered',
   },
+  tags: ['autodocs'],
 }
 
 export default meta

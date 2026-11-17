@@ -8,6 +8,7 @@ const meta: Meta<typeof TopologyCanvas> = {
   parameters: {
     layout: 'fullscreen',
   },
+  tags: ['autodocs'],
 }
 
 export default meta
