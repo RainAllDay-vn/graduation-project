@@ -125,6 +125,17 @@ export function usePanZoom({
     updateTransform(DEFAULT_TRANSFORM, true)
   }, [updateTransform])
 
+  // Pan to center an arbitrary point (x, y) in the viewport (Stylebook §4.1B)
+  const panToPoint = useCallback(
+    (targetX: number, targetY: number, targetK?: number) => {
+      const k = targetK ?? transformRef.current.k
+      const newX = dimensions.width / 2 - targetX * k
+      const newY = dimensions.height / 2 - targetY * k
+      updateTransform({ x: newX, y: newY, k }, true)
+    },
+    [dimensions, updateTransform]
+  )
+
   // Native non-passive Wheel Event handler for smooth zoom around cursor
   useEffect(() => {
     const container = containerRef.current
@@ -233,7 +244,11 @@ export function usePanZoom({
     (e: React.MouseEvent) => {
       if (disabled) return
       const target = e.target as HTMLElement | SVGElement
-      const isInteractive = target.closest('button') || target.closest('.topology-node')
+      const isInteractive =
+        target.closest('button') ||
+        target.closest('.topology-node-group') ||
+        target.closest('.topology-node') ||
+        target.closest('[data-node-id]')
       if (!isInteractive) {
         resetZoom()
       }
@@ -250,6 +265,7 @@ export function usePanZoom({
     zoomIn,
     zoomOut,
     resetZoom,
+    panToPoint,
     setTransform: updateTransform,
     handleMouseDown,
     handleDoubleClick,

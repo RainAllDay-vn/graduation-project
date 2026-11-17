@@ -30,7 +30,7 @@ export const LayerHierarchyDark: Story = {
     nodes: sampleNodes,
     links: sampleLinks,
     width: 1200,
-    height: 780,
+    height: 680,
     locale: 'vi',
     focusNodeId: 'CORE-02',
     blastRadiusLinkIds: ['L-I2-C2', 'L-C2-A2', 'L-C2-A3'],
@@ -40,8 +40,8 @@ export const LayerHierarchyDark: Story = {
     zoom: 1.0,
   },
   render: (args) => (
-    <div className="dark w-full h-[780px] bg-[#0b0f19] p-4 flex items-center justify-center">
-      <div className="w-[1200px] h-[780px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+    <div className="dark w-full h-[680px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[680px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
         <TopologyCanvas {...args} />
       </div>
     </div>
@@ -58,7 +58,7 @@ export const LayerHierarchyLight: Story = {
     nodes: sampleNodes,
     links: sampleLinks,
     width: 1200,
-    height: 780,
+    height: 680,
     locale: 'vi',
     focusNodeId: 'CORE-02',
     blastRadiusLinkIds: ['L-I2-C2', 'L-C2-A2', 'L-C2-A3'],
@@ -68,8 +68,8 @@ export const LayerHierarchyLight: Story = {
     zoom: 1.0,
   },
   render: (args) => (
-    <div className="w-full h-[780px] bg-slate-100 p-4 flex items-center justify-center">
-      <div className="w-[1200px] h-[780px] border border-slate-300 rounded-xl overflow-hidden shadow-xl relative">
+    <div className="w-full h-[680px] bg-slate-100 p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[680px] border border-slate-300 rounded-xl overflow-hidden shadow-xl relative">
         <TopologyCanvas {...args} />
       </div>
     </div>
@@ -87,7 +87,7 @@ export const SiteQuickFocus: Story = {
     nodes: sampleNodes,
     links: sampleLinks,
     width: 1200,
-    height: 780,
+    height: 680,
     locale: 'vi',
     selectedSite: 'SITE-2',
     focusNodeId: 'CORE-02',
@@ -96,8 +96,8 @@ export const SiteQuickFocus: Story = {
     zoom: 1.0,
   },
   render: (args) => (
-    <div className="dark w-full h-[780px] bg-[#0b0f19] p-4 flex items-center justify-center">
-      <div className="w-[1200px] h-[780px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+    <div className="dark w-full h-[680px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[680px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
         <TopologyCanvas {...args} />
       </div>
     </div>
@@ -114,7 +114,7 @@ export const MultiBeaconLayers: Story = {
     nodes: sampleNodes,
     links: sampleLinks,
     width: 1200,
-    height: 780,
+    height: 680,
     locale: 'vi',
     focusedNodeIds: ['CORE-01', 'CORE-02'],
     showLegend: true,
@@ -122,8 +122,8 @@ export const MultiBeaconLayers: Story = {
     zoom: 1.15,
   },
   render: (args) => (
-    <div className="dark w-full h-[780px] bg-[#0b0f19] p-4 flex items-center justify-center">
-      <div className="w-[1200px] h-[780px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+    <div className="dark w-full h-[680px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[680px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
         <TopologyCanvas {...args} />
       </div>
     </div>
@@ -143,15 +143,15 @@ export const InteractivePanZoom: Story = {
     nodes: sampleNodes,
     links: sampleLinks,
     width: 1200,
-    height: 780,
+    height: 680,
     locale: 'vi',
     focusNodeId: 'CORE-02',
     showLegend: true,
     showControls: true,
   },
   render: (args) => (
-    <div className="dark w-full h-[780px] bg-[#0b0f19] p-4 flex items-center justify-center">
-      <div className="w-[1200px] h-[780px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+    <div className="dark w-full h-[680px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[680px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
         <TopologyCanvas {...args} />
       </div>
     </div>
@@ -167,7 +167,7 @@ export const ZoomedInState: Story = {
     nodes: sampleNodes,
     links: sampleLinks,
     width: 1200,
-    height: 780,
+    height: 680,
     locale: 'vi',
     focusNodeId: 'CORE-02',
     showLegend: true,
@@ -176,8 +176,8 @@ export const ZoomedInState: Story = {
     pan: { x: -250, y: -120 },
   },
   render: (args) => (
-    <div className="dark w-full h-[780px] bg-[#0b0f19] p-4 flex items-center justify-center">
-      <div className="w-[1200px] h-[780px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+    <div className="dark w-full h-[680px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[680px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
         <TopologyCanvas {...args} />
       </div>
     </div>
@@ -193,7 +193,7 @@ export const ZoomedOutState: Story = {
     nodes: sampleNodes,
     links: sampleLinks,
     width: 1200,
-    height: 780,
+    height: 680,
     locale: 'vi',
     showLegend: true,
     showControls: true,
@@ -201,8 +201,34 @@ export const ZoomedOutState: Story = {
     pan: { x: 80, y: 40 },
   },
   render: (args) => (
-    <div className="dark w-full h-[780px] bg-[#0b0f19] p-4 flex items-center justify-center">
-      <div className="w-[1200px] h-[780px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+    <div className="dark w-full h-[680px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[680px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+        <TopologyCanvas {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/**
+ * Story 8: NodeSelectionAndBeacon (Step 5.2)
+ * Demonstrates interactive node selection and double concentric radar beacon animations:
+ * - Single click node: Toggles node selection with outer halo and Layer 3 radar beacon rings.
+ * - Double click node: Centers viewport (`panToPoint`) and activates beacon focus reticle.
+ */
+export const NodeSelectionAndBeacon: Story = {
+  args: {
+    nodes: sampleNodes,
+    links: sampleLinks,
+    width: 1200,
+    height: 680,
+    locale: 'vi',
+    selectedNodeId: 'CORE-01',
+    showLegend: true,
+    showControls: true,
+  },
+  render: (args) => (
+    <div className="dark w-full h-[680px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[680px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
         <TopologyCanvas {...args} />
       </div>
     </div>

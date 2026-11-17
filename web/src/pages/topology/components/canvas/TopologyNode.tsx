@@ -71,8 +71,14 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
       data-node-id={node.id}
       data-site={node.site}
       data-status={node.status}
-      onClick={() => onClick?.(node)}
-      onDoubleClick={() => onDoubleClick?.(node)}
+      onClick={(e) => {
+        e.stopPropagation()
+        onClick?.(node)
+      }}
+      onDoubleClick={(e) => {
+        e.stopPropagation()
+        onDoubleClick?.(node)
+      }}
       onMouseEnter={(e) => onMouseEnter?.(node, e)}
       onMouseLeave={(e) => onMouseLeave?.(node, e)}
     >

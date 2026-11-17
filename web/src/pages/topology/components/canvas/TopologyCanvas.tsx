@@ -103,11 +103,17 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   const [internalHoveredNodeId, setInternalHoveredNodeId] = useState<string | null>(null)
   const [internalHoveredLinkId, setInternalHoveredLinkId] = useState<string | null>(null)
   const [internalSelectedSite, setInternalSelectedSite] = useState<string | null>(null)
+  const [internalSelectedNodeId, setInternalSelectedNodeId] = useState<string | null>(null)
+  const [internalFocusNodeId, setInternalFocusNodeId] = useState<string | null>(null)
 
   const activeHoveredNodeId = externalHoveredNodeId ?? internalHoveredNodeId
   const activeHoveredLinkId = externalHoveredLinkId ?? internalHoveredLinkId
   const activeSelectedSite =
     externalSelectedSite !== undefined ? externalSelectedSite : internalSelectedSite
+  const activeSelectedNodeId =
+    selectedNodeId !== undefined ? selectedNodeId : internalSelectedNodeId
+  const activeFocusNodeId =
+    focusNodeId !== undefined ? focusNodeId : internalFocusNodeId
 
   const handleSiteClick = (site: string) => {
     if (externalOnSiteClick) {
@@ -173,12 +179,14 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
 
   const { dimensions, tierBounds, nodePositions } = layout
 
-  // Focused node IDs list for Layer 3 beacon rings
+  // Focused node IDs list for Layer 3 beacon rings (Step 5.2)
   const activeFocusedNodeIds = useMemo(() => {
     const ids = new Set<string>(focusedNodeIds ?? [])
-    if (focusNodeId) ids.add(focusNodeId)
+    if (activeFocusNodeId) ids.add(activeFocusNodeId)
+    // Any actively selected node receives the beacon rings
+    if (activeSelectedNodeId) ids.add(activeSelectedNodeId)
     return ids
-  }, [focusedNodeIds, focusNodeId])
+  }, [focusedNodeIds, activeFocusNodeId, activeSelectedNodeId])
 
   // Step 5.1: Pan & Zoom Engine
   const {
@@ -190,6 +198,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
     zoomIn,
     zoomOut,
     resetZoom,
+    panToPoint,
     handleMouseDown,
     handleDoubleClick,
     canZoomIn,
@@ -205,6 +214,27 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
     onTransformChange,
     disabled: disablePanZoom,
   })
+
+  // Node Selection & Focus Handlers (Step 5.2)
+  const handleSelectNode = (node: DeviceSummary) => {
+    if (onSelectNode) {
+      onSelectNode(node)
+    } else {
+      setInternalSelectedNodeId((prev) => (prev === node.id ? null : node.id))
+    }
+  }
+
+  const handleFocusNode = (node: DeviceSummary) => {
+    const pos = nodePositions.get(node.id)
+    if (pos) {
+      panToPoint(pos.x, pos.y)
+    }
+    if (onFocusNode) {
+      onFocusNode(node)
+    } else {
+      setInternalFocusNodeId((prev) => (prev === node.id ? null : node.id))
+    }
+  }
 
   return (
     <div
@@ -311,7 +341,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
         {/* Layer 4: Network Node Cards (Positioned atop edges & beacon rings) */}
         <g className="topology-nodes-layer" data-testid="topology-nodes-layer">
           {Array.from(nodePositions.values()).map((pos) => {
-            const isSelected = selectedNodeId === pos.id
+            const isSelected = activeSelectedNodeId === pos.id
             const isFocused = activeFocusedNodeIds.has(pos.id)
             const isExpanded = expandedNodeIds?.includes(pos.id)
             const isDimmed = effectiveDimmedNodeIds.has(pos.id)
@@ -330,8 +360,8 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
                 isDimmed={isDimmed}
                 isHovered={isHovered}
                 locale={locale}
-                onClick={onSelectNode}
-                onDoubleClick={onFocusNode}
+                onClick={handleSelectNode}
+                onDoubleClick={handleFocusNode}
                 onMouseEnter={(node, e) => {
                   setInternalHoveredNodeId(node.id)
                   onNodeHover?.(node, e)

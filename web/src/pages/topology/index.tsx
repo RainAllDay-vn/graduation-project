@@ -76,6 +76,7 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
   // 3. Selection & Inspection State
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [selectedLinkId, setSelectedLinkId] = useState<string | null>(null)
+  const [localFocusNodeId, setLocalFocusNodeId] = useState<string | null>(null)
 
   const selectedNode = useMemo(
     () => (selectedNodeId ? nodes.find((n) => n.id === selectedNodeId) ?? null : null),
@@ -88,7 +89,7 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
   )
 
   // Incident blast radius and epicenter logic
-  const effectiveFocusNodeId = focusNodeId || (incidentId ? 'CORE-02' : undefined)
+  const effectiveFocusNodeId = localFocusNodeId || focusNodeId || (incidentId ? 'CORE-02' : undefined)
   const blastRadiusLinkIds = useMemo(() => {
     if (!incidentId) return undefined
     // Default affected blast radius links around CORE-02 epicenter
@@ -100,6 +101,10 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
     setSelectedLinkId(null)
   }
 
+  const handleFocusNode = (node: DeviceSummary) => {
+    setLocalFocusNodeId((prev) => (prev === node.id ? null : node.id))
+  }
+
   const handleSelectLink = (link: LinkSummary) => {
     setSelectedLinkId((prev) => (prev === link.linkId ? null : link.linkId))
     setSelectedNodeId(null)
@@ -108,6 +113,7 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
   const handleCloseInspect = () => {
     setSelectedNodeId(null)
     setSelectedLinkId(null)
+    setLocalFocusNodeId(null)
   }
 
   return (
@@ -149,6 +155,7 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
               focusNodeId={effectiveFocusNodeId}
               blastRadiusLinkIds={blastRadiusLinkIds}
               onSelectNode={handleSelectNode}
+              onFocusNode={handleFocusNode}
               onSelectLink={handleSelectLink}
               showLegend={true}
               showControls={true}
