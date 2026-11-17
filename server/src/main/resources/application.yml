@@ -55,6 +55,9 @@ spring:
         options:
           model: ${OPENAI_MODEL:gpt-4o-mini}
           temperature: 0.2
+      embedding:
+        options:
+          model: ${OPENAI_EMBEDDING_MODEL:text-embedding-3-small}
     vectorstore:
       pgvector:
         table-name: technical_doc_embeddings
@@ -90,3 +93,5 @@ app:
     scheduler:
       enabled: false
     max-auto-retries: 5
+  rag:
+    indexing-enabled: true
