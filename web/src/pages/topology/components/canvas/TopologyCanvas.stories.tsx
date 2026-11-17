@@ -1,0 +1,130 @@
+import type { Meta, StoryObj } from '@storybook/react'
+import { TopologyCanvas } from './TopologyCanvas'
+import { sampleNodes, sampleLinks } from './mockTopologyData'
+
+const meta: Meta<typeof TopologyCanvas> = {
+  title: 'Topology/Canvas/TopologyCanvas',
+  component: TopologyCanvas,
+  parameters: {
+    layout: 'fullscreen',
+  },
+}
+
+export default meta
+type Story = StoryObj<typeof TopologyCanvas>
+
+/**
+ * Story 1: LayerHierarchyDark
+ * Validates the complete 5-layer stacking architecture in Dark Mode:
+ * Layer 1: TierBands (Guidelines, dashed enclosures, monospace bilingual titles)
+ * Layer 2: TopologyEdge (Curved Bézier trunk links & port anchor dots)
+ * Layer 3: TopologyBeacon (Concentric animated beacon rings beneath node cards)
+ * Layer 4: TopologyNode (Node cards, status backgrounds, site borders, access leaf badges)
+ * Floating HTML Overlays:
+ * - Top-Right: ViewportControls (+, −, FIT)
+ * - Bottom-Left: SiteLegend (SITE-1 to SITE-4 swatches with quick-focus chips)
+ */
+export const LayerHierarchyDark: Story = {
+  args: {
+    nodes: sampleNodes,
+    links: sampleLinks,
+    width: 1200,
+    height: 780,
+    locale: 'vi',
+    focusNodeId: 'CORE-02',
+    blastRadiusLinkIds: ['L-I2-C2', 'L-C2-A2', 'L-C2-A3'],
+    selectedLinkId: 'L-P1-C2',
+    showLegend: true,
+    showControls: true,
+    zoom: 1.0,
+  },
+  render: (args) => (
+    <div className="dark w-full h-[780px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[780px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+        <TopologyCanvas {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/**
+ * Story 2: LayerHierarchyLight
+ * Validates the complete 5-layer visual hierarchy under Light Mode NOC tokens:
+ * Ensures contrast on white/slate-50 background, dark borders, and legible typography.
+ */
+export const LayerHierarchyLight: Story = {
+  args: {
+    nodes: sampleNodes,
+    links: sampleLinks,
+    width: 1200,
+    height: 780,
+    locale: 'vi',
+    focusNodeId: 'CORE-02',
+    blastRadiusLinkIds: ['L-I2-C2', 'L-C2-A2', 'L-C2-A3'],
+    selectedLinkId: 'L-P1-C2',
+    showLegend: true,
+    showControls: true,
+    zoom: 1.0,
+  },
+  render: (args) => (
+    <div className="w-full h-[780px] bg-slate-100 p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[780px] border border-slate-300 rounded-xl overflow-hidden shadow-xl relative">
+        <TopologyCanvas {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/**
+ * Story 3: SiteQuickFocus
+ * Demonstrates Stylebook §4.4 quick-focus interaction:
+ * When SITE-2 is selected, routers from SITE-1, SITE-3, and SITE-4 are dimmed to 20% opacity,
+ * highlighting the physical failure and redundancy boundary within SITE-2.
+ */
+export const SiteQuickFocus: Story = {
+  args: {
+    nodes: sampleNodes,
+    links: sampleLinks,
+    width: 1200,
+    height: 780,
+    locale: 'vi',
+    selectedSite: 'SITE-2',
+    focusNodeId: 'CORE-02',
+    showLegend: true,
+    showControls: true,
+    zoom: 1.0,
+  },
+  render: (args) => (
+    <div className="dark w-full h-[780px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[780px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+        <TopologyCanvas {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/**
+ * Story 4: MultiBeaconLayers
+ * Demonstrates multiple nodes with beacon rings rendered on Layer 3 (e.g. CORE-02 and AGG-01).
+ * Validates that beacon rings cleanly pass beneath both node bodies while hovering above edge paths.
+ */
+export const MultiBeaconLayers: Story = {
+  args: {
+    nodes: sampleNodes,
+    links: sampleLinks,
+    width: 1200,
+    height: 780,
+    locale: 'vi',
+    focusedNodeIds: ['CORE-01', 'CORE-02'],
+    showLegend: true,
+    showControls: true,
+    zoom: 1.15,
+  },
+  render: (args) => (
+    <div className="dark w-full h-[780px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[780px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+        <TopologyCanvas {...args} />
+      </div>
+    </div>
+  ),
+}

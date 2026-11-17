@@ -12,6 +12,7 @@ export interface TopologyNodeProps {
   isHovered?: boolean
   isDimmed?: boolean
   isExpanded?: boolean
+  renderBeacon?: boolean
   locale?: 'vi' | 'en'
   onClick?: (node: DeviceSummary) => void
   onDoubleClick?: (node: DeviceSummary) => void
@@ -30,6 +31,7 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
   isHovered = false,
   isDimmed = false,
   isExpanded = false,
+  renderBeacon = true,
   onClick,
   onDoubleClick,
   onMouseEnter,
@@ -75,7 +77,7 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
       onMouseLeave={(e) => onMouseLeave?.(node, e)}
     >
       {/* 1. Double Concentric Beacon Rings for Focused Nodes (Stylebook 3.5) */}
-      {isFocused && (
+      {isFocused && renderBeacon && (
         <g className="node-beacon-rings pointer-events-none">
           {/* Outer static beacon circle */}
           <circle
