@@ -188,20 +188,6 @@ export const sampleNodes: DeviceSummary[] = [
     accessDeviceCount: 16,
     accessErrorCount: 0,
   },
-
-  // Tier 5: Access Leaves
-  {
-    id: 'ACC-01',
-    name: 'hn-acc-01',
-    layer: 'ACCESS',
-    region: 'North',
-    site: 'SITE-1',
-    ipAddress: '10.244.4.1',
-    model: 'Huawei CloudEngine 6800',
-    status: 'ACTIVE',
-    accessDeviceCount: 0,
-    accessErrorCount: 0,
-  },
 ]
 
 export const sampleLinks: LinkSummary[] = [
@@ -379,19 +365,5 @@ export const sampleLinks: LinkSummary[] = [
     capacityGbps: 10,
     operStatus: 'UP',
     utilizationPercent: 68,
-  },
-
-  // Tier 4 -> Tier 5 Leaf Link
-  {
-    linkId: 'L-E1-AC1',
-    sourceDeviceId: 'EXCH-01',
-    targetDeviceId: 'ACC-01',
-    sourcePort: 'TenGig0/2/0/0',
-    targetPort: 'TenGig0/0/0/0',
-    linkType: 'PHYSICAL_FIBER',
-    capacityGbps: 10,
-    operStatus: 'UP',
-    utilizationPercent: 35,
-    isBackup: true,
   },
 ]

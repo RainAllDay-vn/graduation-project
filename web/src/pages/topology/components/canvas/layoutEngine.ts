@@ -10,7 +10,7 @@ import type {
 
 export const DEFAULT_CANVAS_DIMENSIONS: CanvasDimensions = {
   width: 1200,
-  height: 844,
+  height: 680,
   paddingX: 80,
   paddingY: 24,
 }
@@ -52,15 +52,6 @@ export const TIER_DEFINITIONS: TierDefinition[] = [
     height: 140,
     layers: ['EXCHANGE'],
   },
-  {
-    tier: 5,
-    nameVi: 'TẦNG 5 · CỤM TRUY CẬP ĐẦU CUỐI',
-    nameEn: 'TIER 5 · ACCESS LAYER CLUSTERS',
-    shortName: 'ACCESS LEAF',
-    y: 680,
-    height: 140,
-    layers: ['ACCESS'],
-  },
 ]
 
 export const TIER_COLORS: Record<TierLevel, string> = {
@@ -68,11 +59,10 @@ export const TIER_COLORS: Record<TierLevel, string> = {
   2: '#f97316', // Orange
   3: '#06b6d4', // Cyan
   4: '#3b82f6', // Blue
-  5: '#10b981', // Emerald
 }
 
 /**
- * Maps a network device layer to its corresponding stratified tier level (1 to 5).
+ * Maps a network device layer to its corresponding stratified tier level (1 to 4).
  */
 export function getTierForLayer(layer: DeviceLayer): TierLevel {
   switch (layer) {
@@ -84,9 +74,8 @@ export function getTierForLayer(layer: DeviceLayer): TierLevel {
     case 'AGGREGATION':
       return 3
     case 'EXCHANGE':
-      return 4
     case 'ACCESS':
-      return 5
+      return 4
     default:
       return 3
   }

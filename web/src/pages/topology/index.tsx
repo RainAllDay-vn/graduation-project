@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import type { DeviceSummary, LinkSummary } from '@/api/topology'
-import { getSubgraph } from '@/api/topology'
+import { getTopology, getSubgraph } from '@/api/topology'
 import { useTheme } from '@/context'
 import {
   TopologyCanvas,
@@ -43,15 +43,19 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
 
   const kHop = parseInt(searchParams.get('kHop') || '2', 10)
 
-  // 2. Fetch topology subgraph data with graceful fallback
+  // 2. Fetch topology subgraph or full topology graph with graceful fallback
   const { data: remoteData, isLoading } = useQuery({
-    queryKey: ['topology', 'subgraph', focusNodeId, incidentId, kHop],
-    queryFn: () =>
-      getSubgraph({
-        focusNodeId: focusNodeId || undefined,
-        incidentId: incidentId || undefined,
-        kHop,
-      }),
+    queryKey: ['topology', 'graph', focusNodeId, incidentId, kHop],
+    queryFn: () => {
+      if (focusNodeId || incidentId) {
+        return getSubgraph({
+          focusNodeId: focusNodeId || undefined,
+          incidentId: incidentId || undefined,
+          kHop,
+        })
+      }
+      return getTopology()
+    },
     enabled: !mockData,
     staleTime: 30000,
   })

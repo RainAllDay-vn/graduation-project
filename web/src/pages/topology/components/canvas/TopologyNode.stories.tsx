@@ -421,18 +421,6 @@ const sampleFullNodes: DeviceSummary[] = [
     accessDeviceCount: 16,
     accessErrorCount: 0,
   },
-  {
-    id: 'ACC-01',
-    name: 'Access Switch Cluster 01',
-    layer: 'ACCESS',
-    region: 'North',
-    site: 'SITE-1',
-    ipAddress: '10.244.4.1',
-    model: 'Huawei CloudEngine 6800',
-    status: 'ACTIVE',
-    accessDeviceCount: 0,
-    accessErrorCount: 0,
-  },
 ]
 
 export const NodesOnStratifiedCanvasLight: StoryObj<typeof TopologyCanvas> = {

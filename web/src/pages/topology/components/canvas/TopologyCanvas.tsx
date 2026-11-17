@@ -9,6 +9,7 @@ import { TopologyEdge } from './TopologyEdge'
 import { TopologyNode } from './TopologyNode'
 import type { StratifiedLayoutResult } from './types'
 import { ViewportControls } from './ViewportControls'
+import { usePanZoom, type PanZoomTransform } from './usePanZoom'
 
 export interface TopologyCanvasProps {
   nodes?: DeviceSummary[]
@@ -36,6 +37,11 @@ export interface TopologyCanvasProps {
   blastRadiusLinkIds?: string[]
   hoveredLinkId?: string
   zoom?: number
+  pan?: { x: number; y: number }
+  minZoom?: number
+  maxZoom?: number
+  onTransformChange?: (transform: PanZoomTransform) => void
+  disablePanZoom?: boolean
   onZoomIn?: () => void
   onZoomOut?: () => void
   onFit?: () => void
@@ -76,6 +82,11 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   blastRadiusLinkIds,
   hoveredLinkId: externalHoveredLinkId,
   zoom,
+  pan,
+  minZoom,
+  maxZoom,
+  onTransformChange,
+  disablePanZoom,
   onZoomIn,
   onZoomOut,
   onFit,
@@ -169,10 +180,40 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
     return ids
   }, [focusedNodeIds, focusNodeId])
 
+  // Step 5.1: Pan & Zoom Engine
+  const {
+    transform,
+    isPanning,
+    isTransitioning,
+    containerRef,
+    svgRef,
+    zoomIn,
+    zoomOut,
+    resetZoom,
+    handleMouseDown,
+    handleDoubleClick,
+    canZoomIn,
+    canZoomOut,
+  } = usePanZoom({
+    minZoom,
+    maxZoom,
+    initialTransform:
+      zoom !== undefined || pan !== undefined
+        ? { x: pan?.x ?? 0, y: pan?.y ?? 0, k: zoom ?? 1 }
+        : undefined,
+    dimensions,
+    onTransformChange,
+    disabled: disablePanZoom,
+  })
+
   return (
     <div
+      ref={containerRef}
+      onMouseDown={handleMouseDown}
+      onDoubleClick={handleDoubleClick}
       className={cn(
         'relative w-full h-full min-w-0 min-h-0 overflow-hidden select-none',
+        disablePanZoom ? '' : isPanning ? 'cursor-grabbing' : 'cursor-grab',
         'bg-[#f8fafc] dark:bg-[#0b0f19] text-[#0f172a] dark:text-[#f8fafc]',
         className
       )}
@@ -181,14 +222,32 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
     >
       {/* SVG Canvas Root */}
       <svg
+        ref={svgRef}
         viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
         className="w-full h-full block"
         preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Stratified Network Topology Canvas"
       >
-        {/* Layer 1: Stratified Tier Bands (Guidelines & Dashed Enclosures) */}
-        <TierBands
+        {/* Transparent backdrop for receiving drag pan events anywhere on empty canvas */}
+        <rect
+          width={dimensions.width}
+          height={dimensions.height}
+          fill="transparent"
+          className="pointer-events-auto"
+        />
+
+        {/* Pan & Zoom Transformed Container (Step 5.1) */}
+        <g
+          className="topology-pan-zoom-container"
+          data-testid="topology-pan-zoom-container"
+          transform={`translate(${transform.x}, ${transform.y}) scale(${transform.k})`}
+          style={{
+            transition: isTransitioning ? 'transform 240ms cubic-bezier(0, 0, 0.2, 1)' : 'none',
+          }}
+        >
+          {/* Layer 1: Stratified Tier Bands (Guidelines & Dashed Enclosures) */}
+          <TierBands
           tierBounds={tierBounds}
           dimensions={dimensions}
           locale={locale}
@@ -289,15 +348,18 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
 
         {/* Layer 5: Custom SVG Overlays / Visual Annotations Slot */}
         {typeof children === 'function' ? children(layout) : children}
+        </g>
       </svg>
 
       {/* HTML Floating Overlay 1: Top-Right Viewport Controls (Stylebook §0.1 & §3.2) */}
       {showControls && (
         <ViewportControls
-          zoom={zoom}
-          onZoomIn={onZoomIn}
-          onZoomOut={onZoomOut}
-          onFit={onFit}
+          zoom={zoom ?? transform.k}
+          onZoomIn={onZoomIn ?? zoomIn}
+          onZoomOut={onZoomOut ?? zoomOut}
+          onFit={onFit ?? resetZoom}
+          disableZoomIn={!canZoomIn}
+          disableZoomOut={!canZoomOut}
         />
       )}
 

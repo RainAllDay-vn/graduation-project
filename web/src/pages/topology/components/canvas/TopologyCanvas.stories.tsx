@@ -129,3 +129,82 @@ export const MultiBeaconLayers: Story = {
     </div>
   ),
 }
+
+/**
+ * Story 5: InteractivePanZoom (Step 5.1)
+ * Full interactive pan & zoom playground:
+ * - Mouse drag on empty canvas background: Smooth continuous panning with grab/grabbing cursor.
+ * - Mouse wheel: Smooth zoom centered precisely around the mouse cursor position.
+ * - Viewport controls (+, −, FIT): Zoom in (+20%), zoom out (-20%), and reset to fit.
+ * - Double click canvas: Automatically centers and fits the canvas to view.
+ */
+export const InteractivePanZoom: Story = {
+  args: {
+    nodes: sampleNodes,
+    links: sampleLinks,
+    width: 1200,
+    height: 780,
+    locale: 'vi',
+    focusNodeId: 'CORE-02',
+    showLegend: true,
+    showControls: true,
+  },
+  render: (args) => (
+    <div className="dark w-full h-[780px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[780px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+        <TopologyCanvas {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/**
+ * Story 6: ZoomedInState (Step 5.1)
+ * Validates canvas at 1.6x zoom level with pan offset focused on Tier 2 Core Backbones.
+ */
+export const ZoomedInState: Story = {
+  args: {
+    nodes: sampleNodes,
+    links: sampleLinks,
+    width: 1200,
+    height: 780,
+    locale: 'vi',
+    focusNodeId: 'CORE-02',
+    showLegend: true,
+    showControls: true,
+    zoom: 1.6,
+    pan: { x: -250, y: -120 },
+  },
+  render: (args) => (
+    <div className="dark w-full h-[780px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[780px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+        <TopologyCanvas {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/**
+ * Story 7: ZoomedOutState (Step 5.1)
+ * Validates canvas zoomed out to 0.6x (60%) overview perspective.
+ */
+export const ZoomedOutState: Story = {
+  args: {
+    nodes: sampleNodes,
+    links: sampleLinks,
+    width: 1200,
+    height: 780,
+    locale: 'vi',
+    showLegend: true,
+    showControls: true,
+    zoom: 0.6,
+    pan: { x: 80, y: 40 },
+  },
+  render: (args) => (
+    <div className="dark w-full h-[780px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[780px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+        <TopologyCanvas {...args} />
+      </div>
+    </div>
+  ),
+}

@@ -363,18 +363,6 @@ const sampleNodes: DeviceSummary[] = [
     accessDeviceCount: 16,
     accessErrorCount: 0,
   },
-  {
-    id: 'ACC-01',
-    name: 'Access Switch Cluster 01',
-    layer: 'ACCESS',
-    region: 'North',
-    site: 'SITE-1',
-    ipAddress: '10.244.4.1',
-    model: 'Huawei CloudEngine 6800',
-    status: 'ACTIVE',
-    accessDeviceCount: 0,
-    accessErrorCount: 0,
-  },
 ]
 
 const sampleLinks: LinkSummary[] = [
@@ -550,19 +538,6 @@ const sampleLinks: LinkSummary[] = [
     capacityGbps: 10,
     operStatus: 'UP',
     utilizationPercent: 72,
-  },
-
-  // Tier 4 -> Tier 5 Access
-  {
-    linkId: 'L-E1-ACC',
-    sourceDeviceId: 'EXCH-01',
-    targetDeviceId: 'ACC-01',
-    sourcePort: 'TenGig0/2/0/1',
-    targetPort: 'TenGig0/0/0/1',
-    linkType: 'PHYSICAL_FIBER',
-    capacityGbps: 10,
-    operStatus: 'UP',
-    utilizationPercent: 35,
   },
 ]
 

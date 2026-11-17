@@ -113,22 +113,10 @@ const sampleNodes: DeviceSummary[] = [
     accessDeviceCount: 12,
     accessErrorCount: 2,
   },
-  {
-    id: 'ACC-01',
-    name: 'Access Switch Cluster 01',
-    layer: 'ACCESS',
-    region: 'North',
-    site: 'SITE-1',
-    ipAddress: '10.244.4.1',
-    model: 'Huawei CloudEngine 6800',
-    status: 'ACTIVE',
-    accessDeviceCount: 0,
-    accessErrorCount: 0,
-  },
 ]
 
-const emptyLayout = computeStratifiedLayout([], { width: 1200, height: 844 })
-const sampleLayout = computeStratifiedLayout(sampleNodes, { width: 1200, height: 844 })
+const emptyLayout = computeStratifiedLayout([], { width: 1200, height: 680 })
+const sampleLayout = computeStratifiedLayout(sampleNodes, { width: 1200, height: 680 })
 
 const meta: Meta<typeof TierBands> = {
   title: 'Topology/Canvas/TierBands',

@@ -1,7 +1,7 @@
 import type { DeviceLayer, DeviceSummary, LinkSummary } from '@/api/topology'
 export type { LinkSummary }
 
-export type TierLevel = 1 | 2 | 3 | 4 | 5
+export type TierLevel = 1 | 2 | 3 | 4
 
 export interface TierDefinition {
   tier: TierLevel
