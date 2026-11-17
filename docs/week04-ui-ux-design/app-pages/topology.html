@@ -24,16 +24,16 @@
       <a class="page-tab" href="signup.html">Đăng ký</a>
       <a class="page-tab" href="overview.html">Tổng quan</a>
       <span class="page-tab active">Topology</span>
-      <a class="page-tab" href="dashboard.html">Điều tra</a>
       <a class="page-tab" href="lookup.html">Tra cứu</a>
       <a class="page-tab" href="documents.html">Tài liệu</a>
       <a class="page-tab" href="sources.html">Nguồn dữ liệu</a>
       <a class="page-tab" href="settings.html">Cài đặt</a>
     </nav>
     <div class="controls">
-      <span class="lbl">TRẠNG THÁI</span>
-      <button class="seg active" data-state="default">Mặc định (Toàn mạng)</button>
-      <button class="seg" data-state="focus">Tiêu điểm CORE-02</button>
+      <span class="lbl">NGỮ CẢNH</span>
+      <button class="seg active" data-state="default">Toàn mạng (Không incidentId)</button>
+      <button class="seg" data-state="focus">Tiêu điểm CORE-02 (focusNodeId)</button>
+      <button class="seg" data-state="incident">Sự cố INC-07 (Có incidentId)</button>
       <button class="seg" data-state="settings">Cài đặt hiển thị</button>
     </div>
   </header>
@@ -44,13 +44,13 @@
       <div class="side-head">BỐ CỤC &amp; VÙNG</div>
 
       <div class="card" data-region="r-head">
-        <h3>Header mỏng</h3>
-        <p>Brand + chip tiêu điểm hạ tầng: TOÀN MẠNG · 78 THIẾT BỊ · 152 LIÊN KẾT (khi xem tự do) hoặc FOCUS: CORE-02 (2-Hop) khi chọn thiết bị. Hoàn toàn không có mã sự cố hay chip cảnh báo bắt buộc.</p>
+        <h3>Header mỏng thích ứng</h3>
+        <p>Brand + chip linh hoạt: hiển thị chip hạ tầng <code>TOÀN MẠNG</code> / <code>FOCUS: CORE-02</code> khi khám phá tự do; tự động bật chip cảnh báo <code>INC-07 · ĐANG XỬ LÝ</code> khi có tham số <code>incidentId</code>.</p>
       </div>
 
       <div class="card" data-region="r-left">
-        <h3>Sidebar trái — 2 tab</h3>
-        <p>Đã loại bỏ tab Timeline cảnh báo và Giả thuyết AI. Chỉ giữ lại 2 tab thuần túy hạ tầng: <strong>Thiết bị</strong> (ô tìm kiếm + lọc tầng mạng + danh sách A→Z) và <strong>Hiển thị</strong> (chọn bán kính k-Hop, chế độ làm mờ/ẩn, công tắc nhãn cổng).</p>
+        <h3>Sidebar trái thích ứng</h3>
+        <p>Ở chế độ bình thường: chỉ gồm 2 tab hạ tầng (<strong>Thiết bị</strong> và <strong>Hiển thị</strong>). Khi có <code>incidentId</code>: tự động mở khóa thêm 2 tab sự cố chuyên sâu (<strong>Timeline cảnh báo</strong> và <strong>Giả thuyết AI</strong>).</p>
       </div>
 
       <div class="card" data-region="r-canvas">
@@ -87,16 +87,46 @@
               </div>
               <span class="chip topo">TOÀN MẠNG · 78 THIẾT BỊ · 152 LIÊN KẾT</span>
               <span class="chip focus">FOCUS: CORE-02 · 2-HOP LÂN CẬN</span>
+              <span class="chip incident">INC-07 · ĐANG XỬ LÝ · mở 13:52</span>
             </div>
 
             <!-- Body -->
             <div class="vd-body">
 
-              <!-- Left Sidebar (2 Tabs) -->
+              <!-- Left Sidebar -->
               <div class="vd-left" data-region="r-left">
                 <div class="vd-tabs topo-tabs">
+                  <span class="tl-tab incident-tab" data-tab="timeline">Timeline</span>
                   <span class="tl-tab on" data-tab="inventory">Thiết bị</span>
                   <span class="tl-tab" data-tab="settings">Hiển thị</span>
+                </div>
+
+                <!-- Tab: Incident Timeline (When incidentId is present) -->
+                <div class="tl-timeline tl-timeline-incident">
+                  <div class="al-row">
+                    <div class="al-time">14:35</div>
+                    <div class="al-axis"><i class="err"></i></div>
+                    <div class="al-body">
+                      <div class="al-l1"><span class="al-code">ALM-2037</span><span class="al-dev">EXCH-04</span></div>
+                      <div class="al-msg">Mất kết nối BGP về AGG-02</div>
+                    </div>
+                  </div>
+                  <div class="al-row">
+                    <div class="al-time">14:33</div>
+                    <div class="al-axis"><i class="err"></i></div>
+                    <div class="al-body">
+                      <div class="al-l1"><span class="al-code">ALM-2035</span><span class="al-dev">CORE-02</span></div>
+                      <div class="al-msg">BGP session down</div>
+                    </div>
+                  </div>
+                  <div class="al-row">
+                    <div class="al-time">14:32</div>
+                    <div class="al-axis"><i class="warn"></i></div>
+                    <div class="al-body">
+                      <div class="al-l1"><span class="al-code">ALM-2036</span><span class="al-dev">CORE-02</span></div>
+                      <div class="al-msg">Suy hao quang trên liên kết về AGG-02</div>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Tab 1: Devices Directory & Quick Search -->

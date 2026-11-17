@@ -217,27 +217,50 @@
 /* State: default (Toàn mạng) */
 [data-state="default"] .tl-devices { display: flex; }
 [data-state="default"] .tl-settings { display: none; }
+[data-state="default"] .tl-timeline-incident { display: none; }
 [data-state="default"] .vr-overview { display: flex; }
 [data-state="default"] .vr-c02 { display: none; }
 [data-state="default"] .beacons { display: none; }
 [data-state="default"] .chip.topo { display: block; }
 [data-state="default"] .chip.focus { display: none; }
+[data-state="default"] .chip.incident { display: none; }
 
 /* State: focus (Tiêu điểm CORE-02) */
 [data-state="focus"] .tl-devices { display: flex; }
 [data-state="focus"] .tl-settings { display: none; }
+[data-state="focus"] .tl-timeline-incident { display: none; }
 [data-state="focus"] .vr-overview { display: none; }
 [data-state="focus"] .vr-c02 { display: flex; }
 [data-state="focus"] .beacons { display: block; }
 [data-state="focus"] .chip.topo { display: none; }
 [data-state="focus"] .chip.focus { display: block; }
+[data-state="focus"] .chip.incident { display: none; }
 [data-state="focus"] .d1 { opacity: .16; }
+
+/* State: incident (Có incidentId=INC-07 — Nâng cấp giao diện sự cố) */
+[data-state="incident"] .tl-devices { display: none; }
+[data-state="incident"] .tl-settings { display: none; }
+[data-state="incident"] .tl-timeline-incident { display: flex; }
+[data-state="incident"] .tl-tab.incident-tab { display: inline-block; }
+[data-state="incident"] .tl-tab[data-tab="timeline"] { color: #e2e8f0; border-bottom-color: var(--bad); }
+[data-state="incident"] .tl-tab[data-tab="inventory"] { color: #64748b; border-bottom-color: transparent; }
+[data-state="incident"] .vr-overview { display: none; }
+[data-state="incident"] .vr-c02 { display: flex; }
+[data-state="incident"] .beacons { display: block; }
+[data-state="incident"] .chip.topo { display: none; }
+[data-state="incident"] .chip.focus { display: none; }
+[data-state="incident"] .chip.incident { display: block; color: #fbbf24; border: 1px solid #f59e0b; background: rgba(245, 158, 11, 0.12); }
+[data-state="incident"] .d2 { opacity: .16; }
 
 /* State: settings (Cài đặt hiển thị) */
 [data-state="settings"] .tl-devices { display: none; }
 [data-state="settings"] .tl-settings { display: flex; }
+[data-state="settings"] .tl-timeline-incident { display: none; }
 [data-state="settings"] .tl-tab[data-tab="inventory"] { color: #64748b; border-bottom-color: transparent; }
 [data-state="settings"] .tl-tab[data-tab="settings"] { color: #e2e8f0; border-bottom-color: var(--focus); }
 [data-state="settings"] .vr-overview { display: flex; }
 [data-state="settings"] .vr-c02 { display: none; }
 [data-state="settings"] .beacons { display: none; }
+[data-state="settings"] .chip.topo { display: block; }
+[data-state="settings"] .chip.focus { display: none; }
+[data-state="settings"] .chip.incident { display: none; }

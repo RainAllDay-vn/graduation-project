@@ -17,6 +17,8 @@
       var tabName = t.getAttribute("data-tab");
       if (state === "settings") {
         t.classList.toggle("on", tabName === "settings");
+      } else if (state === "incident") {
+        t.classList.toggle("on", tabName === "timeline");
       } else {
         t.classList.toggle("on", tabName === "inventory");
       }
@@ -34,6 +36,8 @@
       var tabName = t.getAttribute("data-tab");
       if (tabName === "settings") {
         setState("settings");
+      } else if (tabName === "timeline") {
+        setState("incident");
       } else {
         setState("default");
       }

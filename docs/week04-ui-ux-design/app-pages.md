@@ -12,22 +12,22 @@ Tài liệu liệt kê toàn bộ trang của hệ thống, quy ước điều h
   - [2. Đăng nhập](#2-đăng-nhập)
   - [3. Đăng ký tài khoản](#3-đăng-ký-tài-khoản)
   - [4. Tổng quan mạng](#4-tổng-quan-mạng)
-  - [5. Dashboard điều tra sự cố](#5-dashboard-điều-tra-sự-cố)
+  - [5. Bản đồ mạng & Điều tra sự cố (Topology)](#5-bản-đồ-mạng--điều-tra-sự-cố-topology)
   - [6. Tra cứu thiết bị, liên kết, dịch vụ](#6-tra-cứu-thiết-bị-liên-kết-dịch-vụ)
   - [7. Quản lý tài liệu](#7-quản-lý-tài-liệu)
   - [8. Cấu hình nguồn dữ liệu](#8-cấu-hình-nguồn-dữ-liệu)
   - [9. Cài đặt chung](#9-cài-đặt-chung)
-  - [10. Bản đồ mạng (Topology)](#10-bản-đồ-mạng-topology)
 - [V. Trang không làm](#v-trang-không-làm)
 
 # I. Nguyên tắc
 
-- Ứng dụng gồm **10 trang** (Đăng ký thêm 11-11; Trang chủ + Tổng quan mạng thêm 12-11; Nguồn dữ liệu + Cài đặt thêm 12-11; Bản đồ mạng Topology thêm 16-11 phục vụ góc nhìn hạ tầng độc lập không ràng buộc sự cố). Dashboard điều tra sự cố là trang trung tâm xử lý sự cố; Bản đồ mạng Topology là không gian làm việc trực quan hóa hạ tầng viễn thông chuyên sâu; các trang còn lại phục vụ một tác vụ đơn lẻ mỗi trang.
-- **Format đặc tả một trang — trang thiết kế tương tác** trong `app-pages/` (một HTML mỗi trang, dùng chung `css/app-pages.css` + `js/app-pages.js`): **miniature của trang (khung thiết kế 1440×900, tự scale lấp vùng giữa) đặt giữa**, hai sidebar card hai bên — trái = **bố cục & vùng**, phải = **tương tác** (liệt kê thao tác của người dùng trên trang); **rê chuột lên card ở sidebar trái là soi thử vùng tương ứng trên miniature ngay lập tức** (bỏ rê trả về như cũ), **bấm card để chốt** — bấm lại card, Esc hoặc bấm nền bỏ chốt; bấm lên miniature không đổi vùng soi, các nút trạng thái chạy demo ngay trên miniature. **Trang phức tạp** (Dashboard điều tra và Bản đồ Topology) chia sẻ ngôn ngữ canvas phân tầng 5 lớp và hệ thống Inspector.
-- Dashboard điều tra là **một trang duy nhất** với các trạng thái theo hành trình điều tra (tiếp nhận → điều tra → soi thiết bị → đánh giá ảnh hưởng → xử lý xong). Năm file prototype giai đoạn trong README (01→05) là năm trạng thái của cùng một trang, không phải năm trang riêng.
-- Đã thiết kế đủ 10 trang: Dashboard (`dashboard-page-stylebook/` ch0–ch5), Bản đồ mạng Topology, Đăng nhập, Đăng ký, Trang chủ, Tổng quan mạng, Tra cứu, Quản lý tài liệu, Nguồn dữ liệu, Cài đặt.
+- Ứng dụng gồm **9 trang** (Đăng ký thêm 11-11; Trang chủ + Tổng quan mạng thêm 12-11; Nguồn dữ liệu + Cài đặt thêm 12-11; Hợp nhất Bản đồ mạng & Không gian điều tra Topology 17-11 theo mô hình *Single Topology Engine*). **Trang Topology là không gian làm việc trung tâm cốt lõi** phục vụ song song cả hai nhiệm vụ: quan sát khám phá hạ tầng mạng tự do và điều tra chẩn đoán sự cố chuyên sâu.
+- **Cơ chế nâng cấp ngữ cảnh động (Contextual Elevation via `incidentId`)**:
+  - Không có `incidentId` trong URL $\rightarrow$ **Chế độ Khám phá hạ tầng**: Canvas hiển thị toàn mạng viễn thông hoặc tiêu điểm thiết bị (`focusNodeId`), sidebar trái chỉ gồm 2 tab hạ tầng (*Thiết bị* và *Hiển thị*), Inspector hiển thị thông số phần cứng, telemetry và liên kết trực tiếp.
+  - Có `incidentId` trong URL $\rightarrow$ **Chế độ Điều tra sự cố**: Header tự động bật chip sự cố (`INC-xx · ĐANG XỬ LÝ`), sidebar trái mở khóa thêm 2 tab chuyên sâu (*Timeline cảnh báo* và *Giả thuyết AI*), canvas khoanh vùng tâm chấn và vẽ luồng ảnh hưởng, Inspector bổ sung các hành động xác nhận/bác bỏ giả thuyết và đóng sự cố.
+- **Format đặc tả một trang — trang thiết kế tương tác** trong `app-pages/` (một HTML mỗi trang, dùng chung `css/app-pages.css` + `js/app-pages.js`): **miniature của trang (khung thiết kế 1440×900, tự scale lấp vùng giữa) đặt giữa**, hai sidebar card hai bên — trái = **bố cục & vùng**, phải = **tương tác**; rê chuột lên card ở sidebar trái là soi thử vùng tương ứng trên miniature ngay lập tức, bấm card để chốt. Chi tiết hành vi canvas 5 tầng tham chiếu thêm tại `dashboard-page-stylebook/` (ch0–ch5).
 - **Bảng + panel chi tiết** là pattern dùng chung của Tra cứu và Quản lý tài liệu (khối `.vp-thead`/`.vp-trow`/`.vp-chip` chia sẻ trong `css/app-pages.css`) — chip trạng thái một ngôn ngữ trên cả hai trang.
-- **Token màu & font dùng chung một nguồn** (`design-tokens.css` đặt cạnh hai thư mục thiết kế, thêm 13-11): cả stylebook dashboard lẫn các trang tương tác đều link cùng một file token — palette giấy/mực, màu nhấn, bộ ba trạng thái (gốc + nền mờ/viền/chữ cho chip & băng), màu canvas topology, site/tier, và hai họ font. Sửa giá trị chỉ tại file này để style không lệch giữa các trang; từng trang chỉ còn CSS bố cục & thành phần riêng. Chrome điều hướng của tài liệu (tab trang, nút trạng thái) theo ngôn ngữ stylebook: nhãn mono, trạng thái chọn nền mực. Font web chọn **Inter + JetBrains Mono** (thêm 13-11, nạp qua Google Fonts CDN, offline thì fallback về system font) — tiêu chí đầu là dấu tiếng Việt sạch ở cỡ nhỏ và nhất quán giữa máy của kỹ sư.
+- **Token màu & font dùng chung một nguồn** (`design-tokens.css` đặt cạnh hai thư mục thiết kế, thêm 13-11): palette giấy/mực, màu nhấn, bộ ba trạng thái, màu canvas topology, site/tier, và hai họ font **Inter + JetBrains Mono**.
 
 # II. Sơ đồ điều hướng
 
@@ -37,9 +37,9 @@ flowchart LR
     LAND -->|chưa có tài khoản| SIGNUP[Đăng ký tài khoản]
     LOGIN --> OV[Tổng quan mạng]
     SIGNUP -->|tạo xong / quay lại| LOGIN
-    OV -->|bấm sự cố đang mở| DASH[Dashboard điều tra]
-    DASH -->|xử lý xong / quay lại| OV
-    OV --> TOPO[Bản đồ mạng Topology]
+    OV -->|bấm sự cố đang mở| TOPO_INC[Topology · Chế độ sự cố ?incidentId=...]
+    OV -->|bấm tab Topology| TOPO[Topology · Chế độ toàn cảnh]
+    TOPO_INC -->|xử lý xong / thoát sự cố| TOPO
     OV --> TC[Tra cứu]
     TC -->|xem trong topology| TOPO
     OV --> DOCS[Quản lý tài liệu]
@@ -47,12 +47,14 @@ flowchart LR
     OV --> SET[Cài đặt chung]
 ```
 
-- Chưa đăng nhập: vào **Trang chủ** trước — hai nút dẫn sang Đăng nhập và Đăng ký. Đề xuất: nếu phiên cũ còn hợp lệ, nút chính đổi thành "Tiếp tục phiên làm việc" vào thẳng Tổng quan.
-- Sau đăng nhập, trang mặc định là **Tổng quan mạng**; nếu có sự cố đang được xử lý dở, hệ thống hỏi "tiếp tục điều tra INC-xx?" và vào thẳng Dashboard nếu đồng ý.
-- Chưa có tài khoản: link "Đăng ký" dưới form Đăng nhập mở trang Đăng ký; sau khi tạo tài khoản (kích hoạt qua email — đề xuất), quay lại Đăng nhập.
-- **Thanh điều hướng chính nằm trong topbar, hiện ở mọi trang sau đăng nhập**: Tổng quan · Bản đồ · Điều tra · Tra cứu · Tài liệu · Nguồn dữ liệu · Cài đặt. Trang chủ (chưa đăng nhập) có thanh riêng: chỉ brand + hai nút Đăng nhập/Tạo tài khoản. Sơ đồ trên chỉ vẽ luồng chính; thực tế từ bất kỳ trang nào cũng sang được trang bất kỳ khác qua topbar.
-- Khi ở Dashboard điều tra, topbar giữ bố cục ch0 (brand + chip sự cố INC-07 và trạng thái xử lý). Khi ở Bản đồ Topology độc lập, topbar hiển thị thanh điều hướng chuẩn cùng chip tiêu điểm thiết bị đang soi (`FOCUS: NODE-ID (k-Hop)` hoặc `TOÀN MẠNG`).
-- Đi sâu từ Tra cứu: chọn một thiết bị → nút "Xem trong topology" mở thẳng trang **Bản đồ mạng (Topology)** với thiết bị đó ở trạng thái focus và hiển thị bán kính lân cận (không yêu cầu thiết bị phải nằm trong sự cố).
+- Chưa đăng nhập: vào **Trang chủ** trước — hai nút dẫn sang Đăng nhập và Đăng ký. Nếu phiên cũ còn hợp lệ, nút chính đổi thành "Tiếp tục phiên làm việc" vào thẳng Tổng quan.
+- Sau đăng nhập, trang mặc định là **Tổng quan mạng**; nếu có sự cố đang được xử lý dở, hệ thống hỏi "tiếp tục điều tra INC-xx?" và vào thẳng Topology với tham số sự cố nếu đồng ý.
+- **Thanh điều hướng chính nằm trong topbar, hiện ở mọi trang sau đăng nhập (6 tab thống nhất)**:
+  - **Tổng quan · Topology (có chấm đỏ nhấp nháy 🔴 khi có sự cố) · Tra cứu · Tài liệu · Nguồn dữ liệu · Cài đặt**.
+  - Khi người dùng nhấp vào tab **Topology**:
+    - Nếu hệ thống đang có sự cố mở: tự động dẫn vào `/topology?incidentId=INC-top` để ưu tiên xử lý sự cố.
+    - Nếu hệ thống không có sự cố: mở `/topology` ở chế độ toàn cảnh hạ tầng.
+- **Đi sâu từ Tra cứu**: chọn một thiết bị $\rightarrow$ nút "Xem trong topology →" mở thẳng `/topology?focusNodeId=...` với thiết bị đó làm tiêu điểm và bán kính lân cận (không ép buộc thiết bị phải nằm trong sự cố).
 
 # III. Bảng tổng hợp
 
@@ -62,12 +64,11 @@ flowchart LR
 | 2 | Đăng nhập | Xác thực vào hệ thống | Mọi người dùng | Đơn giản | Khung đề xuất — [`app-pages/login.html`](app-pages/login.html) |
 | 3 | Đăng ký tài khoản | Tự đăng ký tài khoản kỹ sư vận hành | Người dùng mới | Đơn giản | Khung đề xuất — [`app-pages/signup.html`](app-pages/signup.html) |
 | 4 | Tổng quan mạng | Nhìn nhanh sức khỏe mạng và chọn sự cố để điều tra | Kỹ sư, quản lý vận hành | Trung bình | Khung đề xuất — [`app-pages/overview.html`](app-pages/overview.html) |
-| 5 | Dashboard điều tra | Theo dõi, khoanh vùng và xử lý một sự cố trên topology | Kỹ sư trực | Cao | **Đã thiết kế** — `dashboard-page-stylebook/` ch0–ch5 · tóm tắt tương tác — [`app-pages/dashboard.html`](app-pages/dashboard.html) |
+| 5 | Bản đồ mạng & Điều tra (Topology) | Không gian làm việc trực quan hóa cốt lõi: quan sát toàn mạng hạ tầng tự do; tự động nâng cấp sang chế độ điều tra sự cố khi có `incidentId` | Kỹ sư trực, kỹ sư IP/MPLS | Cao | **Đã thiết kế** — [`app-pages/topology.html`](app-pages/topology.html) · Stylebook ch0–ch5 |
 | 6 | Tra cứu | Tra cứu thiết bị, liên kết, dịch vụ không gắn với sự cố đang mở | Kỹ sư | Trung bình | Khung đề xuất — [`app-pages/lookup.html`](app-pages/lookup.html) |
 | 7 | Quản lý tài liệu | Nạp và quản lý tài liệu kỹ thuật, nghiệp vụ cho AI | Kỹ sư, người phụ trách nội dung | Đơn giản | Khung đề xuất — [`app-pages/documents.html`](app-pages/documents.html) |
 | 8 | Nguồn dữ liệu | Cấu hình hệ thống nguồn bên thứ ba và mapping dữ liệu | Quản trị hệ thống | Trung bình | Khung đề xuất — [`app-pages/sources.html`](app-pages/sources.html) |
 | 9 | Cài đặt chung | Tùy chỉnh giao diện toàn ứng dụng, lưu vĩnh viễn | Mọi người dùng | Đơn giản | Khung đề xuất — [`app-pages/settings.html`](app-pages/settings.html) |
-| 10 | Bản đồ mạng (Topology) | Quan sát trực quan toàn bộ mạng viễn thông, soi thiết bị & liên kết tự do, duyệt k-Hop ego-network không gắn với sự cố | Kỹ sư vận hành, quy hoạch mạng | Cao | **Đã thiết kế** — [`app-pages/topology.html`](app-pages/topology.html) |
 
 # IV. Đặc tả từng trang
 
@@ -97,17 +98,30 @@ Tóm tắt thiết kế: cùng vỏ ngoài với Đăng nhập (bố cục chia 
 
 Tóm tắt thiết kế: trả lời "mạng đang thế nào, việc gì cần xử lý trước" trong một màn hình — bốn thẻ chỉ số sức khỏe trên cùng (nút hoạt động, cảnh báo đang mở, sự cố đang xử lý, cổng mất kết nối, mỗi thẻ kèm dòng phụ chỉ đúng đối tượng), danh sách sự cố đang mở sắp theo mức độ ưu tiên với nút "Mở Dashboard" (lối vào chính của Dashboard), và sự cố đã xử lý gần đây kèm thời gian khôi phục. Nếu còn phiên điều tra dở, băng trên cùng hỏi "tiếp tục điều tra INC-xx?" (quy ước ở mục II). Khác Dashboard: Tổng quan trả lời "chọn việc gì" khi chưa có ngữ cảnh sự cố; Dashboard trả lời "sự cố này là gì" khi đã có.
 
-## 5. Dashboard điều tra sự cố
+## 5. Bản đồ mạng & Điều tra sự cố (Topology)
 
-**Đã đặc tả: [`app-pages/dashboard.html`](app-pages/dashboard.html)** — miniature dashboard ở giữa (6 vùng: header mỏng, sidebar trái 4 tab, canvas topology, cụm nút zoom nổi, legend màu site, Inspector), hai sidebar giải thích, demo 5 trạng thái đại diện — mỗi state tô một hành vi vùng khác nhau, mã state trỏ thẳng vào hình stylebook (thêm 14-11: viết lại đúng spec sau khi bản đầu đi lệch).
+**Đã đặc tả: [`app-pages/topology.html`](app-pages/topology.html)** (tham chiếu chi tiết tương tác tại `dashboard-page-stylebook/` ch0–ch5) — không gian làm việc trung tâm cốt lõi của hệ thống, vận hành theo mô hình **Single Topology Engine** với cơ chế nâng cấp ngữ cảnh động (*Contextual Elevation*) dựa trên tham số `incidentId`:
 
-Tóm tắt thiết kế: trang trung tâm theo `dashboard-page-stylebook/` (ch0–ch5) — miniature ở đây là bản tóm tắt, chi tiết đầy đủ từng vùng nằm trong stylebook. Header mỏng chỉ có brand + chip sự cố (mã, trạng thái, thời điểm mở); sidebar trái là **4 tab** (Tìm kiếm · Timeline cảnh báo · Giả thuyết AI · Cài đặt hiển thị) — mỗi lần mở một tab, không xếp chồng; canvas chia 5 dải tầng ngang (Peering & Transit → National Border Gateway → Core → Edge Aggregation → Metro Exchange), node = nền sức khỏe + viền màu site + badge "+N" gom lá Access trên node exchange, edge = màu trạng thái / dày băng thông / liền-đứt hiệu suất; Inspector là danh sách thiết bị khi chưa chọn, dải định danh + ba tab khi chọn node, hàng hai đầu kèm cổng thay thanh tab khi chọn edge. Năm trạng thái demo: **Mặc định** (5.1A — Timeline + danh sách thiết bị), **Tìm kiếm** (4.1B+5.1B — beacon CORE-02, ngoài K=2 mờ; Inspector định danh + Quick CLI), **Giả thuyết** (4.3B+C+5.3B — khoanh vùng + beacon hai đầu, chi tiết accordion tại chỗ; Inspector giữ ngữ cảnh AGG-02 tab Trạng thái + telemetry), **Tài liệu** (4.2C+5.2C — panel mã lỗi đè mép trái canvas), **Chọn edge** (5.4 — hàng hai đầu kèm cổng thay thanh tab). Pan, zoom LOD, kéo node, tooltip, đa beacon và xác nhận/bác bỏ giả thuyết là tương tác sống — đặc tả ở stylebook chương 3–4, không làm state riêng.
+- **Chế độ 1: Khám phá hạ tầng toàn cảnh (Khi KHÔNG có `incidentId`)**:
+  - *URL:* `/topology` (hoặc `/topology?focusNodeId=CORE-01&kHop=1`).
+  - *Header mỏng:* Giữ nhận diện thương hiệu `NOC TOPOLOGY` và chip tiêu điểm hạ tầng (`TOÀN MẠNG · 78 THIẾT BỊ · 152 LIÊN KẾT` hoặc `FOCUS: CORE-01 (1-Hop)`). Không có mã sự cố.
+  - *Sidebar trái:* Chỉ gồm **2 tab hạ tầng** — **Thiết bị** (ô tìm kiếm + lọc theo tầng `CORE/AGG/EXCH/BIÊN` + danh sách thiết bị A→Z) và **Hiển thị** (chọn bán kính bước nhảy k-Hop 1/2/3/Toàn mạng, chế độ làm mờ/ẩn, công tắc nhãn cổng).
+  - *Canvas topology 5 tầng:* Peering & Transit → National Border Gateway → Core Backbone → Edge Aggregation → Metro Exchange. Thuật toán BFS Ego-Network làm nổi bật láng giềng $k$-hop quanh node tiêu điểm và làm mờ các vùng ngoài lề.
+  - *Inspector bên phải:* Khi chưa chọn thiết bị $\rightarrow$ hiển thị thẻ thống kê sức khỏe toàn mạng (tổng thiết bị, số node hoạt động, số cảnh báo); khi chọn thiết bị $\rightarrow$ hiển thị thông số định danh, IP, tải CPU/RAM, nhiệt độ SFP và danh sách cổng/liên kết trực tiếp.
+
+- **Chế độ 2: Điều tra chẩn đoán sự cố (Khi CÓ `incidentId`)**:
+  - *URL:* `/topology?incidentId=INC-07`.
+  - *Header mỏng:* Bật chip sự cố nổi bật: `INC-07 · ĐANG XỬ LÝ · mở 13:52` (nền cam/đỏ nổi bật).
+  - *Camera:* Tự động căn tiêu cự (Auto-fit/Auto-zoom) vào tâm chấn sự cố (`epicenter` của incident).
+  - *Sidebar trái mở rộng thành 4 tab:* Tự động mở khóa thêm 2 tab chuyên sâu — **Timeline cảnh báo** (trục thời gian chuỗi alert liên quan) và **Giả thuyết AI** (danh sách nguyên nhân gốc rễ xếp theo độ tin cậy kèm nút Xác nhận / Bác bỏ).
+  - *Canvas topology:* Khoanh vùng nghi vấn, kích hoạt vòng beacon đỏ nhấp nháy tại đường truyền lỗi và tô màu cam nét đứt cho diện ảnh hưởng (Blast Radius).
+  - *Inspector bên phải:* Bổ sung khối trích dẫn tài liệu kỹ thuật, hướng dẫn đo kiểm quang, và nút kết thúc/đóng phiên điều tra sự cố.
 
 ## 6. Tra cứu thiết bị, liên kết, dịch vụ
 
 **Đã đặc tả: [`app-pages/lookup.html`](app-pages/lookup.html)** — miniature trang tra cứu ở giữa (6 vùng: thanh điều hướng, tìm kiếm + bộ lọc, tab theo loại, bảng tài nguyên, panel chi tiết, chân trang), hai sidebar giải thích, demo 3 trạng thái (mặc định, chưa chọn, không có kết quả).
 
-Tóm tắt thiết kế: tra cứu tài nguyên khi không có sự cố đang mở — ô tìm kiếm lớn (lọc ngay khi gõ, không nút "Tìm") + ba bộ lọc (Lớp, Khu vực, Trạng thái) và tab theo loại kèm số lượng (Thiết bị, Liên kết, Dịch vụ) đứng trên bảng. Chọn một dòng → panel chi tiết bên phải dùng ngôn ngữ hiển thị giống Inspector (ch5) để nhất quán; nút chính "Xem trong topology" mở Dashboard với đối tượng được chọn, hoặc về Tổng quan nếu không có sự cố đang mở (quy ước ở mục II).
+Tóm tắt thiết kế: tra cứu tài nguyên khi không có sự cố đang mở — ô tìm kiếm lớn (lọc ngay khi gõ, không nút "Tìm") + ba bộ lọc (Lớp, Khu vực, Trạng thái) và tab theo loại kèm số lượng (Thiết bị, Liên kết, Dịch vụ) đứng trên bảng. Chọn một dòng → panel chi tiết bên phải dùng ngôn ngữ hiển thị giống Inspector để nhất quán; nút chính "Xem trong topology →" mở thẳng `/topology?focusNodeId=...` với thiết bị đó ở trạng thái tiêu điểm và hiển thị bán kính lân cận mà không đòi hỏi thiết bị phải nằm trong sự cố (quy ước ở mục II).
 
 ## 7. Quản lý tài liệu
 
@@ -126,28 +140,6 @@ Tóm tắt thiết kế: trang quản trị kết nối hệ thống nguồn bê
 **Đã đặc tả: [`app-pages/settings.html`](app-pages/settings.html)** — miniature trang cài đặt ở giữa (6 vùng: thanh điều hướng, tiêu đề, khối chủ đề, khối hiển thị mặc định, khối khôi phục mặc định, chân trang), hai sidebar giải thích, demo 4 trạng thái (mặc định, chủ đề tối, chưa lưu, đã lưu).
 
 Tóm tắt thiết kế: nơi lưu tùy chọn giao diện toàn ứng dụng — khối chủ đề (Sáng / Tối / Theo hệ thống) áp dụng ngay mọi trang (trạng thái "Chủ đề tối" đổi màu cả miniature); khối hiển thị mặc định là bản gốc của phím chỉnh nhanh mục 4.4 trong Dashboard — 4.4 tác động phiên hiện tại, trang này là giá trị mặc định khi mở Dashboard mới, kèm tùy chọn băng hỏi tiếp tục phiên dở ở Tổng quan; nút "Khôi phục mặc định" đưa mọi tùy chọn về giá trị ban đầu. Đáp ứng tiêu chí khả năng sử dụng trong proposal: tùy chọn lưu theo tài khoản, khôi phục được về mặc định. Đề xuất chờ gật: cơ chế lưu rõ ràng với băng cảnh báo "chưa lưu".
-
-## 10. Bản đồ mạng (Topology)
-
-**Đã đặc tả: [`app-pages/topology.html`](app-pages/topology.html)** — miniature bản đồ mạng ở giữa (6 vùng: header mỏng, sidebar trái 2 tab hạ tầng, canvas topology 5 tầng, cụm zoom nổi, legend màu site, Inspector), hai sidebar giải thích, demo 3 trạng thái (mặc định toàn mạng, tiêu điểm CORE-02, cài đặt hiển thị). Trang bổ sung theo yêu cầu vận hành hạ tầng viễn thông — chia sẻ cùng bố cục khung 3 cột / viewport với Dashboard điều tra sự cố (`dashboard-page-stylebook/`), nhưng được tinh giản nhằm phục vụ góc nhìn quan sát và khám phá hạ tầng mạng toàn diện, **hoàn toàn độc lập, không gắn với bất kỳ sự cố hay phiên điều tra nào**.
-
-Tóm tắt thiết kế:
-- **Bố cục 3 vùng**: Sidebar trái (bộ lọc & tìm kiếm), Canvas topology trung tâm (5 dải tầng phân cấp viễn thông) và Inspector bên phải (thông số kỹ thuật & liên kết thiết bị).
-- **Loại bỏ các thành phần gắn với sự cố**:
-  - Không có chip mã sự cố (`INC-xx`) trên header — thay bằng thanh điều hướng chuẩn và chip tiêu điểm thiết bị đang chọn (`FOCUS: NODE-ID (k-Hop)` hoặc `TOÀN MẠNG`).
-  - Sidebar trái **loại bỏ hoàn toàn tab Timeline cảnh báo và tab Giả thuyết AI**. Chỉ giữ lại **2 tab thuần túy về hạ tầng**:
-    1. *Tìm kiếm & Danh mục thiết bị:* Ô tìm kiếm nhanh (mã thiết bị, IP, model, site), bộ lọc theo lớp mạng (Core, AGG, Exchange, Access) và danh sách thiết bị A→Z có chấm trạng thái vận hành.
-    2. *Cài đặt hiển thị & Bộ lọc đồ thị:* Lựa chọn bán kính bước nhảy k-Hop (1-Hop, 2-Hop, 3-Hop, Toàn mạng), chế độ hiển thị node ngoài vùng focus (Làm mờ / Ẩn hoàn toàn), bật/tắt nhãn cổng và liên kết dự phòng.
-- **Canvas Topology trung tâm**:
-  - Tự động dựng 5 dải tầng ngang phân cấp viễn thông từ trên xuống dưới: Peering & Border Gateways → Provincial Core → Edge Aggregation → Metro Exchange → Access Clusters.
-  - Hỗ trợ đầy đủ pan, zoom quanh con trỏ chuột, nút điều khiển zoom (+ / − / FIT) và Legend nhận diện Site.
-  - Hỗ trợ thuật toán duyệt đồ thị BFS Ego-Network khi nhấp vào thiết bị bất kỳ: làm nổi bật các thiết bị láng giềng trong bán kính $k$-hop và làm mờ/ẩn các vùng còn lại.
-- **Inspector bên phải**:
-  - Khi chưa chọn thiết bị: Thống kê nhanh tổng quan sức khỏe toàn mạng (tổng số node, số node bình thường/lỗi, tổng số liên kết).
-  - Khi chọn thiết bị: Hiển thị định danh, địa chỉ IP, model, site, telemetry tức thời (CPU, RAM, nhiệt độ) và danh sách cổng/liên kết vật lý trực tiếp kết nối tới các thiết bị khác.
-  - Khi chọn liên kết: Hiển thị cặp thiết bị hai đầu, dung lượng, độ trễ và trạng thái hoạt động của đường truyền.
-- **Liên kết điều hướng từ Tra cứu (`/lookup`)**:
-  - Khi kỹ sư duyệt danh sách tại trang Tra cứu và bấm **"Xem trong topology →"**, hệ thống chuyển thẳng sang trang Bản đồ mạng (`/topology?focusNodeId=...`) với thiết bị đó làm tâm điểm và tự động hiển thị bán kính 1-Hop lân cận mà không đòi hỏi thiết bị phải nằm trong sự cố.
 
 # V. Trang không làm
 
