@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useImperativeHandle, useMemo, useState, forwardRef } from 'react'
 import type { DeviceSummary, LinkSummary } from '@/api/topology'
 import { cn } from '@/lib/utils'
 import { computeStratifiedLayout } from './layoutEngine'
@@ -14,6 +14,14 @@ import { computeEgoNetwork, type KHopDistance, type KHopFilterMode } from './ego
 import { KHopControls } from './KHopControls'
 import { TopologyTooltip, type TooltipTarget } from './TopologyTooltip'
 import { useNodeDrag } from './useNodeDrag'
+
+export interface TopologyCanvasHandle {
+  panToNode: (nodeId: string) => void
+  panToPoint: (x: number, y: number) => void
+  resetZoom: () => void
+  zoomIn: () => void
+  zoomOut: () => void
+}
 
 export interface TopologyCanvasProps {
   nodes?: DeviceSummary[]
@@ -39,6 +47,7 @@ export interface TopologyCanvasProps {
   selectedSite?: string | null
   onSiteClick?: (site: string) => void
   selectedNodeId?: string
+  centerNodeId?: string | null
   focusedNodeIds?: string[]
   focusNodeId?: string
   expandedNodeIds?: string[]
@@ -72,7 +81,7 @@ export interface TopologyCanvasProps {
   children?: React.ReactNode | ((layout: StratifiedLayoutResult) => React.ReactNode)
 }
 
-export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
+export const TopologyCanvas = forwardRef<TopologyCanvasHandle, TopologyCanvasProps>(({
   nodes = [],
   links = [],
   width,
@@ -96,6 +105,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   selectedSite: externalSelectedSite,
   onSiteClick: externalOnSiteClick,
   selectedNodeId,
+  centerNodeId,
   focusedNodeIds,
   focusNodeId,
   expandedNodeIds,
@@ -127,7 +137,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   className,
   style,
   children,
-}) => {
+}, ref) => {
   const [internalHoveredNodeId, setInternalHoveredNodeId] = useState<string | null>(null)
   const [internalHoveredLinkId, setInternalHoveredLinkId] = useState<string | null>(null)
   const [internalSelectedSite, setInternalSelectedSite] = useState<string | null>(null)
@@ -317,6 +327,34 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
     disabled: disableNodeDrag,
     onPositionChange: onNodePositionChange,
   })
+
+  // Imperative handle for parent components (e.g. centering nodes from sidebar)
+  useImperativeHandle(
+    ref,
+    () => ({
+      panToNode: (nodeId: string) => {
+        const pos = effectiveNodePositions.get(nodeId)
+        if (pos) {
+          panToPoint(pos.x, pos.y)
+        }
+      },
+      panToPoint,
+      resetZoom,
+      zoomIn,
+      zoomOut,
+    }),
+    [effectiveNodePositions, panToPoint, resetZoom, zoomIn, zoomOut]
+  )
+
+  // Reactive prop centering
+  useEffect(() => {
+    if (centerNodeId) {
+      const pos = effectiveNodePositions.get(centerNodeId)
+      if (pos) {
+        panToPoint(pos.x, pos.y)
+      }
+    }
+  }, [centerNodeId, effectiveNodePositions, panToPoint])
 
   // Single-click: Select node -> affects Inspector (Stylebook §3.5: "không đụng beacon")
   const handleSelectNode = (node: DeviceSummary) => {
@@ -640,4 +678,6 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
       )}
     </div>
   )
-}
+})
+
+TopologyCanvas.displayName = 'TopologyCanvas'

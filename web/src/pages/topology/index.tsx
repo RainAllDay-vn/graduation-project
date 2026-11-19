@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import type { DeviceSummary, LinkSummary } from '@/api/topology'
@@ -6,6 +6,7 @@ import { getTopology, getSubgraph } from '@/api/topology'
 import { useTheme } from '@/context'
 import {
   TopologyCanvas,
+  type TopologyCanvasHandle,
   TopologyHeader,
   TopologyLeftSidebar,
   TopologyRightSidebar,
@@ -81,6 +82,7 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
   // Single click: Selected device or link that controls the Inspector (Chapter 5)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [selectedLinkId, setSelectedLinkId] = useState<string | null>(null)
+  const canvasRef = useRef<TopologyCanvasHandle>(null)
 
   // Double click: Set of active beacon focus nodes (Stylebook §3.5: multiple beacons)
   const [focusedNodeIds, setFocusedNodeIds] = useState<Set<string>>(() => {
@@ -114,6 +116,13 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
   const handleSelectNode = (node: DeviceSummary) => {
     setSelectedNodeId((prev) => (prev === node.id ? null : node.id))
     setSelectedLinkId(null)
+  }
+
+  // Device selection from Left Sidebar directory: updates selection in inspector and pans canvas to center node
+  const handleSelectDeviceFromSidebar = (device: DeviceSummary) => {
+    setSelectedNodeId(device.id)
+    setSelectedLinkId(null)
+    canvasRef.current?.panToNode(device.id)
   }
 
   // Double click: Toggles beacon focus on / off (Stylebook §3.5: "Bấm đúp một node → beacon... Bấm đúp lại → biến mất")
@@ -166,8 +175,14 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
 
       {/* 2. 3-Column Workspace Body */}
       <div className="flex-1 flex min-h-0 overflow-hidden relative">
-        {/* Left Sidebar: Navigation & Directory Placeholders */}
-        <TopologyLeftSidebar incidentId={incidentId} locale={locale} />
+        {/* Left Sidebar: Navigation & Directory */}
+        <TopologyLeftSidebar
+          incidentId={incidentId}
+          nodes={nodes}
+          selectedNodeId={selectedNodeId}
+          onSelectDevice={handleSelectDeviceFromSidebar}
+          locale={locale}
+        />
 
         {/* Center: Stratified 5-Tier Canvas Engine */}
         <main className="flex-1 h-full min-w-0 min-h-0 relative overflow-hidden bg-[#f8fafc] dark:bg-[#070a10]">
@@ -208,6 +223,7 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
             </div>
           ) : (
             <TopologyCanvas
+              ref={canvasRef}
               nodes={nodes}
               links={links}
               locale={locale}

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { TopologyLeftSidebar } from './TopologyLeftSidebar'
+import { sampleNodes } from './canvas/mockTopologyData'
 
 const meta: Meta<typeof TopologyLeftSidebar> = {
   title: 'Topology/TopologyLeftSidebar',
@@ -13,9 +14,10 @@ const meta: Meta<typeof TopologyLeftSidebar> = {
 export default meta
 type Story = StoryObj<typeof TopologyLeftSidebar>
 
-/** Story 1: Standard infrastructure overview mode (2 tabs: Devices & Display) */
+/** Story 1: Standard infrastructure overview mode (Tab Thiết bị & Hiển thị) - Dark Mode */
 export const OverviewModeDark: Story = {
   args: {
+    nodes: sampleNodes,
     locale: 'vi',
   },
   render: (args) => (
@@ -30,6 +32,7 @@ export const OverviewModeDark: Story = {
 /** Story 2: Standard overview mode in Light Mode */
 export const OverviewModeLight: Story = {
   args: {
+    nodes: sampleNodes,
     locale: 'vi',
   },
   render: (args) => (
@@ -41,10 +44,11 @@ export const OverviewModeLight: Story = {
   ),
 }
 
-/** Story 3: Contextual incident mode (Unlocks 4 tabs: Timeline, Hypotheses, Devices, Display) */
-export const IncidentElevationDark: Story = {
+/** Story 3: Device Selected state (CORE-02 selected) */
+export const DeviceSelectedState: Story = {
   args: {
-    incidentId: 'INC-2026-0915',
+    nodes: sampleNodes,
+    selectedNodeId: 'CORE-02',
     locale: 'vi',
   },
   render: (args) => (
@@ -56,10 +60,42 @@ export const IncidentElevationDark: Story = {
   ),
 }
 
-/** Story 4: English locale typography */
+/** Story 4: Empty directory state (0 devices) */
+export const EmptyDirectory: Story = {
+  args: {
+    nodes: [],
+    locale: 'vi',
+  },
+  render: (args) => (
+    <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
+      <div className="h-[620px] rounded-lg overflow-hidden border border-slate-800 shadow-xl flex">
+        <TopologyLeftSidebar {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/** Story 5: Contextual incident mode (Unlocks 4 tabs: Timeline, Hypotheses, Devices, Display) */
+export const IncidentElevationDark: Story = {
+  args: {
+    incidentId: 'INC-2026-0915',
+    nodes: sampleNodes,
+    locale: 'vi',
+  },
+  render: (args) => (
+    <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
+      <div className="h-[620px] rounded-lg overflow-hidden border border-slate-800 shadow-xl flex">
+        <TopologyLeftSidebar {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/** Story 6: English locale typography */
 export const EnglishLocale: Story = {
   args: {
     incidentId: 'INC-2026-0915',
+    nodes: sampleNodes,
     locale: 'en',
   },
   render: (args) => (
