@@ -36,7 +36,7 @@ public class OverviewServiceImpl implements OverviewService {
     @Override
     @Transactional(readOnly = true)
     public OverviewResponse getOverview() {
-        TopologyGraph graph = topologyService.getTopology(null, null);
+        TopologyGraph graph = topologyService.getFullGraph();
         List<DeviceSummary> devices = graph != null && graph.nodes() != null
                 ? graph.nodes()
                 : Collections.emptyList();

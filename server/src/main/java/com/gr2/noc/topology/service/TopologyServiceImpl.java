@@ -41,11 +41,169 @@ public class TopologyServiceImpl implements TopologyService {
 
         List<NetworkDevice> filtered = all.stream()
                 .filter(d -> layer == null || d.getLayer() == layer)
-                .filter(d -> region == null || region.isBlank() ||
-                        (d.getRegion() != null && d.getRegion().toLowerCase().contains(region.toLowerCase())))
+                .filter(d -> region == null || region.isBlank() || matchesRegion(d, region))
                 .toList();
 
         return TopologyGraph.from(filtered);
+    }
+
+    @Override
+    public TopologyGraph getTopology(List<String> focusNodeIds, DeviceLayer focusLayer, int kHop, Integer maxNodes,
+                                     DeviceLayer layer, String region) {
+        Set<String> startIds = resolveStartIds(focusNodeIds, focusLayer);
+        int effectiveK = Math.min(Math.max(kHop, 1), 3);
+        int effectiveMaxNodes = (maxNodes == null || maxNodes < 1) ? DEFAULT_MAX_NODES : maxNodes;
+
+        GraphIndex index = buildGraphIndex(getAllDevices());
+
+        Set<String> visited = boundedBfs(startIds, effectiveK, effectiveMaxNodes, index, layer, region);
+
+        return collectGraph(visited, index.deviceMap());
+    }
+
+    @Override
+    public TopologyGraph getFullGraph() {
+        return TopologyGraph.from(getAllDevices());
+    }
+
+    private static final int DEFAULT_MAX_NODES = 150;
+
+    private Set<String> resolveStartIds(List<String> focusNodeIds, DeviceLayer focusLayer) {
+        boolean hasFocusIds = focusNodeIds != null && focusNodeIds.stream().anyMatch(id -> id != null && !id.isBlank());
+        if (hasFocusIds) {
+            Set<String> startIds = new LinkedHashSet<>();
+            for (String id : focusNodeIds) {
+                if (id == null || id.isBlank()) {
+                    continue;
+                }
+                NetworkDevice device = findDeviceById(id.trim())
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Focus device not found with ID: " + id.trim()
+                        ));
+                startIds.add(device.getId());
+            }
+            return startIds;
+        }
+
+        if (focusLayer != null) {
+            List<NetworkDevice> layerDevices = getAllDevices().stream()
+                    .filter(d -> d.getLayer() == focusLayer)
+                    .toList();
+            if (layerDevices.isEmpty()) {
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No devices found for focus layer: " + focusLayer
+                );
+            }
+            Set<String> startIds = new LinkedHashSet<>();
+            for (NetworkDevice device : layerDevices) {
+                startIds.add(device.getId());
+            }
+            return startIds;
+        }
+
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Starting points are required: provide focusNodeIds or focusLayer"
+        );
+    }
+
+    private Set<String> boundedBfs(Set<String> startIds, int maxHops, int maxNodes, GraphIndex index,
+                                   DeviceLayer layer, String region) {
+        Set<String> visited = new LinkedHashSet<>();
+        Queue<String> queue = new LinkedList<>();
+        Map<String, Integer> distance = new HashMap<>();
+
+        for (String startId : startIds) {
+            if (visited.size() >= maxNodes) {
+                return visited;
+            }
+            if (visited.add(startId)) {
+                distance.put(startId, 0);
+                queue.add(startId);
+            }
+        }
+
+        while (!queue.isEmpty() && visited.size() < maxNodes) {
+            String current = queue.poll();
+            int currentDist = distance.get(current);
+
+            if (currentDist >= maxHops) {
+                continue;
+            }
+            for (String neighbor : index.neighbors().getOrDefault(current, Collections.emptySet())) {
+                if (visited.contains(neighbor)) {
+                    continue;
+                }
+                NetworkDevice device = index.deviceMap().get(neighbor);
+                if (device != null && (layer != null || region != null && !region.isBlank())
+                        && !matchesTraversalFilter(device, layer, region)) {
+                    continue;
+                }
+                if (visited.size() >= maxNodes) {
+                    return visited;
+                }
+                visited.add(neighbor);
+                distance.put(neighbor, currentDist + 1);
+                queue.add(neighbor);
+            }
+        }
+        return visited;
+    }
+
+    private boolean matchesTraversalFilter(NetworkDevice device, DeviceLayer layer, String region) {
+        if (layer != null && device.getLayer() != layer) {
+            return false;
+        }
+        return region == null || region.isBlank() || matchesRegion(device, region);
+    }
+
+    private boolean matchesRegion(NetworkDevice device, String region) {
+        return device.getRegion() != null && device.getRegion().toLowerCase().contains(region.toLowerCase());
+    }
+
+    private GraphIndex buildGraphIndex(List<NetworkDevice> allDevices) {
+        Map<String, Set<String>> neighbors = new HashMap<>();
+        Map<String, NetworkDevice> deviceMap = new HashMap<>();
+
+        for (NetworkDevice dev : allDevices) {
+            deviceMap.put(dev.getId(), dev);
+            neighbors.putIfAbsent(dev.getId(), new HashSet<>());
+            if (dev.getLinks() != null) {
+                for (NetworkLink link : dev.getLinks()) {
+                    if (link.getTargetDevice() != null) {
+                        String targetId = link.getTargetDevice().getId();
+                        neighbors.get(dev.getId()).add(targetId);
+                        neighbors.computeIfAbsent(targetId, k -> new HashSet<>()).add(dev.getId());
+                    }
+                }
+            }
+        }
+        return new GraphIndex(deviceMap, neighbors);
+    }
+
+    private TopologyGraph collectGraph(Set<String> visitedIds, Map<String, NetworkDevice> deviceMap) {
+        List<DeviceSummary> nodes = new ArrayList<>();
+        List<LinkSummary> links = new ArrayList<>();
+
+        for (String id : visitedIds) {
+            NetworkDevice dev = deviceMap.get(id);
+            if (dev != null) {
+                nodes.add(DeviceSummary.from(dev));
+                if (dev.getLinks() != null) {
+                    for (NetworkLink link : dev.getLinks()) {
+                        if (link.getTargetDevice() != null && visitedIds.contains(link.getTargetDevice().getId())) {
+                            links.add(LinkSummary.from(dev.getId(), link));
+                        }
+                    }
+                }
+            }
+        }
+        return TopologyGraph.of(nodes, links);
+    }
+
+    private record GraphIndex(Map<String, NetworkDevice> deviceMap, Map<String, Set<String>> neighbors) {
     }
 
     @Override
@@ -76,68 +234,11 @@ public class TopologyServiceImpl implements TopologyService {
                 ));
 
         int effectiveK = Math.min(Math.max(kHop, 1), 3);
-        List<NetworkDevice> allDevices = getAllDevices();
+        GraphIndex index = buildGraphIndex(getAllDevices());
 
-        // Build undirected adjacency graph for BFS traversal
-        Map<String, Set<String>> adjacency = new HashMap<>();
-        Map<String, NetworkDevice> deviceMap = new HashMap<>();
+        Set<String> visited = boundedBfs(Set.of(focusDevice.getId()), effectiveK, Integer.MAX_VALUE, index, null, null);
 
-        for (NetworkDevice dev : allDevices) {
-            deviceMap.put(dev.getId(), dev);
-            adjacency.putIfAbsent(dev.getId(), new HashSet<>());
-            if (dev.getLinks() != null) {
-                for (NetworkLink link : dev.getLinks()) {
-                    if (link.getTargetDevice() != null) {
-                        String targetId = link.getTargetDevice().getId();
-                        adjacency.get(dev.getId()).add(targetId);
-                        adjacency.computeIfAbsent(targetId, k -> new HashSet<>()).add(dev.getId());
-                    }
-                }
-            }
-        }
-
-        // BFS to find all nodes within effectiveK hops
-        Set<String> visited = new HashSet<>();
-        Queue<String> queue = new LinkedList<>();
-        Map<String, Integer> distance = new HashMap<>();
-
-        queue.add(focusDevice.getId());
-        visited.add(focusDevice.getId());
-        distance.put(focusDevice.getId(), 0);
-
-        while (!queue.isEmpty()) {
-            String current = queue.poll();
-            int currentDist = distance.get(current);
-
-            if (currentDist < effectiveK) {
-                for (String neighbor : adjacency.getOrDefault(current, Collections.emptySet())) {
-                    if (!visited.contains(neighbor)) {
-                        visited.add(neighbor);
-                        distance.put(neighbor, currentDist + 1);
-                        queue.add(neighbor);
-                    }
-                }
-            }
-        }
-
-        List<DeviceSummary> nodes = new ArrayList<>();
-        List<LinkSummary> links = new ArrayList<>();
-
-        for (String id : visited) {
-            NetworkDevice dev = deviceMap.get(id);
-            if (dev != null) {
-                nodes.add(DeviceSummary.from(dev));
-                if (dev.getLinks() != null) {
-                    for (NetworkLink link : dev.getLinks()) {
-                        if (link.getTargetDevice() != null && visited.contains(link.getTargetDevice().getId())) {
-                            links.add(LinkSummary.from(dev.getId(), link));
-                        }
-                    }
-                }
-            }
-        }
-
-        return TopologyGraph.of(nodes, links);
+        return collectGraph(visited, index.deviceMap());
     }
 
     @Override

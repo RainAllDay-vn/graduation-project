@@ -8,9 +8,16 @@ import com.gr2.noc.topology.dto.get.LinkSummary;
 import com.gr2.noc.topology.dto.get.TopologyGraph;
 import com.gr2.noc.topology.enums.DeviceLayer;
 
+import java.util.List;
+
 public interface TopologyService {
 
     TopologyGraph getTopology(DeviceLayer layer, String region);
+
+    TopologyGraph getTopology(List<String> focusNodeIds, DeviceLayer focusLayer, int kHop, Integer maxNodes,
+                              DeviceLayer layer, String region);
+
+    TopologyGraph getFullGraph();
 
     TopologyGraph getSubgraph(String focusNodeId, String incidentId, int kHop);
 
