@@ -14,6 +14,7 @@ export interface TopologyNodeProps {
   isExpanded?: boolean
   renderBeacon?: boolean
   isDragging?: boolean
+  isLodFar?: boolean
   locale?: 'vi' | 'en'
   onClick?: (node: DeviceSummary) => void
   onDoubleClick?: (node: DeviceSummary) => void
@@ -36,6 +37,7 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
   isExpanded = false,
   renderBeacon = true,
   isDragging = false,
+  isLodFar = false,
   onClick,
   onDoubleClick,
   onMouseDown,
@@ -79,6 +81,7 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
       data-site={node.site}
       data-status={node.status}
       data-is-dragging={isDragging ? 'true' : undefined}
+      data-lod-far={isLodFar ? 'true' : undefined}
       onMouseDown={(e) => {
         onMouseDown?.(node, e)
       }}
@@ -145,7 +148,7 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
         />
       )}
 
-      {/* 3. Node Body (Rectangle: Health Fill + Site Border) */}
+      {/* 3. Node Body (Rectangle: Health Fill + Site Border, Stylebook §3.2: brightened in LOD far) */}
       <rect
         x={x - halfW}
         y={y - halfH}
@@ -155,16 +158,18 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
         style={{
           fill: isWarning ? '#78350f' : isCritical ? '#991b1b' : undefined,
           stroke: siteColor,
+          strokeOpacity: isLodFar ? 0 : 1,
         }}
         className={cn(
-          'transition-all duration-150',
-          isHealthy && 'fill-white dark:fill-[#0f172a]',
+          'transition-all duration-200',
+          isHealthy &&
+            (isLodFar ? 'fill-slate-200 dark:fill-[#1e293b]' : 'fill-white dark:fill-[#0f172a]'),
           isHovered && 'brightness-110 drop-shadow-md'
         )}
-        strokeWidth={isSelected ? 2.4 : 1.8}
+        strokeWidth={isLodFar ? 0 : isSelected ? 2.4 : 1.8}
       />
 
-      {/* 4. Router ID Label (Monospace bold centered text) */}
+      {/* 4. Router ID Label (Monospace bold centered text, Stylebook §3.2: hidden in LOD far) */}
       <text
         x={x}
         y={y + 3.8}
@@ -174,17 +179,21 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
           fill: isWarning ? '#fef3c7' : isCritical ? '#ffffff' : undefined,
         }}
         className={cn(
-          'text-[11px] font-extrabold tracking-[0.04em] uppercase pointer-events-none',
+          'text-[11px] font-extrabold tracking-[0.04em] uppercase pointer-events-none transition-opacity duration-200',
+          isLodFar && 'opacity-0',
           isHealthy && 'fill-slate-900 dark:fill-white'
         )}
       >
         {node.id}
       </text>
 
-      {/* 5. Access Leaf Badge under Exchange Nodes (Stylebook 1.5) */}
+      {/* 5. Access Leaf Badge under Exchange Nodes (Stylebook 1.5 & 3.2: hidden in LOD far) */}
       {hasAccessLeaf && (
         <g
-          className="node-access-badge-group cursor-pointer"
+          className={cn(
+            'node-access-badge-group cursor-pointer transition-opacity duration-200',
+            isLodFar && 'opacity-0 pointer-events-none'
+          )}
           data-testid={`node-badge-${node.id}`}
           onClick={(e) => {
             e.stopPropagation()

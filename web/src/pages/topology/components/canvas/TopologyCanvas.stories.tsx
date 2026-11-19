@@ -373,3 +373,32 @@ export const InteractiveNodeDragging: Story = {
     </div>
   ),
 }
+
+/**
+ * Story 14: LevelOfDetailFar (Step 5.5b / Stylebook §3.2)
+ * Demonstrates Far Level of Detail (Mức xa):
+ * - Router cards collapse into compact status color blocks (text labels hidden)
+ * - Healthy node blocks brighten one step to detach cleanly from dark canvas background
+ * - Trunk links collapse to uniform hairline strokes without utilization dash patterns
+ * - Rich contextual hover tooltips remain 100% active on both nodes and edges
+ */
+export const LevelOfDetailFar: Story = {
+  args: {
+    nodes: sampleNodes,
+    links: sampleLinks,
+    width: 1200,
+    height: 680,
+    locale: 'vi',
+    lod: 'far',
+    showLegend: true,
+    showControls: true,
+    showTooltip: true,
+  },
+  render: (args) => (
+    <div className="dark w-full h-[680px] bg-[#0b0f19] p-4 flex items-center justify-center">
+      <div className="w-[1200px] h-[680px] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative">
+        <TopologyCanvas {...args} />
+      </div>
+    </div>
+  ),
+}

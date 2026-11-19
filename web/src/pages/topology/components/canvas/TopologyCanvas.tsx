@@ -30,6 +30,8 @@ export interface TopologyCanvasProps {
   showControls?: boolean
   showKHopControls?: boolean
   showTooltip?: boolean
+  lod?: 'auto' | 'near' | 'far'
+  lodThreshold?: number
   kHop?: KHopDistance
   filterMode?: KHopFilterMode
   onKHopChange?: (kHop: KHopDistance) => void
@@ -85,6 +87,8 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
   showControls = true,
   showKHopControls = true,
   showTooltip = true,
+  lod = 'auto',
+  lodThreshold = 0.8,
   kHop: externalKHop,
   filterMode: externalFilterMode = 'ghost',
   onKHopChange: externalOnKHopChange,
@@ -362,6 +366,10 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
     }
   }
 
+  // Step 5.5b: Semantic Zoom & Level of Detail (LOD) (Stylebook §3.2)
+  const currentZoom = zoom ?? transform.k
+  const isLodFar = lod === 'far' ? true : lod === 'near' ? false : currentZoom < lodThreshold
+
   return (
     <div
       ref={containerRef}
@@ -384,6 +392,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
       )}
       style={style}
       data-testid="topology-canvas"
+      data-lod={isLodFar ? 'far' : 'near'}
     >
       {/* SVG Canvas Root */}
       <svg
@@ -453,6 +462,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
                 isHovered={isHovered}
                 isDimmed={isDimmed}
                 isBlastRadius={isBlastRadius}
+                isLodFar={isLodFar}
                 showPortAnchors={showPortAnchors}
                 onClick={handleSelectLink}
                 onMouseEnter={(l, e) => {
@@ -540,6 +550,7 @@ export const TopologyCanvas: React.FC<TopologyCanvasProps> = ({
                 isDimmed={isDimmed}
                 isHovered={isHovered}
                 isDragging={isDragging}
+                isLodFar={isLodFar}
                 locale={locale}
                 onMouseDown={handleNodeMouseDown}
                 onClick={handleSelectNode}

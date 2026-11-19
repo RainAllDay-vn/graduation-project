@@ -16,6 +16,7 @@ export interface TopologyEdgeProps {
   isHovered?: boolean
   isDimmed?: boolean
   isBlastRadius?: boolean
+  isLodFar?: boolean
   showPortAnchors?: boolean
   onClick?: (link: LinkSummary) => void
   onMouseEnter?: (link: LinkSummary, event: React.MouseEvent<SVGPathElement>) => void
@@ -32,6 +33,7 @@ export const TopologyEdge: React.FC<TopologyEdgeProps> = ({
   isHovered = false,
   isDimmed = false,
   isBlastRadius = false,
+  isLodFar = false,
   showPortAnchors = true,
   onClick,
   onMouseEnter,
@@ -82,24 +84,24 @@ export const TopologyEdge: React.FC<TopologyEdgeProps> = ({
         />
       )}
 
-      {/* 3. Primary Physical Fiber Edge Line */}
+      {/* 3. Primary Physical Fiber Edge Line (Stylebook §3.2: hairline in LOD far) */}
       <path
         d={coords.path}
         fill="none"
         stroke={colorStyle.stroke}
-        strokeWidth={isHovered ? strokeWidth + 1.2 : strokeWidth}
-        strokeOpacity={isHovered ? 1.0 : colorStyle.opacity}
-        strokeDasharray={dashArray}
+        strokeWidth={isLodFar ? 1.2 : isHovered ? strokeWidth + 1.2 : strokeWidth}
+        strokeOpacity={isHovered ? 1.0 : isLodFar ? 0.75 : colorStyle.opacity}
+        strokeDasharray={isLodFar ? undefined : dashArray}
         strokeLinecap="round"
         className={cn(
-          'transition-all duration-150 pointer-events-none',
+          'transition-all duration-200 pointer-events-none',
           isHovered && 'filter drop-shadow-[0_0_4px_rgba(56,189,248,0.5)]'
         )}
       />
 
-      {/* 4. Physical Port Anchor Dots (Stylebook rule 2.1) */}
-      {showPortAnchors && (
-        <g className="port-anchors pointer-events-none">
+      {/* 4. Physical Port Anchor Dots (Stylebook rule 2.1 & 3.2: hidden in LOD far) */}
+      {!isLodFar && showPortAnchors && (
+        <g className="port-anchors pointer-events-none transition-opacity duration-200">
           <circle
             cx={coords.startX}
             cy={coords.startY}
