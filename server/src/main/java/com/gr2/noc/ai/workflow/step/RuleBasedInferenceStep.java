@@ -7,7 +7,6 @@ import com.gr2.noc.rag.dto.TechnicalDocSnippet;
 import com.gr2.noc.telemetry.dto.get.DeviceTelemetrySnapshotDetails;
 import com.gr2.noc.telemetry.dto.get.TelemetryMetricSeries;
 import com.gr2.noc.telemetry.dto.get.TelemetryTimeseriesPointDetails;
-import com.gr2.noc.telemetry.enums.OperStatus;
 import com.gr2.noc.topology.dto.get.LinkSummary;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;

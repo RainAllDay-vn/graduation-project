@@ -95,3 +95,6 @@ app:
     max-auto-retries: 5
   rag:
     indexing-enabled: true
+    retrieval:
+      top-k: 3
+      min-similarity-score: 0.70

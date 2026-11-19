@@ -6,7 +6,6 @@ import com.gr2.noc.ai.dto.HypothesisDrafts;
 import com.gr2.noc.ai.dto.InvestigationContext;
 import com.gr2.noc.ai.dto.RawInference;
 import com.gr2.noc.hypothesis.dto.create.CreateHypothesisRequest;
-import com.gr2.noc.topology.dto.get.LinkSummary;
 import com.gr2.noc.topology.dto.get.TopologyGraph;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
