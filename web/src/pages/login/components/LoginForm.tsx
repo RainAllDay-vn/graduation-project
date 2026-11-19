@@ -18,6 +18,7 @@ export interface LoginFormProps {
   isLoading?: boolean
   isSuccess?: boolean
   locale?: 'vi' | 'en'
+  sessionExpiryReason?: 'inactivity' | 'session_expired' | 'user_action' | null
   onChange: (field: keyof LoginFormData, value: string | boolean) => void
   onSubmit: (e: FormEvent) => void
   onSignupClick: () => void
@@ -73,6 +74,7 @@ export function LoginForm({
   isLoading = false,
   isSuccess = false,
   locale = 'vi',
+  sessionExpiryReason = null,
   onChange,
   onSubmit,
   onSignupClick,
@@ -105,6 +107,28 @@ export function LoginForm({
         </div>
 
         {/* Status Banners */}
+        {sessionExpiryReason === 'inactivity' && !errors.general && !isSuccess && (
+          <div className="mt-4 text-[12.5px] font-semibold rounded-lg px-3 py-2.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-800 dark:text-amber-300 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0 animate-pulse" />
+            <span>
+              {locale === 'en'
+                ? 'Your session expired due to 15 minutes of inactivity. Please sign in again.'
+                : 'Phiên làm việc đã tự động kết thúc do không có thao tác (15 phút). Vui lòng đăng nhập lại.'}
+            </span>
+          </div>
+        )}
+
+        {sessionExpiryReason === 'session_expired' && !errors.general && !isSuccess && (
+          <div className="mt-4 text-[12.5px] font-semibold rounded-lg px-3 py-2.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-800 dark:text-amber-300 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+            <span>
+              {locale === 'en'
+                ? 'Your server session has expired. Please sign in to resume.'
+                : 'Phiên làm việc trên máy chủ đã kết thúc. Vui lòng đăng nhập lại để tiếp tục.'}
+            </span>
+          </div>
+        )}
+
         {errors.general && (
           <div className="mt-4 text-[12.5px] font-semibold rounded-lg px-3 py-2.5 bg-[#fef2f2] dark:bg-red-950/40 border border-[#fecaca] dark:border-red-900/50 text-[#991b1b] dark:text-red-300 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#ef4444] shrink-0" />

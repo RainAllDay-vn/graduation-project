@@ -3,6 +3,9 @@ import { NavLink, Outlet, useNavigate, Navigate, useLocation } from 'react-route
 import { useQuery } from '@tanstack/react-query'
 import { useAuth, useTheme } from '@/context'
 import { getIncidents } from '@/api/incidents'
+import { getMe } from '@/api/auth'
+import { useSessionTimeout } from '@/hooks/useSessionTimeout'
+import { SessionExpiryWarningModal } from '@/components/auth/SessionExpiryWarningModal'
 import { LogOut } from 'lucide-react'
 
 function getInitials(name?: string): string {
@@ -36,9 +39,17 @@ const TABS = {
 export default function AppLayout() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { user, isAuthenticated, isLoading, logout } = useAuth()
+  const { user, isAuthenticated, isLoading, logout, signOff } = useAuth()
   const { locale, setLocale } = useTheme()
   const [showUserMenu, setShowUserMenu] = useState(false)
+
+  // Auto Sign-off Watchdog (15 min idle timeout, 60s warning countdown)
+  const { showWarning, remainingSeconds, extendSession, signOffNow } =
+    useSessionTimeout({
+      enabled: isAuthenticated,
+      onSignOff: (reason) => signOff(reason),
+      onKeepAlive: () => getMe().then(() => {}),
+    })
 
   // Topology and Investigation pages use a strict fixed-viewport canvas (no window scrolling)
   const isFixedViewport =
@@ -201,6 +212,16 @@ export default function AppLayout() {
       >
         <Outlet />
       </main>
+
+      {/* Session Inactivity Countdown Modal (NOC Security Standard) */}
+      <SessionExpiryWarningModal
+        isOpen={showWarning}
+        remainingSeconds={remainingSeconds}
+        totalWarningSeconds={60}
+        onExtend={extendSession}
+        onSignOff={signOffNow}
+        locale={locale}
+      />
     </div>
   )
 }

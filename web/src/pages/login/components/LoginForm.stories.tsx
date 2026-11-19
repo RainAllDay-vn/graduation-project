@@ -125,3 +125,41 @@ export const English: Story = {
     onSsoClick: () => {},
   },
 }
+
+export const SessionExpiredInactivity: Story = {
+  args: {
+    formData: {
+      email: 'engineer@noc.local',
+      password: '',
+      rememberMe: true,
+    },
+    errors: {},
+    isLoading: false,
+    isSuccess: false,
+    locale: 'vi',
+    sessionExpiryReason: 'inactivity',
+    onChange: () => {},
+    onSubmit: (e) => e.preventDefault(),
+    onSignupClick: () => {},
+    onSsoClick: () => {},
+  },
+}
+
+export const SessionExpiredServer: Story = {
+  args: {
+    formData: {
+      email: 'engineer@noc.local',
+      password: '',
+      rememberMe: true,
+    },
+    errors: {},
+    isLoading: false,
+    isSuccess: false,
+    locale: 'vi',
+    sessionExpiryReason: 'session_expired',
+    onChange: () => {},
+    onSubmit: (e) => e.preventDefault(),
+    onSignupClick: () => {},
+    onSsoClick: () => {},
+  },
+}

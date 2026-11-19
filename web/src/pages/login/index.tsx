@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import { login } from '@/api/auth'
 import { useAuth, useTheme } from '@/context'
@@ -8,8 +8,16 @@ import { LoginForm, type LoginFormData, type LoginFormErrors } from './component
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { isAuthenticated, setUser } = useAuth()
   const { locale, setLocale } = useTheme()
+
+  const reason = searchParams.get('reason') as
+    | 'inactivity'
+    | 'session_expired'
+    | 'user_action'
+    | null
+  const returnUrl = searchParams.get('returnUrl')
 
   const [formData, setFormData] = useState<LoginFormData>(() => {
     const remembered = localStorage.getItem('noc_remember_email') || ''
@@ -27,9 +35,13 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !isSuccess) {
-      navigate('/overview', { replace: true })
+      if (returnUrl && returnUrl.startsWith('/')) {
+        navigate(returnUrl, { replace: true })
+      } else {
+        navigate('/overview', { replace: true })
+      }
     }
-  }, [isAuthenticated, isSuccess, navigate])
+  }, [isAuthenticated, isSuccess, navigate, returnUrl])
 
   const handleChange = (field: keyof LoginFormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -92,7 +104,11 @@ export default function LoginPage() {
 
       // Allow brief moment to display success banner before navigating
       setTimeout(() => {
-        navigate('/overview')
+        if (returnUrl && returnUrl.startsWith('/')) {
+          navigate(returnUrl)
+        } else {
+          navigate('/overview')
+        }
       }, 1200)
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
@@ -143,6 +159,7 @@ export default function LoginPage() {
         isLoading={isLoading}
         isSuccess={isSuccess}
         locale={locale}
+        sessionExpiryReason={reason}
         onChange={handleChange}
         onSubmit={handleSubmit}
         onSignupClick={() => navigate('/signup')}
