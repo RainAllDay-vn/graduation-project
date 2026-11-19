@@ -36,18 +36,6 @@ public class TopologyServiceImpl implements TopologyService {
     }
 
     @Override
-    public TopologyGraph getTopology(DeviceLayer layer, String region) {
-        List<NetworkDevice> all = getAllDevices();
-
-        List<NetworkDevice> filtered = all.stream()
-                .filter(d -> layer == null || d.getLayer() == layer)
-                .filter(d -> region == null || region.isBlank() || matchesRegion(d, region))
-                .toList();
-
-        return TopologyGraph.from(filtered);
-    }
-
-    @Override
     public TopologyGraph getTopology(List<String> focusNodeIds, DeviceLayer focusLayer, int kHop, Integer maxNodes,
                                      DeviceLayer layer, String region) {
         Set<String> startIds = resolveStartIds(focusNodeIds, focusLayer);
@@ -64,6 +52,24 @@ public class TopologyServiceImpl implements TopologyService {
     @Override
     public TopologyGraph getFullGraph() {
         return TopologyGraph.from(getAllDevices());
+    }
+
+    @Override
+    public DeviceDirectoryPage searchDevices(String search, DeviceLayer layer, String region, int page, int size) {
+        int effectiveSize = Math.min(Math.max(size, 1), 200);
+
+        String normalizedSearch = search == null ? null : search.trim().toLowerCase();
+        List<NetworkDevice> filtered = getAllDevices().stream()
+                .filter(d -> normalizedSearch == null || normalizedSearch.isBlank()
+                        || (d.getId() != null && d.getId().toLowerCase().contains(normalizedSearch))
+                        || (d.getName() != null && d.getName().toLowerCase().contains(normalizedSearch)))
+                .filter(d -> layer == null || d.getLayer() == layer)
+                .filter(d -> region == null || region.isBlank() || matchesRegion(d, region))
+                .sorted(Comparator.comparing(NetworkDevice::getId,
+                        Comparator.nullsLast(Comparator.<String>naturalOrder())))
+                .toList();
+
+        return DeviceDirectoryPage.of(filtered, page, effectiveSize);
     }
 
     private static final int DEFAULT_MAX_NODES = 150;

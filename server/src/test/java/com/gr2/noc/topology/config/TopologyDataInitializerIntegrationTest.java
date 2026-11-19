@@ -27,7 +27,7 @@ class TopologyDataInitializerIntegrationTest {
     @Test
     @DisplayName("Should seed realistic telecom topology graph when dev profile is active")
     void shouldSeedTopologyWhenDevProfileActive() {
-        TopologyGraph graph = topologyService.getTopology(null, null);
+        TopologyGraph graph = topologyService.getFullGraph();
         assertThat(graph.nodes()).hasSizeGreaterThanOrEqualTo(12);
         assertThat(graph.links()).hasSizeGreaterThanOrEqualTo(8);
 
