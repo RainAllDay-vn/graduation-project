@@ -8,6 +8,7 @@ import com.gr2.noc.topology.dto.get.DeviceDirectoryPage;
 import com.gr2.noc.topology.dto.get.LinkSummary;
 import com.gr2.noc.topology.dto.get.TopologyGraph;
 import com.gr2.noc.topology.enums.DeviceLayer;
+import com.gr2.noc.topology.enums.DeviceStatus;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,16 +59,25 @@ public interface TopologyApi {
 
     /**
      * Paged device directory with case-insensitive search (device id or name),
-     * layer and region filters. Sorted by device id for stable pagination.
+     * layer, status and region filters. Sorted by device id for stable pagination.
+     * availableRegions lists distinct regions across all devices (independent of filters)
+     * so clients can render stable filter options.
      */
     @GetMapping("/devices")
     ResponseEntity<DeviceDirectoryPage> searchDevices(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) DeviceLayer layer,
+            @RequestParam(required = false) DeviceStatus status,
             @RequestParam(required = false) String region,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     );
+
+    /**
+     * Retrieve all network links in the topology (source endpoint view).
+     */
+    @GetMapping("/links")
+    ResponseEntity<List<LinkSummary>> getLinks();
 
     /**
      * Calculate outage blast radius (downstream affected devices, links, and subscribers).

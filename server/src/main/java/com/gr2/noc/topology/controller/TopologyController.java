@@ -8,6 +8,7 @@ import com.gr2.noc.topology.dto.get.DeviceDirectoryPage;
 import com.gr2.noc.topology.dto.get.LinkSummary;
 import com.gr2.noc.topology.dto.get.TopologyGraph;
 import com.gr2.noc.topology.enums.DeviceLayer;
+import com.gr2.noc.topology.enums.DeviceStatus;
 import com.gr2.noc.topology.service.TopologyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 public class TopologyController implements TopologyApi {
@@ -39,9 +39,14 @@ public class TopologyController implements TopologyApi {
     }
 
     @Override
-    public ResponseEntity<DeviceDirectoryPage> searchDevices(String search, DeviceLayer layer, String region,
-                                                             int page, int size) {
-        return ResponseEntity.ok(topologyService.searchDevices(search, layer, region, page, size));
+    public ResponseEntity<DeviceDirectoryPage> searchDevices(String search, DeviceLayer layer, DeviceStatus status,
+                                                             String region, int page, int size) {
+        return ResponseEntity.ok(topologyService.searchDevices(search, layer, status, region, page, size));
+    }
+
+    @Override
+    public ResponseEntity<List<LinkSummary>> getLinks() {
+        return ResponseEntity.ok(topologyService.getLinks());
     }
 
     @Override

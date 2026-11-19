@@ -43,7 +43,7 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
 
   const kHop = parseInt(searchParams.get('kHop') || '2', 10)
 
-  // 2. Fetch topology subgraph or full topology graph without fallback to mock data in production
+  // 2. Fetch topology subgraph or hub-centered topology graph (starting points are mandatory server-side)
   const {
     data: remoteData,
     isLoading,
@@ -60,7 +60,7 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
           kHop,
         })
       }
-      return getTopology()
+      return getTopology({ focusLayer: 'CORE', kHop: 2 })
     },
     enabled: !mockData,
     staleTime: 30000,

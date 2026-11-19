@@ -13,7 +13,7 @@ import {
   formatUtilization,
   formatSubscribers,
 } from './lookupUtils'
-import { ArrowRight, Inbox, AlertTriangle } from 'lucide-react'
+import { ArrowRight, Inbox, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export interface LookupTableProps {
   activeTab: LookupTab
@@ -25,6 +25,9 @@ export interface LookupTableProps {
   locale?: 'vi' | 'en'
   onSelect: (id: string) => void
   onResetFilters?: () => void
+  page?: number
+  totalPages?: number
+  onPageChange?: (page: number) => void
 }
 
 export function LookupTable({
@@ -37,6 +40,9 @@ export function LookupTable({
   locale = 'vi',
   onSelect,
   onResetFilters,
+  page = 0,
+  totalPages = 0,
+  onPageChange,
 }: LookupTableProps) {
   const isEn = locale === 'en'
 
@@ -399,6 +405,34 @@ export function LookupTable({
           </tbody>
         </table>
       </div>
+
+      {activeTab === 'devices' && onPageChange && totalPages > 1 && (
+        <div className="border-t border-[#e2e8f0] dark:border-[#1e293b] px-4 py-2.5 flex items-center justify-between">
+          <span className="text-[11.5px] text-[#64748b] dark:text-[#94a3b8]">
+            {isEn ? 'Page' : 'Trang'} {page + 1} / {totalPages}
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={page === 0}
+              onClick={() => onPageChange(page - 1)}
+              className="p-1.5 rounded-lg border border-[#e2e8f0] dark:border-[#1e293b] text-[#0f172a] dark:text-[#f8fafc] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition-colors cursor-pointer"
+              aria-label={isEn ? 'Previous page' : 'Trang trước'}
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              disabled={page >= totalPages - 1}
+              onClick={() => onPageChange(page + 1)}
+              className="p-1.5 rounded-lg border border-[#e2e8f0] dark:border-[#1e293b] text-[#0f172a] dark:text-[#f8fafc] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition-colors cursor-pointer"
+              aria-label={isEn ? 'Next page' : 'Trang sau'}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

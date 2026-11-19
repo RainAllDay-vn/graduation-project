@@ -55,21 +55,47 @@ public class TopologyServiceImpl implements TopologyService {
     }
 
     @Override
-    public DeviceDirectoryPage searchDevices(String search, DeviceLayer layer, String region, int page, int size) {
+    public DeviceDirectoryPage searchDevices(String search, DeviceLayer layer, DeviceStatus status, String region,
+                                             int page, int size) {
         int effectiveSize = Math.min(Math.max(size, 1), 200);
 
+        List<NetworkDevice> allDevices = getAllDevices();
+
         String normalizedSearch = search == null ? null : search.trim().toLowerCase();
-        List<NetworkDevice> filtered = getAllDevices().stream()
+        List<NetworkDevice> filtered = allDevices.stream()
                 .filter(d -> normalizedSearch == null || normalizedSearch.isBlank()
                         || (d.getId() != null && d.getId().toLowerCase().contains(normalizedSearch))
                         || (d.getName() != null && d.getName().toLowerCase().contains(normalizedSearch)))
                 .filter(d -> layer == null || d.getLayer() == layer)
+                .filter(d -> status == null || d.getStatus() == status)
                 .filter(d -> region == null || region.isBlank() || matchesRegion(d, region))
                 .sorted(Comparator.comparing(NetworkDevice::getId,
                         Comparator.nullsLast(Comparator.<String>naturalOrder())))
                 .toList();
 
-        return DeviceDirectoryPage.of(filtered, page, effectiveSize);
+        List<String> availableRegions = allDevices.stream()
+                .map(NetworkDevice::getRegion)
+                .filter(r -> r != null && !r.isBlank())
+                .distinct()
+                .sorted()
+                .toList();
+
+        return DeviceDirectoryPage.of(filtered, availableRegions, page, effectiveSize);
+    }
+
+    @Override
+    public List<LinkSummary> getLinks() {
+        List<LinkSummary> links = new ArrayList<>();
+        for (NetworkDevice device : getAllDevices()) {
+            if (device.getLinks() != null) {
+                for (NetworkLink link : device.getLinks()) {
+                    if (link.getTargetDevice() != null) {
+                        links.add(LinkSummary.from(device.getId(), link));
+                    }
+                }
+            }
+        }
+        return links;
     }
 
     private static final int DEFAULT_MAX_NODES = 150;

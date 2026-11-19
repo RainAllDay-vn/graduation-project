@@ -379,6 +379,25 @@ class TopologyControllerIntegrationTest {
         }
 
         @Test
+        @DisplayName("Should filter by device status")
+        void shouldFilterByStatus() throws Exception {
+            mockMvc.perform(get("/api/topology/devices").param("status", "DEGRADED"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.totalElements", is(1)))
+                    .andExpect(jsonPath("$.content[0].id", is("TEST-AGG-01")));
+        }
+
+        @Test
+        @DisplayName("Should expose distinct regions across all devices independent of filters")
+        void shouldExposeAvailableRegions() throws Exception {
+            mockMvc.perform(get("/api/topology/devices")
+                            .param("layer", "CORE")
+                            .param("size", "1"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.availableRegions", hasItems("Miền Bắc", "Miền Nam")));
+        }
+
+        @Test
         @DisplayName("Should return empty content when page is out of range")
         void shouldReturnEmptyContentWhenPageOutOfRange() throws Exception {
             mockMvc.perform(get("/api/topology/devices")
@@ -387,6 +406,21 @@ class TopologyControllerIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content", hasSize(0)))
                     .andExpect(jsonPath("$.totalElements", is(4)));
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /api/topology/links")
+    class GetLinksTests {
+
+        @Test
+        @DisplayName("Should return all links from source device view")
+        void shouldReturnAllLinks() throws Exception {
+            mockMvc.perform(get("/api/topology/links"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$", hasSize(3)))
+                    .andExpect(jsonPath("$[*].linkId",
+                            hasItems("TEST-LINK-AGG-CORE", "TEST-LINK-EXCH-AGG", "TEST-LINK-CORE-CORE")));
         }
     }
 

@@ -8,6 +8,7 @@ import com.gr2.noc.topology.dto.get.DeviceDirectoryPage;
 import com.gr2.noc.topology.dto.get.LinkSummary;
 import com.gr2.noc.topology.dto.get.TopologyGraph;
 import com.gr2.noc.topology.enums.DeviceLayer;
+import com.gr2.noc.topology.enums.DeviceStatus;
 
 import java.util.List;
 
@@ -18,7 +19,10 @@ public interface TopologyService {
 
     TopologyGraph getFullGraph();
 
-    DeviceDirectoryPage searchDevices(String search, DeviceLayer layer, String region, int page, int size);
+    DeviceDirectoryPage searchDevices(String search, DeviceLayer layer, DeviceStatus status, String region,
+                                      int page, int size);
+
+    List<LinkSummary> getLinks();
 
     TopologyGraph getSubgraph(String focusNodeId, String incidentId, int kHop);
 

@@ -12,9 +12,11 @@ public record DeviceDirectoryPage(
     int page,
     int size,
     long totalElements,
-    int totalPages
+    int totalPages,
+    List<String> availableRegions
 ) {
-    public static DeviceDirectoryPage of(List<NetworkDevice> devices, int page, int size) {
+    public static DeviceDirectoryPage of(List<NetworkDevice> devices, List<String> availableRegions,
+                                         int page, int size) {
         List<DeviceSummary> summaries = devices == null
             ? Collections.emptyList()
             : devices.stream().map(DeviceSummary::from).toList();
@@ -34,6 +36,7 @@ public record DeviceDirectoryPage(
             .size(size)
             .totalElements(totalElements)
             .totalPages(totalPages)
+            .availableRegions(availableRegions != null ? availableRegions : Collections.emptyList())
             .build();
     }
 }

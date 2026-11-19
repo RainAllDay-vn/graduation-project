@@ -50,14 +50,38 @@ export interface DeviceDetails extends DeviceSummary {
 }
 
 export interface GetTopologyParams {
+  focusNodeIds?: string[]
+  focusLayer?: DeviceLayer
+  kHop?: number
+  maxNodes?: number
   layer?: DeviceLayer
   region?: string
 }
 
+export interface SearchDevicesParams {
+  search?: string
+  layer?: DeviceLayer
+  status?: DeviceStatus
+  region?: string
+  page?: number
+  size?: number
+}
+
+export interface DeviceDirectoryPage {
+  content: DeviceSummary[]
+  page: number
+  size: number
+  totalElements: number
+  totalPages: number
+  availableRegions: string[]
+}
+
 /**
- * Retrieve complete network topology graph.
+ * Retrieve a bounded topology graph centered on forced starting points
+ * (focusNodeIds or focusLayer). The server returns 400 if no starting
+ * points are provided.
  */
-export async function getTopology(params?: GetTopologyParams): Promise<TopologyGraph> {
+export async function getTopology(params: GetTopologyParams): Promise<TopologyGraph> {
   const response = await apiClient.get<TopologyGraph>('/topology', { params })
   return response.data
 }
@@ -71,6 +95,22 @@ export async function getSubgraph(params?: {
   kHop?: number
 }): Promise<TopologyGraph> {
   const response = await apiClient.get<TopologyGraph>('/topology/subgraph', { params })
+  return response.data
+}
+
+/**
+ * Paged device directory with server-side search and filters.
+ */
+export async function searchDevices(params?: SearchDevicesParams): Promise<DeviceDirectoryPage> {
+  const response = await apiClient.get<DeviceDirectoryPage>('/topology/devices', { params })
+  return response.data
+}
+
+/**
+ * Retrieve all network links in the topology.
+ */
+export async function getTopologyLinks(): Promise<LinkSummary[]> {
+  const response = await apiClient.get<LinkSummary[]>('/topology/links')
   return response.data
 }
 

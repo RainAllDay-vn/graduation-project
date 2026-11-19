@@ -3,10 +3,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTheme } from '@/context'
 import {
-  getTopology,
+  searchDevices,
+  getTopologyLinks,
   getDeviceById,
   type DeviceSummary,
   type DeviceDetails,
+  type DeviceLayer,
+  type DeviceStatus,
   type LinkSummary,
 } from '@/api/topology'
 import {
@@ -20,7 +23,6 @@ import {
 import { getIncidents, type IncidentSummary } from '@/api/incidents'
 import {
   type LookupTab,
-  filterDevices,
   filterLinks,
   filterServices,
 } from './components/lookupUtils'
@@ -63,6 +65,9 @@ export interface LookupViewProps {
   onStatusChange: (status: string) => void
   onResetFilters: () => void
   onSelect: (id: string) => void
+  devicePageNumber?: number
+  deviceTotalPages?: number
+  onDevicePageChange?: (page: number) => void
   onNavigateToTopology: (target: {
     type: LookupTab
     id: string
@@ -100,6 +105,9 @@ export function LookupView({
   onStatusChange,
   onResetFilters,
   onSelect,
+  devicePageNumber = 0,
+  deviceTotalPages = 0,
+  onDevicePageChange,
   onNavigateToTopology,
   onSelectDependentDevice,
 }: LookupViewProps) {
@@ -150,6 +158,9 @@ export function LookupView({
               locale={locale}
               onSelect={onSelect}
               onResetFilters={onResetFilters}
+              page={devicePageNumber}
+              totalPages={deviceTotalPages}
+              onPageChange={onDevicePageChange}
             />
           </div>
 
@@ -204,14 +215,40 @@ export default function LookupPage() {
     searchParams.get('id') || searchParams.get('focusId') || null
   )
 
-  // 1. Fetch Topology
-  const { data: topology, isLoading: isLoadingTopology } = useQuery({
-    queryKey: ['topology'],
-    queryFn: () => getTopology(),
+  // 1. Fetch devices via paged directory (server-side search & filters)
+  const DEVICE_PAGE_SIZE = 50
+  const [devicePage, setDevicePage] = useState(0)
+
+  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery)
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedQuery(searchQuery)
+      setDevicePage(0)
+    }, 300)
+    return () => clearTimeout(t)
+  }, [searchQuery])
+
+  const { data: deviceDirectory, isLoading: isLoadingDevices } = useQuery({
+    queryKey: ['deviceDirectory', debouncedQuery, layerFilter, regionFilter, statusFilter, devicePage],
+    queryFn: () =>
+      searchDevices({
+        search: debouncedQuery.trim() || undefined,
+        layer: layerFilter !== 'ALL' ? (layerFilter as DeviceLayer) : undefined,
+        status: statusFilter !== 'ALL' ? (statusFilter as DeviceStatus) : undefined,
+        region: regionFilter !== 'ALL' ? regionFilter : undefined,
+        page: devicePage,
+        size: DEVICE_PAGE_SIZE,
+      }),
     refetchInterval: 30000,
   })
 
-  // 2. Fetch Services
+  // 2. Fetch links & services
+  const { data: allLinks = [], isLoading: isLoadingLinks } = useQuery({
+    queryKey: ['topologyLinks'],
+    queryFn: () => getTopologyLinks(),
+    refetchInterval: 30000,
+  })
+
   const { data: services = [], isLoading: isLoadingServices } = useQuery({
     queryKey: ['services'],
     queryFn: () => getServices(),
@@ -225,22 +262,18 @@ export default function LookupPage() {
     refetchInterval: 30000,
   })
 
-  const devices = useMemo(() => topology?.nodes || [], [topology])
-  const links = useMemo(() => topology?.links || [], [topology])
+  const devices = useMemo(() => deviceDirectory?.content || [], [deviceDirectory])
+  const links = allLinks
 
-  // Extract available regions dynamically from devices & services
+  // Extract available regions dynamically (server facet + services)
   const availableRegions = useMemo(() => {
-    const set = new Set<string>()
-    devices.forEach((d) => d.region && set.add(d.region))
+    const set = new Set<string>(deviceDirectory?.availableRegions || [])
     services.forEach((s) => s.region && set.add(s.region))
     return Array.from(set)
-  }, [devices, services])
+  }, [deviceDirectory, services])
 
-  // Filtered lists
-  const filteredDevices = useMemo(
-    () => filterDevices(devices, searchQuery, layerFilter, regionFilter, statusFilter),
-    [devices, searchQuery, layerFilter, regionFilter, statusFilter]
-  )
+  // Devices are already filtered & paged server-side
+  const filteredDevices = devices
 
   const filteredLinks = useMemo(
     () => filterLinks(links, searchQuery, typeFilter, statusFilter),
@@ -255,11 +288,11 @@ export default function LookupPage() {
   // Tab counts
   const counts = useMemo(
     () => ({
-      devices: devices.length,
+      devices: deviceDirectory?.totalElements ?? 0,
       links: links.length,
       services: services.length,
     }),
-    [devices.length, links.length, services.length]
+    [deviceDirectory?.totalElements, links.length, services.length]
   )
 
   // Auto-select first item if none selected or if previously selected item is no longer in view
@@ -375,6 +408,7 @@ export default function LookupPage() {
     setTypeFilter('ALL')
     setRegionFilter('ALL')
     setStatusFilter('ALL')
+    setDevicePage(0)
   }
 
   // Handle Reset Filters
@@ -384,6 +418,7 @@ export default function LookupPage() {
     setTypeFilter('ALL')
     setRegionFilter('ALL')
     setStatusFilter('ALL')
+    setDevicePage(0)
   }
 
   // Handle Navigate to Topology
@@ -404,9 +439,10 @@ export default function LookupPage() {
     setLayerFilter('ALL')
     setRegionFilter('ALL')
     setStatusFilter('ALL')
+    setDevicePage(0)
   }
 
-  const isLoading = isLoadingTopology || isLoadingServices
+  const isLoading = isLoadingDevices || isLoadingLinks || isLoadingServices
   const isLoadingDetails =
     (isDeviceSelected && isLoadingDeviceDetails) ||
     (isServiceSelected && (isLoadingServiceDetails || isLoadingServiceImpact))
@@ -441,6 +477,9 @@ export default function LookupPage() {
       onStatusChange={setStatusFilter}
       onResetFilters={handleResetFilters}
       onSelect={setSelectedId}
+      devicePageNumber={devicePage}
+      deviceTotalPages={deviceDirectory?.totalPages ?? 0}
+      onDevicePageChange={setDevicePage}
       onNavigateToTopology={handleNavigateToTopology}
       onSelectDependentDevice={handleSelectDependentDevice}
     />
