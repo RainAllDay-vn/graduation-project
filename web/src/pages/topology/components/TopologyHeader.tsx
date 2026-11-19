@@ -15,7 +15,7 @@ export interface TopologyHeaderProps {
   /** Currently focused node ID (if any) */
   focusNodeId?: string | null
   /** Current hop distance if focused */
-  focusHop?: number
+  focusHop?: number | 'all'
   /** Locale language code */
   locale?: 'vi' | 'en'
   /** Additional CSS class names */
@@ -101,8 +101,12 @@ export const TopologyHeader: React.FC<TopologyHeaderProps> = ({
           >
             <span className="w-1.5 h-1.5 rounded-full bg-sky-400 inline-block" />
             <span>
-              {isEn ? 'FOCUS:' : 'TIÊU ĐIỂM:'} {focusNodeId} · {focusHop}
-              {isEn ? '-HOP RADIUS' : '-HOP LÂN CẬN'}
+              {isEn ? 'FOCUS:' : 'TIÊU ĐIỂM:'} {focusNodeId} ·{' '}
+              {focusHop === 'all'
+                ? isEn
+                  ? 'ALL HOPS'
+                  : 'TOÀN MẠNG'
+                : `${focusHop}${isEn ? '-HOP RADIUS' : '-HOP LÂN CẬN'}`}
             </span>
           </div>
         ) : (

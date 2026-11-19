@@ -23,13 +23,13 @@ public class TopologyController implements TopologyApi {
     private final TopologyService topologyService;
 
     @Override
-    public ResponseEntity<TopologyGraph> getTopology(List<String> focusNodeIds, DeviceLayer focusLayer, int kHop,
+    public ResponseEntity<TopologyGraph> getTopology(List<String> focusNodeIds, DeviceLayer focusLayer, Integer kHop,
                                                      Integer maxNodes, DeviceLayer layer, String region) {
         return ResponseEntity.ok(topologyService.getTopology(focusNodeIds, focusLayer, kHop, maxNodes, layer, region));
     }
 
     @Override
-    public ResponseEntity<TopologyGraph> getSubgraph(String focusNodeId, String incidentId, int kHop) {
+    public ResponseEntity<TopologyGraph> getSubgraph(String focusNodeId, String incidentId, Integer kHop) {
         return ResponseEntity.ok(topologyService.getSubgraph(focusNodeId, incidentId, kHop));
     }
 

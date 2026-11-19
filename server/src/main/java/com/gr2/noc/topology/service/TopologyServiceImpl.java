@@ -36,10 +36,10 @@ public class TopologyServiceImpl implements TopologyService {
     }
 
     @Override
-    public TopologyGraph getTopology(List<String> focusNodeIds, DeviceLayer focusLayer, int kHop, Integer maxNodes,
+    public TopologyGraph getTopology(List<String> focusNodeIds, DeviceLayer focusLayer, Integer kHop, Integer maxNodes,
                                      DeviceLayer layer, String region) {
         Set<String> startIds = resolveStartIds(focusNodeIds, focusLayer);
-        int effectiveK = Math.min(Math.max(kHop, 1), 3);
+        int effectiveK = (kHop == null || kHop <= 0) ? Integer.MAX_VALUE : kHop;
         int effectiveMaxNodes = (maxNodes == null || maxNodes < 1) ? DEFAULT_MAX_NODES : maxNodes;
 
         GraphIndex index = buildGraphIndex(getAllDevices());
@@ -239,7 +239,7 @@ public class TopologyServiceImpl implements TopologyService {
     }
 
     @Override
-    public TopologyGraph getSubgraph(String focusNodeId, String incidentId, int kHop) {
+    public TopologyGraph getSubgraph(String focusNodeId, String incidentId, Integer kHop) {
         String effectiveFocusId = focusNodeId;
 
         if (incidentId != null && !incidentId.isBlank()) {
@@ -265,7 +265,7 @@ public class TopologyServiceImpl implements TopologyService {
                         "Focus device not found with ID: " + targetFocusId
                 ));
 
-        int effectiveK = Math.min(Math.max(kHop, 1), 3);
+        int effectiveK = (kHop == null || kHop <= 0) ? Integer.MAX_VALUE : kHop;
         GraphIndex index = buildGraphIndex(getAllDevices());
 
         Set<String> visited = boundedBfs(Set.of(focusDevice.getId()), effectiveK, Integer.MAX_VALUE, index, null, null);

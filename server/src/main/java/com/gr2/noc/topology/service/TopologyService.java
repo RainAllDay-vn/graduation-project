@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface TopologyService {
 
-    TopologyGraph getTopology(List<String> focusNodeIds, DeviceLayer focusLayer, int kHop, Integer maxNodes,
+    TopologyGraph getTopology(List<String> focusNodeIds, DeviceLayer focusLayer, Integer kHop, Integer maxNodes,
                               DeviceLayer layer, String region);
 
     TopologyGraph getFullGraph();
@@ -24,7 +24,7 @@ public interface TopologyService {
 
     List<LinkSummary> getLinks();
 
-    TopologyGraph getSubgraph(String focusNodeId, String incidentId, int kHop);
+    TopologyGraph getSubgraph(String focusNodeId, String incidentId, Integer kHop);
 
     DeviceDetails getDeviceById(String id);
 

@@ -42,7 +42,12 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
     ? initialFocusNodeId
     : searchParams.get('focusNodeId')
 
-  const kHop = parseInt(searchParams.get('kHop') || '2', 10)
+  const kHopParam = searchParams.get('kHop')
+  const kHop = kHopParam
+    ? kHopParam === 'all'
+      ? undefined
+      : parseInt(kHopParam, 10)
+    : undefined
 
   // 2. Fetch topology subgraph or hub-centered topology graph (starting points are mandatory server-side)
   const {
@@ -61,7 +66,7 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
           kHop,
         })
       }
-      return getTopology({ focusLayer: 'CORE', kHop: 2 })
+      return getTopology({ focusLayer: 'CORE' })
     },
     enabled: !mockData,
     staleTime: 30000,
@@ -91,9 +96,13 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
     if (incidentId) s.add('CORE-02')
     return s
   })
-  const [currentKHop, setCurrentKHop] = useState<KHopDistance>(
-    (parseInt(searchParams.get('kHop') || '2', 10) as KHopDistance) || 2
-  )
+  const [currentKHop, setCurrentKHop] = useState<KHopDistance>(() => {
+    const p = searchParams.get('kHop')
+    if (p === '1' || p === '2' || p === '3') {
+      return parseInt(p, 10) as KHopDistance
+    }
+    return 'all'
+  })
   const [currentFilterMode, setCurrentFilterMode] = useState<KHopFilterMode>('ghost')
 
   const selectedNode = useMemo(
@@ -169,7 +178,7 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
               ? `${focusedNodeIds.size} TIÊU ĐIỂM`
               : null
         }
-        focusHop={typeof currentKHop === 'number' ? currentKHop : undefined}
+        focusHop={currentKHop}
         locale={locale}
       />
 

@@ -33,7 +33,7 @@ public interface TopologyApi {
     ResponseEntity<TopologyGraph> getTopology(
             @RequestParam(required = false) List<String> focusNodeIds,
             @RequestParam(required = false) DeviceLayer focusLayer,
-            @RequestParam(defaultValue = "2") int kHop,
+            @RequestParam(required = false) Integer kHop,
             @RequestParam(required = false) Integer maxNodes,
             @RequestParam(required = false) DeviceLayer layer,
             @RequestParam(required = false) String region
@@ -41,14 +41,14 @@ public interface TopologyApi {
 
     /**
      * Retrieve a focused subgraph:
-     * - By focusNodeId and kHop radius (1-hop, 2-hop, 3-hop).
+     * - By focusNodeId and kHop radius (1-hop, 2-hop, 3-hop, or unlimited).
      * - Or by incidentId (automatically focuses on the incident's epicenter device).
      */
     @GetMapping("/subgraph")
     ResponseEntity<TopologyGraph> getSubgraph(
             @RequestParam(required = false) String focusNodeId,
             @RequestParam(required = false) String incidentId,
-            @RequestParam(defaultValue = "1") int kHop
+            @RequestParam(required = false) Integer kHop
     );
 
     /**
