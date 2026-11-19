@@ -67,7 +67,13 @@ export default function OverviewPage() {
         label: isEn ? 'OPEN ALARMS' : 'CẢNH BÁO ĐANG MỞ',
         value: m.openAlarms,
         tone: m.openAlarms > 0 ? 'warn' : 'normal',
-        subtitle: primaryDevice ? `ALM 58.2°C · ${primaryDevice}` : 'ALM 58.2°C',
+        subtitle: m.openAlarms > 0
+          ? primaryDevice
+            ? `${m.openAlarms} ${isEn ? 'active' : 'hoạt động'} · ${primaryDevice}`
+            : `${m.openAlarms} ${isEn ? 'active alarms' : 'cảnh báo hoạt động'}`
+          : isEn
+          ? 'All systems nominal'
+          : 'Tất cả bình thường',
         onClick: () => topIncident && navigate(`/dashboard?incidentId=${topIncident.id}`),
       },
       {

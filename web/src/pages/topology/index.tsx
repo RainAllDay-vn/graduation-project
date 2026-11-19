@@ -11,7 +11,6 @@ import {
   TopologyRightSidebar,
 } from './components'
 import type { KHopDistance, KHopFilterMode } from './components/canvas/egoNetwork'
-import { sampleNodes, sampleLinks } from './components/canvas/mockTopologyData'
 
 export interface TopologyPageProps {
   /** Optional override for active incident ID */
@@ -44,8 +43,14 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
 
   const kHop = parseInt(searchParams.get('kHop') || '2', 10)
 
-  // 2. Fetch topology subgraph or full topology graph with graceful fallback
-  const { data: remoteData, isLoading } = useQuery({
+  // 2. Fetch topology subgraph or full topology graph without fallback to mock data in production
+  const {
+    data: remoteData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['topology', 'graph', focusNodeId, incidentId, kHop],
     queryFn: () => {
       if (focusNodeId || incidentId) {
@@ -61,17 +66,15 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
     staleTime: 30000,
   })
 
-  // Use provided mockData, fetched remoteData, or default sample network
+  // Use provided mockData strictly for Storybook/tests; otherwise use remoteData from API
   const nodes = useMemo(() => {
     if (mockData) return mockData.nodes
-    if (remoteData?.nodes && remoteData.nodes.length > 0) return remoteData.nodes
-    return sampleNodes
+    return remoteData?.nodes ?? []
   }, [mockData, remoteData])
 
   const links = useMemo(() => {
     if (mockData) return mockData.links
-    if (remoteData?.links && remoteData.links.length > 0) return remoteData.links
-    return sampleLinks
+    return remoteData?.links ?? []
   }, [mockData, remoteData])
 
   // 3. Selection & Inspection State (Stylebook §3.5)
@@ -101,11 +104,10 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
     [selectedLinkId, links]
   )
 
-  // Incident blast radius logic
+  // Incident blast radius logic (to be loaded dynamically via API in Incident Mode 5.6)
   const blastRadiusLinkIds = useMemo(() => {
     if (!incidentId) return undefined
-    // Default affected blast radius links around CORE-02 epicenter
-    return ['L-I2-C2', 'L-C2-A2', 'L-C2-A3']
+    return undefined
   }, [incidentId])
 
   // Single click: Only updates selection and inspector context (Stylebook §3.5: "không đụng beacon")
@@ -176,6 +178,34 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
                 {locale === 'en' ? 'LOADING TOPOLOGY GRAPH…' : 'ĐANG TẢI BẢN ĐỒ TOPOLOGY…'}
               </span>
             </div>
+          ) : isError && !mockData ? (
+            <div className="w-full h-full flex flex-col items-center justify-center text-rose-500 px-4 text-center">
+              <svg className="w-10 h-10 mb-3 text-rose-500/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <h3 className="font-semibold text-sm text-slate-800 dark:text-slate-100">
+                {locale === 'en' ? 'Failed to Load Topology Graph' : 'Không thể tải bản đồ topology'}
+              </h3>
+              <p className="font-mono text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md">
+                {(error as any)?.response?.data?.message || (error as Error)?.message || (locale === 'en' ? 'Unable to connect to topology service' : 'Không thể kết nối đến máy chủ topology')}
+              </p>
+              <button
+                type="button"
+                onClick={() => refetch()}
+                className="mt-3.5 px-3 py-1 text-xs font-mono font-semibold rounded bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 transition-colors cursor-pointer"
+              >
+                {locale === 'en' ? 'RETRY' : 'THỬ LẠI'}
+              </button>
+            </div>
+          ) : !mockData && nodes.length === 0 ? (
+            <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 px-4 text-center">
+              <span className="font-mono text-sm font-semibold text-slate-600 dark:text-slate-300">
+                {locale === 'en' ? 'No Topology Data Found' : 'Không tìm thấy dữ liệu mạng'}
+              </span>
+              <p className="font-mono text-xs text-slate-400 mt-1">
+                {locale === 'en' ? '0 devices and 0 links returned from topology service.' : '0 thiết bị và 0 liên kết trả về từ máy chủ.'}
+              </p>
+            </div>
           ) : (
             <TopologyCanvas
               nodes={nodes}
@@ -202,6 +232,8 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
 
         {/* Right Sidebar: Hardware Telemetry & Inspector Placeholders */}
         <TopologyRightSidebar
+          nodes={nodes}
+          links={links}
           selectedNode={selectedNode}
           selectedLink={selectedLink}
           onCloseInspect={handleCloseInspect}

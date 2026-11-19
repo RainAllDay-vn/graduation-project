@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import type { DeviceSummary, LinkSummary } from '@/api/topology'
 import { TopologyRightSidebar } from './TopologyRightSidebar'
+import { sampleNodes, sampleLinks } from './canvas/mockTopologyData'
 
 const meta: Meta<typeof TopologyRightSidebar> = {
   title: 'Topology/TopologyRightSidebar',
@@ -43,6 +44,8 @@ const mockLink: LinkSummary = {
 export const UnselectedOverviewDark: Story = {
   args: {
     locale: 'vi',
+    nodes: sampleNodes,
+    links: sampleLinks,
   },
   render: (args) => (
     <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
@@ -57,6 +60,8 @@ export const UnselectedOverviewDark: Story = {
 export const UnselectedOverviewLight: Story = {
   args: {
     locale: 'vi',
+    nodes: sampleNodes,
+    links: sampleLinks,
   },
   render: (args) => (
     <div className="bg-slate-100 p-6 rounded-xl border border-slate-300 flex items-center justify-center">

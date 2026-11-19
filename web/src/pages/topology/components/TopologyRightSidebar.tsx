@@ -3,6 +3,10 @@ import type { DeviceSummary, LinkSummary } from '@/api/topology'
 import { cn } from '@/lib/utils'
 
 export interface TopologyRightSidebarProps {
+  /** All devices in the current topology view (used for network health overview) */
+  nodes?: DeviceSummary[]
+  /** All links in the current topology view (used for network health overview) */
+  links?: LinkSummary[]
   /** Currently selected device (if any) */
   selectedNode?: DeviceSummary | null
   /** Currently selected link (if any) */
@@ -24,6 +28,8 @@ export interface TopologyRightSidebarProps {
  * details and clean placeholder text/wireframe cards.
  */
 export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
+  nodes,
+  links,
   selectedNode,
   selectedLink,
   onCloseInspect,
@@ -32,6 +38,11 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
   style,
 }) => {
   const isEn = locale === 'en'
+
+  const totalDevices = nodes?.length ?? 0
+  const normalDevices = nodes ? nodes.filter((n) => n.status === 'ACTIVE').length : 0
+  const degradedOrCritDevices = nodes ? nodes.filter((n) => n.status !== 'ACTIVE').length : 0
+  const totalLinks = links?.length ?? 0
 
   return (
     <aside
@@ -282,7 +293,7 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
                 {isEn ? 'Total Devices' : 'Tổng thiết bị'}
               </div>
               <div className="font-mono font-extrabold text-lg text-slate-900 dark:text-white mt-0.5">
-                78
+                {totalDevices}
               </div>
             </div>
 
@@ -291,7 +302,7 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
                 {isEn ? 'Normal State' : 'Bình thường'}
               </div>
               <div className="font-mono font-extrabold text-lg text-emerald-500 mt-0.5">
-                72
+                {normalDevices}
               </div>
             </div>
 
@@ -300,7 +311,7 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
                 {isEn ? 'Degraded/Crit' : 'Cảnh báo'}
               </div>
               <div className="font-mono font-extrabold text-lg text-rose-500 mt-0.5">
-                6
+                {degradedOrCritDevices}
               </div>
             </div>
 
@@ -309,7 +320,7 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
                 {isEn ? 'Trunk Links' : 'Đường trục'}
               </div>
               <div className="font-mono font-extrabold text-lg text-slate-900 dark:text-white mt-0.5">
-                152
+                {totalLinks}
               </div>
             </div>
           </div>

@@ -135,8 +135,8 @@ export const TopologyLeftSidebar: React.FC<TopologyLeftSidebarProps> = ({
         <div className="mt-auto p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
           💡 <strong>{isEn ? 'Chapter 4 Spec:' : 'Đặc tả Chương 4:'}</strong>{' '}
           {isEn
-            ? 'Device inventory, dynamic timeline, and AI hypotheses will be integrated here.'
-            : 'Danh mục 78 router, bộ lọc tầng L2/L3 và trục sự cố sẽ được kết nối tại đây.'}
+            ? 'Device directory, dynamic timeline, and AI hypotheses will be integrated here.'
+            : 'Danh mục thiết bị router, bộ lọc tầng L2/L3 và trục sự cố sẽ được kết nối tại đây.'}
         </div>
       </div>
     </aside>

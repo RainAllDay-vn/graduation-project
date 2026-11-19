@@ -10,7 +10,7 @@ interface IncidentContextType {
 const IncidentContext = createContext<IncidentContextType | undefined>(undefined)
 
 export function IncidentProvider({ children }: { children: ReactNode }) {
-  const [activeIncidentId, setActiveIncidentId] = useState<string | null>('INC-07')
+  const [activeIncidentId, setActiveIncidentId] = useState<string | null>(null)
 
   const clearActiveIncident = () => {
     setActiveIncidentId(null)
