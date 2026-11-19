@@ -39,13 +39,13 @@ Viền node là kênh mã hoá **site**, gồm các ràng buộc:
 
 ## 1.3 Nền = trạng thái sức khoẻ
 
-Nền node là kênh mã hoá sức khoẻ, gồm ba mức:
+Nền node là kênh mã hoá sức khoẻ, gồm ba mức chuẩn giám sát NOC:
 
-- healthy: nền tối `#0f172a` — đây là trạng thái mặc định của node, hoà vào canvas.
-- warning: nền amber đậm `#78350f` — node vẫn hoạt động nhưng gặp vấn đề cần giải quyết.
-- critical: nền đỏ đậm `#991b1b` — node không hoạt động.
+- healthy: nền tối `#0f172a` (dark mode) / trắng `#ffffff` (light mode) — đây là trạng thái mặc định của node, hoà vào canvas, viền thể hiện màu Site.
+- warning: nền hổ phách tươi `#f59e0b` (Amber 500) đi kèm chữ ID đen đậm `#0f172a` (tỉ lệ tương phản 9.4:1) — node vẫn hoạt động nhưng gặp suy hao/sự cố cần xử lý.
+- critical: nền đỏ tươi `#ef4444` (Red 500) đi kèm chữ ID trắng tinh `#ffffff` (tương phản 5.1:1 trên nền tối) — node bị mất kết nối hoặc hỏng hóc nghiêm trọng.
 
-[Illustration thể hiện ba node cùng site, chỉ khác status: healthy hoà vào nền, warning nền amber, critical nền đỏ]
+[Illustration thể hiện ba node cùng site, chỉ khác status: healthy hoà vào nền, warning nền vàng hổ phách tươi chữ đen, critical nền đỏ tươi chữ trắng]
 
 ---
 

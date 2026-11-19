@@ -46,10 +46,10 @@ export interface NodeHealthColorStyle {
 
 /**
  * Returns health-coded fill and text colors for node body.
- * Follows stylebook rule 1.3:
- * - ACTIVE (healthy): dark slate #0f172a, blending into canvas.
- * - DEGRADED (warning): dark amber #78350f.
- * - CRITICAL / OFFLINE: dark red #991b1b.
+ * Modernized Warning and Error Palette:
+ * - ACTIVE (healthy): dark slate #0f172a (dark) / white #ffffff (light).
+ * - DEGRADED (warning): vibrant amber #f59e0b with dark text #0f172a.
+ * - CRITICAL / OFFLINE (error): vibrant red #ef4444 with pure white text #ffffff.
  */
 export function getNodeHealthColors(
   status: DeviceStatus,
@@ -64,16 +64,16 @@ export function getNodeHealthColors(
       }
     case 'DEGRADED':
       return {
-        fill: isDark ? '#78350f' : '#fffbeb',
-        text: isDark ? '#fef3c7' : '#92400e',
-        borderFallback: '#f59e0b',
+        fill: '#f59e0b',
+        text: '#0f172a',
+        borderFallback: '#d97706',
       }
     case 'CRITICAL':
     case 'OFFLINE':
       return {
-        fill: isDark ? '#991b1b' : '#fef2f2',
-        text: isDark ? '#ffffff' : '#991b1b',
-        borderFallback: '#ef4444',
+        fill: '#ef4444',
+        text: '#ffffff',
+        borderFallback: '#dc2626',
       }
     default:
       return {

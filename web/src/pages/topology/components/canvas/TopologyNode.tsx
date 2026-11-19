@@ -156,7 +156,7 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
         height={height}
         rx={rx}
         style={{
-          fill: isWarning ? '#78350f' : isCritical ? '#991b1b' : undefined,
+          fill: isWarning ? '#f59e0b' : isCritical ? '#ef4444' : undefined,
           stroke: siteColor,
           strokeOpacity: isLodFar ? 0 : 1,
         }}
@@ -166,7 +166,7 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
             (isLodFar ? 'fill-slate-200 dark:fill-[#1e293b]' : 'fill-white dark:fill-[#0f172a]'),
           isHovered && 'brightness-110 drop-shadow-md'
         )}
-        strokeWidth={isLodFar ? 0 : isSelected ? 2.4 : 1.8}
+        strokeWidth={isLodFar ? 0 : isSelected ? 2.5 : (isWarning || isCritical) ? 2 : 1.8}
       />
 
       {/* 4. Router ID Label (Monospace bold centered text, Stylebook §3.2: hidden in LOD far) */}
@@ -176,7 +176,7 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
         textAnchor="middle"
         style={{
           fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
-          fill: isWarning ? '#fef3c7' : isCritical ? '#ffffff' : undefined,
+          fill: isWarning ? '#0f172a' : isCritical ? '#ffffff' : undefined,
         }}
         className={cn(
           'text-[11px] font-extrabold tracking-[0.04em] uppercase pointer-events-none transition-opacity duration-200',
@@ -208,8 +208,8 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
             height={badgeH}
             rx={badgeH / 2}
             style={{
-              fill: hasAccessError ? '#450a0a' : undefined,
-              stroke: hasAccessError ? '#ef4444' : undefined,
+              fill: hasAccessError ? '#ef4444' : undefined,
+              stroke: hasAccessError ? '#b91c1c' : undefined,
             }}
             className={cn(
               'transition-colors duration-150',
@@ -226,10 +226,10 @@ export const TopologyNode: React.FC<TopologyNodeProps> = ({
             textAnchor="middle"
             style={{
               fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
-              fill: hasAccessError ? '#fca5a5' : undefined,
+              fill: hasAccessError ? '#ffffff' : undefined,
             }}
             className={cn(
-              'text-[8.5px] font-bold pointer-events-none select-none tracking-wider',
+              'text-[8.5px] font-extrabold pointer-events-none select-none tracking-wider',
               !hasAccessError && 'fill-slate-600 dark:fill-[#cbd5e1]'
             )}
           >
