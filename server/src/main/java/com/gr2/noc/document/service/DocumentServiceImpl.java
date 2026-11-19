@@ -8,6 +8,7 @@ import com.gr2.noc.document.enums.DocumentSource;
 import com.gr2.noc.document.enums.IndexingStatus;
 import com.gr2.noc.document.model.TechnicalDocument;
 import com.gr2.noc.document.repository.TechnicalDocumentRepository;
+import com.gr2.noc.rag.service.TechnicalDocVectorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
@@ -30,17 +31,20 @@ public class DocumentServiceImpl implements DocumentService {
     private final DocumentStorageService documentStorageService;
     private final DocumentIndexingService documentIndexingService;
     private final TaskExecutor documentIndexingExecutor;
+    private final TechnicalDocVectorService technicalDocVectorService;
 
     public DocumentServiceImpl(
             TechnicalDocumentRepository documentRepository,
             DocumentStorageService documentStorageService,
             DocumentIndexingService documentIndexingService,
-            @Qualifier("documentIndexingExecutor") TaskExecutor documentIndexingExecutor
+            @Qualifier("documentIndexingExecutor") TaskExecutor documentIndexingExecutor,
+            TechnicalDocVectorService technicalDocVectorService
     ) {
         this.documentRepository = documentRepository;
         this.documentStorageService = documentStorageService;
         this.documentIndexingService = documentIndexingService;
         this.documentIndexingExecutor = documentIndexingExecutor;
+        this.technicalDocVectorService = technicalDocVectorService;
     }
 
     @Override
@@ -114,6 +118,7 @@ public class DocumentServiceImpl implements DocumentService {
             throw notFound(id);
         }
         documentRepository.delete(document);
+        technicalDocVectorService.deleteIndex(id);
         documentStorageService.deleteDocumentFolder(id);
     }
 

@@ -3,6 +3,7 @@ package com.gr2.noc.document.service;
 import com.gr2.noc.document.enums.IndexingStatus;
 import com.gr2.noc.document.model.TechnicalDocument;
 import com.gr2.noc.document.repository.TechnicalDocumentRepository;
+import com.gr2.noc.rag.service.TechnicalDocVectorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ public class DocumentIndexingService {
 
     private final TechnicalDocumentRepository documentRepository;
     private final DocumentStorageService documentStorageService;
+    private final TechnicalDocVectorService technicalDocVectorService;
 
     @Value("${app.documents.max-file-size:100MB}")
     private DataSize maxFileSize;
@@ -56,6 +58,7 @@ public class DocumentIndexingService {
         document.setContent(text);
         document.setIndexingStatus(IndexingStatus.READY);
         document.setStatusReason(null);
+        technicalDocVectorService.indexDocument(document);
     }
 
     private void markFailed(TechnicalDocument document, String reason) {

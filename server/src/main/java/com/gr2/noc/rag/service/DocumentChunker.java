@@ -1,8 +1,11 @@
 package com.gr2.noc.rag.service;
 
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public final class DocumentChunker {
 
     private static final int CHUNK_SIZE = 800;

@@ -6,6 +6,7 @@ import com.gr2.noc.document.enums.IndexingStatus;
 import com.gr2.noc.document.model.TechnicalDocument;
 import com.gr2.noc.document.repository.TechnicalDocumentRepository;
 import com.gr2.noc.document.service.DocumentStorageService;
+import com.gr2.noc.rag.service.TechnicalDocVectorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -18,6 +19,8 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -32,6 +35,7 @@ public class DocumentDataInitializer implements CommandLineRunner {
 
     private final TechnicalDocumentRepository documentRepository;
     private final DocumentStorageService documentStorageService;
+    private final TechnicalDocVectorService technicalDocVectorService;
 
     @Override
     @Transactional
@@ -43,7 +47,8 @@ public class DocumentDataInitializer implements CommandLineRunner {
 
         log.info("Seeding technical-document library...");
 
-        seedReadyDocument(
+        List<TechnicalDocument> readyDocuments = new ArrayList<>();
+        readyDocuments.add(seedReadyDocument(
                 "SOP-OPTICS-01",
                 "Quy trình xử lý sự cố cáp quang và mất tín hiệu RX",
                 DocType.OPERATION_RUNBOOK,
@@ -70,9 +75,8 @@ public class DocumentDataInitializer implements CommandLineRunner {
                         - Cập nhật nhật ký sự cố và bài học kinh nghiệm vào wiki nội bộ.
                         """,
                 Instant.now().minus(2, ChronoUnit.DAYS)
-        );
-
-        seedReadyDocument(
+        ));
+        readyDocuments.add(seedReadyDocument(
                 "SOP-OPTICS-02",
                 "Quy trình xử lý quá nhiệt module SFP",
                 DocType.OPERATION_RUNBOOK,
@@ -98,9 +102,8 @@ public class DocumentDataInitializer implements CommandLineRunner {
                         - Theo dõi nhiệt độ module trong 24 giờ tiếp theo, xác nhận nhiệt độ ổn định dưới 65°C.
                         """,
                 Instant.now().minus(5, ChronoUnit.DAYS)
-        );
-
-        seedReadyDocument(
+        ));
+        readyDocuments.add(seedReadyDocument(
                 "SOP-BGP-01",
                 "Quy trình chẩn đoán BGP Flapping",
                 DocType.OPERATION_RUNBOOK,
@@ -127,14 +130,15 @@ public class DocumentDataInitializer implements CommandLineRunner {
                         - Cân nhắc route dampening hoặc tạm thời shutdown/đặt lại session nếu flap dai dẳng.
                         """,
                 Instant.now().minus(7, ChronoUnit.DAYS)
-        );
+        ));
 
         seedFailedDocument();
+        readyDocuments.forEach(technicalDocVectorService::indexDocument);
         log.info("Successfully seeded 3 READY SOP documents and 1 FAILED document.");
     }
 
-    private void seedReadyDocument(String id, String title, DocType docType, DocumentSource source,
-                                   String fileName, Set<String> targetFaultCodes, String content, Instant createdAt) {
+    private TechnicalDocument seedReadyDocument(String id, String title, DocType docType, DocumentSource source,
+                                                String fileName, Set<String> targetFaultCodes, String content, Instant createdAt) {
         long fileSizeBytes = content.getBytes(StandardCharsets.UTF_8).length;
         String storagePath = documentStorageService.store(
                 id, 1, fileName, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
@@ -154,9 +158,9 @@ public class DocumentDataInitializer implements CommandLineRunner {
                 .createdAt(createdAt)
                 .build();
         if (document == null) {
-            return;
+            return null;
         }
-        documentRepository.save(document);
+        return documentRepository.save(document);
     }
 
     private void seedFailedDocument() {
