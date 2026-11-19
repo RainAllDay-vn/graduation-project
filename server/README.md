@@ -66,3 +66,47 @@ ingested data on the device page. For `alarm` messages, a new incident appears u
 - `MqConsumerRegistryIntegrationTest` — real-broker e2e via Testcontainers
   (requires Docker; uses `rabbitmq:3-alpine`). Docker Engine ≥ 29 needs
   `-Dapi.version` handling already built into the Gradle `test` task.
+
+---
+
+# RAG knowledge indexing (pgvector)
+
+Technical documents (SOPs, vendor specs) are chunked and embedded into the
+`technical_doc_embeddings` pgvector table (1536-dim, cosine) so the AI investigation
+can retrieve relevant runbook snippets (design `docs/week07-ai-design` §5).
+
+- Indexing runs automatically: on document upload/replace (via the async indexing
+  pipeline), on dev-profile boot for the 3 seeded SOPs, and on document delete the
+  vectors are removed. Fail-soft: an unavailable embedding API or vector store only
+  logs a warning and never breaks uploads or startup.
+- Toggle: `app.rag.indexing-enabled` (default `true`); embedding model
+  `spring.ai.openai.embedding.options.model` (default `text-embedding-3-small`,
+  env `OPENAI_EMBEDDING_MODEL`).
+
+## 1. Prerequisites (dev)
+
+```bash
+# PostgreSQL with the pgvector extension
+docker run -d --name noc-postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres pgvector/pgvector:pg16
+
+# Embedding API key
+export OPENAI_API_KEY=sk-...
+```
+
+The vector table is created automatically (`initialize-schema: true`).
+
+## 2. Smoke check
+
+1. Start the server (`./gradlew bootRun`, dev profile) — boot logs show
+   `Indexed ... chunks of document SOP-OPTICS-01/02, SOP-BGP-01 ...`.
+2. Verify rows:
+
+   ```bash
+   docker exec -it noc-postgres psql -U postgres -d noc_db \
+     -c "SELECT metadata->>'documentId' AS doc, count(*) FROM technical_doc_embeddings GROUP BY 1;"
+   ```
+3. Upload a new `.md` document via `POST /api/documents` — the row count for its id grows.
+4. Delete the document (`DELETE /api/documents/{id}`) — its rows disappear.
+
+Without `OPENAI_API_KEY` the boot indexing attempt fails with a warning and the app
+continues (rule-based engine and everything else unaffected).
