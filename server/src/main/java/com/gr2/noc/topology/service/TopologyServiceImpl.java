@@ -11,26 +11,19 @@ import com.gr2.noc.topology.enums.LinkType;
 import com.gr2.noc.topology.model.NetworkDevice;
 import com.gr2.noc.topology.model.NetworkLink;
 import com.gr2.noc.topology.repository.NetworkDeviceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class TopologyServiceImpl implements TopologyService {
 
     private final NetworkDeviceRepository networkDeviceRepository;
     private final IncidentRepository incidentRepository;
-    private final Map<String, NetworkDevice> inMemoryStore = new ConcurrentHashMap<>();
 
-    @Autowired
-    public TopologyServiceImpl(
-            @Autowired(required = false) NetworkDeviceRepository networkDeviceRepository,
-            IncidentRepository incidentRepository
-    ) {
+    public TopologyServiceImpl(NetworkDeviceRepository networkDeviceRepository, IncidentRepository incidentRepository) {
         this.networkDeviceRepository = networkDeviceRepository;
         this.incidentRepository = incidentRepository;
     }
@@ -419,72 +412,25 @@ public class TopologyServiceImpl implements TopologyService {
 
     @Override
     public void clearAll() {
-        inMemoryStore.clear();
-        if (networkDeviceRepository != null) {
-            try {
-                networkDeviceRepository.deleteAll();
-            } catch (Exception ignored) {
-            }
-        }
+        networkDeviceRepository.deleteAll();
     }
 
     private List<NetworkDevice> getAllDevices() {
-        if (networkDeviceRepository != null) {
-            try {
-                List<NetworkDevice> fromDb = networkDeviceRepository.findAllWithLinks();
-                if (fromDb != null && !fromDb.isEmpty()) {
-                    return fromDb;
-                }
-            } catch (Exception ignored) {
-                // Fallback to in-memory store
-            }
-        }
-        return new ArrayList<>(inMemoryStore.values());
+        return networkDeviceRepository.findAllWithLinks();
     }
 
     private Optional<NetworkDevice> findDeviceById(String id) {
-        if (networkDeviceRepository != null) {
-            try {
-                Optional<NetworkDevice> fromDb = networkDeviceRepository.findByIdWithLinks(id);
-                if (fromDb.isPresent()) {
-                    return fromDb;
-                }
-            } catch (Exception ignored) {
-                // Fallback to in-memory store
-            }
-        }
-        return Optional.ofNullable(inMemoryStore.get(id));
+        return networkDeviceRepository.findByIdWithLinks(id);
     }
 
     private boolean existsDeviceById(String id) {
-        if (id == null) {
-            return false;
-        }
-        if (inMemoryStore.containsKey(id)) {
-            return true;
-        }
-        if (networkDeviceRepository != null) {
-            try {
-                return networkDeviceRepository.existsById(id);
-            } catch (Exception ignored) {
-                // Fallback to in-memory store
-            }
-        }
-        return false;
+        return id != null && networkDeviceRepository.existsById(id);
     }
 
     private NetworkDevice saveDevice(NetworkDevice device) {
         if (device == null) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to save device");
         }
-        inMemoryStore.put(device.getId(), device);
-        if (networkDeviceRepository != null) {
-            try {
-                return networkDeviceRepository.save(device);
-            } catch (Exception ignored) {
-                // Fallback to in-memory store
-            }
-        }
-        return device;
+        return networkDeviceRepository.save(device);
     }
 }

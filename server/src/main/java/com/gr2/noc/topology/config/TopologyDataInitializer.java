@@ -12,6 +12,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Seeds initial telecom topology network on application startup (dev profile only).
@@ -33,7 +34,7 @@ public class TopologyDataInitializer implements CommandLineRunner {
             topologyService.getDeviceById("SW-HN-02");
             log.info("Topology seed data already exists. Skipping initialization.");
             return;
-        } catch (Exception ignored) {
+        } catch (ResponseStatusException e) {
             // Devices not seeded yet, proceed
         }
 

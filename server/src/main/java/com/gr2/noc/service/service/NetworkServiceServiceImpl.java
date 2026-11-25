@@ -8,23 +8,18 @@ import com.gr2.noc.service.enums.ServiceStatus;
 import com.gr2.noc.service.enums.ServiceType;
 import com.gr2.noc.service.model.NetworkService;
 import com.gr2.noc.service.repository.NetworkServiceRepository;
-import com.gr2.noc.topology.dto.get.DeviceDetails;
 import com.gr2.noc.topology.dto.get.DeviceSummary;
 import com.gr2.noc.topology.enums.DeviceStatus;
 import com.gr2.noc.topology.model.NetworkDevice;
 import com.gr2.noc.topology.repository.NetworkDeviceRepository;
-import com.gr2.noc.topology.service.TopologyService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
@@ -32,18 +27,13 @@ public class NetworkServiceServiceImpl implements NetworkServiceService {
 
     private final NetworkServiceRepository serviceRepository;
     private final NetworkDeviceRepository deviceRepository;
-    private final TopologyService topologyService;
-    private final Map<String, NetworkService> inMemoryStore = new ConcurrentHashMap<>();
 
-    @Autowired
     public NetworkServiceServiceImpl(
-            @Autowired(required = false) NetworkServiceRepository serviceRepository,
-            @Autowired(required = false) NetworkDeviceRepository deviceRepository,
-            TopologyService topologyService
+            NetworkServiceRepository serviceRepository,
+            NetworkDeviceRepository deviceRepository
     ) {
         this.serviceRepository = serviceRepository;
         this.deviceRepository = deviceRepository;
-        this.topologyService = topologyService;
     }
 
     @Override
@@ -117,15 +107,7 @@ public class NetworkServiceServiceImpl implements NetworkServiceService {
         NetworkService service = findServiceById(id)
                 .orElseThrow(() -> notFound(id));
 
-        inMemoryStore.remove(id);
-        String serviceId = service.getId();
-        if (serviceRepository != null && serviceId != null) {
-            try {
-                serviceRepository.deleteById(serviceId);
-            } catch (Exception ignored) {
-                // Fallback to in-memory store only
-            }
-        }
+        serviceRepository.deleteById(service.getId());
     }
 
     @Override
@@ -199,74 +181,31 @@ public class NetworkServiceServiceImpl implements NetworkServiceService {
     }
 
     private List<NetworkService> getAllServices() {
-        if (serviceRepository != null) {
-            try {
-                List<NetworkService> fromDb = serviceRepository.findAllWithDevices();
-                if (fromDb != null && !fromDb.isEmpty()) {
-                    return fromDb;
-                }
-            } catch (Exception ignored) {
-                // Fallback to in-memory store
-            }
-        }
-        return new ArrayList<>(inMemoryStore.values());
+        return serviceRepository.findAllWithDevices();
     }
 
     private Optional<NetworkService> findServiceById(String id) {
         if (id == null) {
             return Optional.empty();
         }
-        if (serviceRepository != null) {
-            try {
-                Optional<NetworkService> fromDb = serviceRepository.findByIdWithDevices(id);
-                if (fromDb.isPresent()) {
-                    return fromDb;
-                }
-            } catch (Exception ignored) {
-                // Fallback to in-memory store
-            }
-        }
-        return Optional.ofNullable(inMemoryStore.get(id));
+        return serviceRepository.findByIdWithDevices(id);
     }
 
     private boolean existsServiceById(String id) {
-        if (id == null) {
-            return false;
-        }
-        if (inMemoryStore.containsKey(id)) {
-            return true;
-        }
-        if (serviceRepository != null) {
-            try {
-                return serviceRepository.existsById(id);
-            } catch (Exception ignored) {
-                // Fallback to in-memory store
-            }
-        }
-        return false;
+        return id != null && serviceRepository.existsById(id);
     }
 
     private NetworkService saveService(NetworkService service) {
         if (service == null) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to save service");
         }
-        inMemoryStore.put(service.getId(), service);
-        if (serviceRepository != null) {
-            try {
-                return serviceRepository.save(service);
-            } catch (Exception ignored) {
-                // Fallback to in-memory store only
-            }
-        }
-        return service;
+        return serviceRepository.save(service);
     }
 
     /**
-     * Resolve a device ID to a full NetworkDevice entity.
-     * With Neo4j available, the entity is loaded from the repository (preserving
-     * its links so persisting the service does not clobber device nodes).
-     * Without Neo4j (tests / in-memory mode), a representative entity is
-     * rebuilt from the topology service's device details.
+     * Resolve a device ID to a full NetworkDevice entity loaded from the
+     * repository (preserving its links so persisting the service does not
+     * clobber device nodes).
      */
     private NetworkDevice resolveDevice(String deviceId) {
         if (deviceId == null) {
@@ -275,30 +214,11 @@ public class NetworkServiceServiceImpl implements NetworkServiceService {
                     "Dependent device ID must not be null"
             );
         }
-        if (deviceRepository != null) {
-            try {
-                Optional<NetworkDevice> fromDb = deviceRepository.findByIdWithLinks(deviceId);
-                if (fromDb.isPresent()) {
-                    return fromDb.get();
-                }
-            } catch (Exception ignored) {
-                // Fallback to topology service lookup
-            }
-        }
-
-        DeviceDetails details = topologyService.getDeviceById(deviceId);
-        return NetworkDevice.builder()
-                .id(details.id())
-                .name(details.name())
-                .layer(details.layer())
-                .region(details.region())
-                .site(details.site())
-                .ipAddress(details.ipAddress())
-                .model(details.model())
-                .status(details.status())
-                .accessDeviceCount(details.accessDeviceCount())
-                .accessErrorCount(details.accessErrorCount())
-                .build();
+        return deviceRepository.findByIdWithLinks(deviceId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Dependent device not found with ID: " + deviceId
+                ));
     }
 
     private ResponseStatusException notFound(String id) {
