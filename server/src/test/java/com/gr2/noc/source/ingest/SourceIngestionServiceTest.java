@@ -178,6 +178,19 @@ class SourceIngestionServiceTest {
     }
 
     @Test
+    void shouldIngestParsedJsonNode() throws Exception {
+        com.fasterxml.jackson.databind.JsonNode root = new ObjectMapper().readTree("""
+                {"type":"telemetry.snapshot","payload":{"deviceId":"DEV-NODE-1","operStatus":"UP"}}
+                """);
+
+        IngestResult result = ingestionService.ingest(root);
+
+        assertTrue(result.success());
+        assertEquals(1, result.recordsIngested());
+        verify(telemetryService).recordSnapshot(eq("DEV-NODE-1"), any());
+    }
+
+    @Test
     void shouldFailOnUnknownType() {
         IngestResult result = ingestionService.ingest("{\"type\":\"topology.link\",\"payload\":{}}");
 

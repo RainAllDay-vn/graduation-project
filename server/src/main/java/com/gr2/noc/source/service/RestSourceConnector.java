@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gr2.noc.source.dto.get.TestConnectionResult;
 import com.gr2.noc.source.enums.SourceAuthType;
 import com.gr2.noc.source.enums.SourceType;
+import com.gr2.noc.source.ingest.IngestResult;
+import com.gr2.noc.source.ingest.SourceIngestionService;
 import com.gr2.noc.source.model.ExternalSource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,10 +16,15 @@ import org.springframework.stereotype.Component;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @ConditionalOnProperty(name = "app.sources.sync.simulated", havingValue = "false")
@@ -26,17 +33,20 @@ public class RestSourceConnector implements SourceConnector {
 
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
+    private final SourceIngestionService ingestionService;
     private final int connectTimeoutSeconds;
 
     public RestSourceConnector(
             @Value("${app.sources.connect-timeout-seconds:5}") int connectTimeoutSeconds,
-            ObjectMapper objectMapper
+            ObjectMapper objectMapper,
+            SourceIngestionService ingestionService
     ) {
         this.connectTimeoutSeconds = connectTimeoutSeconds;
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(connectTimeoutSeconds))
                 .build();
         this.objectMapper = objectMapper;
+        this.ingestionService = ingestionService;
     }
 
     @Override
@@ -46,7 +56,7 @@ public class RestSourceConnector implements SourceConnector {
         }
         long startedAt = System.currentTimeMillis();
         try {
-            HttpResponse<String> response = sendGet(source);
+            HttpResponse<String> response = sendGet(source, null);
             long latencyMs = System.currentTimeMillis() - startedAt;
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
                 return TestConnectionResult.builder()
@@ -74,16 +84,16 @@ public class RestSourceConnector implements SourceConnector {
     }
 
     @Override
-    public SyncFetchResult fetch(ExternalSource source) {
+    public SyncFetchResult fetch(ExternalSource source, Instant since) {
         if (source.getType() == SourceType.MQ) {
             return SyncFetchResult.failed("Nguồn message queue nhận sự kiện liên tục, không hỗ trợ kéo dữ liệu");
         }
         try {
-            HttpResponse<String> response = sendGet(source);
+            HttpResponse<String> response = sendGet(source, since);
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
                 return SyncFetchResult.failed("Nguồn trả về mã HTTP " + response.statusCode());
             }
-            return SyncFetchResult.success(countRecords(response.body()), 0);
+            return ingestResponse(response.body());
         } catch (IllegalArgumentException e) {
             return SyncFetchResult.failed("Địa chỉ REST không hợp lệ");
         } catch (InterruptedException e) {
@@ -94,8 +104,58 @@ public class RestSourceConnector implements SourceConnector {
         }
     }
 
-    private HttpResponse<String> sendGet(ExternalSource source) throws Exception {
-        HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(source.getEndpointUrl()))
+    private SyncFetchResult ingestResponse(String body) {
+        if (body == null || body.isBlank()) {
+            return SyncFetchResult.success(0, 0);
+        }
+        JsonNode root;
+        try {
+            root = objectMapper.readTree(body);
+        } catch (Exception e) {
+            return SyncFetchResult.failed("Phản hồi của nguồn không phải JSON hợp lệ");
+        }
+
+        List<JsonNode> messages = new ArrayList<>();
+        if (root.isArray()) {
+            root.forEach(messages::add);
+        } else {
+            messages.add(root);
+        }
+
+        long ingested = 0;
+        int skipped = 0;
+        int failedMessages = 0;
+        String firstError = null;
+        for (JsonNode message : messages) {
+            IngestResult result = ingestionService.ingest(message);
+            if (result.success()) {
+                ingested += result.recordsIngested();
+                skipped += result.recordsFailed();
+            } else {
+                failedMessages++;
+                if (firstError == null) {
+                    firstError = result.message();
+                }
+            }
+        }
+        if (failedMessages > 0) {
+            return SyncFetchResult.failed(
+                    failedMessages + "/" + messages.size() + " thông điệp xử lý thất bại: " + firstError);
+        }
+        return SyncFetchResult.success(ingested, skipped);
+    }
+
+    private URI buildUri(ExternalSource source, Instant since) {
+        String url = source.getEndpointUrl();
+        if (since != null) {
+            String separator = url.contains("?") ? "&" : "?";
+            url = url + separator + "since=" + URLEncoder.encode(since.toString(), StandardCharsets.UTF_8);
+        }
+        return URI.create(url);
+    }
+
+    private HttpResponse<String> sendGet(ExternalSource source, Instant since) throws Exception {
+        HttpRequest.Builder builder = HttpRequest.newBuilder(buildUri(source, since))
                 .timeout(Duration.ofSeconds(connectTimeoutSeconds))
                 .GET();
         if (source.getAuthType() == SourceAuthType.BEARER_TOKEN && source.getAuthToken() != null) {
@@ -104,25 +164,6 @@ public class RestSourceConnector implements SourceConnector {
             builder.header("X-API-Key", source.getAuthToken());
         }
         return httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofString());
-    }
-
-    private long countRecords(String body) {
-        if (body == null || body.isBlank()) {
-            return 0;
-        }
-        try {
-            JsonNode root = objectMapper.readTree(body);
-            if (root.isArray()) {
-                return root.size();
-            }
-            if (root.isObject()) {
-                return 1;
-            }
-            return 0;
-        } catch (Exception e) {
-            log.warn("Could not parse source response as JSON: {}", e.getMessage());
-            return 0;
-        }
     }
 
     private TestConnectionResult testBrokerSocket(ExternalSource source) {

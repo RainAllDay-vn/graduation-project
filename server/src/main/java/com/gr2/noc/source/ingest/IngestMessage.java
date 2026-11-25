@@ -18,6 +18,10 @@ public record IngestMessage(
         } catch (Exception e) {
             throw new IllegalArgumentException("Thông điệp không phải JSON hợp lệ");
         }
+        return parse(root);
+    }
+
+    public static IngestMessage parse(JsonNode root) {
         if (root == null || !root.isObject()) {
             throw new IllegalArgumentException("Thông điệp phải là một JSON object");
         }

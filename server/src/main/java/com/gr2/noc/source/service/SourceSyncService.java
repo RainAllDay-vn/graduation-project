@@ -71,7 +71,7 @@ public class SourceSyncService {
 
         SyncFetchResult result;
         try {
-            result = connector.fetch(source);
+            result = connector.fetch(source, source.getLastSyncAt());
         } catch (Exception e) {
             result = SyncFetchResult.failed("Lỗi không xác định khi đồng bộ: " + e.getMessage());
         }

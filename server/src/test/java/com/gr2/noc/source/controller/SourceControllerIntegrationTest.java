@@ -373,7 +373,7 @@ class SourceControllerIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status", is("SUCCESS")))
                     .andExpect(jsonPath("$.triggerType", is("MANUAL")))
-                    .andExpect(jsonPath("$.recordsFetched", greaterThanOrEqualTo(12000)))
+                    .andExpect(jsonPath("$.recordsFetched", is(5)))
                     .andExpect(jsonPath("$.recordsFailed", is(0)))
                     .andExpect(jsonPath("$.finishedAt", notNullValue()))
                     .andReturn();

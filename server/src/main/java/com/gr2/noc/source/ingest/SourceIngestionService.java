@@ -44,8 +44,22 @@ public class SourceIngestionService {
         if (rawJson == null || rawJson.isBlank()) {
             return IngestResult.failed("Thông điệp rỗng");
         }
+        JsonNode root;
         try {
-            IngestMessage message = IngestMessage.parse(objectMapper, rawJson);
+            root = objectMapper.readTree(rawJson);
+        } catch (Exception e) {
+            log.warn("Failed to ingest message: {}", e.getMessage());
+            return IngestResult.failed("Lỗi xử lý thông điệp: Thông điệp không phải JSON hợp lệ");
+        }
+        return ingest(root);
+    }
+
+    public IngestResult ingest(JsonNode root) {
+        if (root == null || !root.isObject()) {
+            return IngestResult.failed("Lỗi xử lý thông điệp: Thông điệp phải là một JSON object");
+        }
+        try {
+            IngestMessage message = IngestMessage.parse(root);
             return switch (message.type()) {
                 case TELEMETRY_SNAPSHOT -> handleTelemetrySnapshot(message.payload());
                 case TELEMETRY_POINTS -> handleTelemetryPoints(message.payload());
