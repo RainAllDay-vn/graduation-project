@@ -3,6 +3,8 @@ package com.gr2.noc.source.mq;
 import com.gr2.noc.source.enums.SourceStatus;
 import com.gr2.noc.source.enums.SourceType;
 import com.gr2.noc.source.enums.SyncStatus;
+import com.gr2.noc.source.ingest.IngestResult;
+import com.gr2.noc.source.ingest.SourceIngestionService;
 import com.gr2.noc.source.model.ExternalSource;
 import com.gr2.noc.source.repository.ExternalSourceRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +37,7 @@ public class MqConsumerRegistry {
     private static final String QUEUE_PREFIX = "noc.source.";
 
     private final ExternalSourceRepository sourceRepository;
-    private final MqMessageHandler messageHandler;
+    private final SourceIngestionService ingestionService;
     private final ConnectionFactory connectionFactory;
     private final AmqpAdmin amqpAdmin;
 
@@ -115,11 +117,11 @@ public class MqConsumerRegistry {
 
     private void onMessage(String sourceId, Message message) {
         String raw = new String(message.getBody(), StandardCharsets.UTF_8);
-        MqIngestResult result = messageHandler.handle(raw);
+        IngestResult result = ingestionService.ingest(raw);
         recordOutcome(sourceId, result);
     }
 
-    private void recordOutcome(String sourceId, MqIngestResult result) {
+    private void recordOutcome(String sourceId, IngestResult result) {
         try {
             sourceRepository.findById(sourceId).ifPresent(source -> {
                 source.setLastSyncAt(Instant.now());

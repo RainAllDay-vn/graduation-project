@@ -1,4 +1,4 @@
-package com.gr2.noc.source.mq;
+package com.gr2.noc.source.ingest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gr2.noc.incident.dto.create.CreateIncidentRequest;
@@ -32,13 +32,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class MqMessageHandlerTest {
+class SourceIngestionServiceTest {
 
     private TelemetryService telemetryService;
     private IncidentService incidentService;
     private IncidentRepository incidentRepository;
     private AlarmRepository alarmRepository;
-    private MqMessageHandler handler;
+    private SourceIngestionService ingestionService;
 
     @BeforeEach
     void setUp() {
@@ -46,7 +46,7 @@ class MqMessageHandlerTest {
         incidentService = mock(IncidentService.class);
         incidentRepository = mock(IncidentRepository.class);
         alarmRepository = mock(AlarmRepository.class);
-        handler = new MqMessageHandler(
+        ingestionService = new SourceIngestionService(
                 telemetryService, incidentService, incidentRepository, alarmRepository, new ObjectMapper());
     }
 
@@ -65,7 +65,7 @@ class MqMessageHandlerTest {
                 }
                 """;
 
-        MqIngestResult result = handler.handle(raw);
+        IngestResult result = ingestionService.ingest(raw);
 
         assertTrue(result.success());
         assertEquals(1, result.recordsIngested());
@@ -97,7 +97,7 @@ class MqMessageHandlerTest {
         when(telemetryService.recordTimeseriesPoints(anyString(), any())).thenAnswer(invocation ->
                 ((List<?>) invocation.getArgument(1)).size());
 
-        MqIngestResult result = handler.handle(raw);
+        IngestResult result = ingestionService.ingest(raw);
 
         assertTrue(result.success());
         assertEquals(2, result.recordsIngested());
@@ -130,7 +130,7 @@ class MqMessageHandlerTest {
         when(incidentRepository.findByPrimaryDeviceIdOrderByCreatedAtDesc("DEV-MQ-1"))
                 .thenReturn(List.of(openIncident));
 
-        MqIngestResult result = handler.handle(raw);
+        IngestResult result = ingestionService.ingest(raw);
 
         assertTrue(result.success());
         ArgumentCaptor<Alarm> captor = ArgumentCaptor.forClass(Alarm.class);
@@ -165,7 +165,7 @@ class MqMessageHandlerTest {
                 .build());
         when(incidentRepository.findById("INC-MQ-1")).thenReturn(Optional.of(created));
 
-        MqIngestResult result = handler.handle(raw);
+        IngestResult result = ingestionService.ingest(raw);
 
         assertTrue(result.success());
         ArgumentCaptor<CreateIncidentRequest> captor = ArgumentCaptor.forClass(CreateIncidentRequest.class);
@@ -179,7 +179,7 @@ class MqMessageHandlerTest {
 
     @Test
     void shouldFailOnUnknownType() {
-        MqIngestResult result = handler.handle("{\"type\":\"topology.link\",\"payload\":{}}");
+        IngestResult result = ingestionService.ingest("{\"type\":\"topology.link\",\"payload\":{}}");
 
         assertFalse(result.success());
         assertTrue(result.message().contains("Loại thông điệp không hỗ trợ"));
@@ -187,7 +187,7 @@ class MqMessageHandlerTest {
 
     @Test
     void shouldFailOnMalformedJson() {
-        MqIngestResult result = handler.handle("{not json");
+        IngestResult result = ingestionService.ingest("{not json");
 
         assertFalse(result.success());
         assertTrue(result.message().contains("Lỗi xử lý thông điệp"));
@@ -195,7 +195,7 @@ class MqMessageHandlerTest {
 
     @Test
     void shouldFailOnMissingPayload() {
-        MqIngestResult result = handler.handle("{\"type\":\"alarm\"}");
+        IngestResult result = ingestionService.ingest("{\"type\":\"alarm\"}");
 
         assertFalse(result.success());
         assertTrue(result.message().contains("payload"));
@@ -205,7 +205,7 @@ class MqMessageHandlerTest {
     void shouldFailOnMissingRequiredField() {
         String raw = "{\"type\":\"telemetry.snapshot\",\"payload\":{\"operStatus\":\"UP\"}}";
 
-        MqIngestResult result = handler.handle(raw);
+        IngestResult result = ingestionService.ingest(raw);
 
         assertFalse(result.success());
         assertTrue(result.message().contains("deviceId"));
@@ -213,7 +213,7 @@ class MqMessageHandlerTest {
 
     @Test
     void shouldFailOnBlankMessage() {
-        MqIngestResult result = handler.handle("   ");
+        IngestResult result = ingestionService.ingest("   ");
 
         assertFalse(result.success());
         assertTrue(result.message().contains("rỗng"));
@@ -225,7 +225,7 @@ class MqMessageHandlerTest {
                 {"type":"telemetry.snapshot","payload":{"deviceId":"DEV-MQ-1","operStatus":"WARPED"}}
                 """;
 
-        MqIngestResult result = handler.handle(raw);
+        IngestResult result = ingestionService.ingest(raw);
 
         assertFalse(result.success());
         assertTrue(result.message().contains("operStatus"));

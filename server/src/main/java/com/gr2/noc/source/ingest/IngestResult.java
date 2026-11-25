@@ -1,32 +1,32 @@
-package com.gr2.noc.source.mq;
+package com.gr2.noc.source.ingest;
 
 import lombok.Builder;
 
 @Builder
-public record MqIngestResult(
+public record IngestResult(
     boolean success,
     long recordsIngested,
     int recordsFailed,
     String message
 ) {
 
-    public static MqIngestResult success(long recordsIngested) {
-        return MqIngestResult.builder()
+    public static IngestResult success(long recordsIngested) {
+        return IngestResult.builder()
                 .success(true)
                 .recordsIngested(recordsIngested)
                 .build();
     }
 
-    public static MqIngestResult success(long recordsIngested, int recordsFailed) {
-        return MqIngestResult.builder()
+    public static IngestResult success(long recordsIngested, int recordsFailed) {
+        return IngestResult.builder()
                 .success(true)
                 .recordsIngested(recordsIngested)
                 .recordsFailed(recordsFailed)
                 .build();
     }
 
-    public static MqIngestResult failed(String message) {
-        return MqIngestResult.builder()
+    public static IngestResult failed(String message) {
+        return IngestResult.builder()
                 .success(false)
                 .message(message)
                 .build();

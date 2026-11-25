@@ -1,4 +1,4 @@
-package com.gr2.noc.source.mq;
+package com.gr2.noc.source.ingest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +30,7 @@ import java.util.function.Predicate;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MqMessageHandler {
+public class SourceIngestionService {
 
     private static final Set<IncidentStatus> CLOSED_STATUSES = Set.of(IncidentStatus.MITIGATED, IncidentStatus.RESOLVED);
 
@@ -40,32 +40,32 @@ public class MqMessageHandler {
     private final AlarmRepository alarmRepository;
     private final ObjectMapper objectMapper;
 
-    public MqIngestResult handle(String rawJson) {
+    public IngestResult ingest(String rawJson) {
         if (rawJson == null || rawJson.isBlank()) {
-            return MqIngestResult.failed("Thông điệp rỗng");
+            return IngestResult.failed("Thông điệp rỗng");
         }
         try {
-            MqMessage message = MqMessage.parse(objectMapper, rawJson);
+            IngestMessage message = IngestMessage.parse(objectMapper, rawJson);
             return switch (message.type()) {
                 case TELEMETRY_SNAPSHOT -> handleTelemetrySnapshot(message.payload());
                 case TELEMETRY_POINTS -> handleTelemetryPoints(message.payload());
                 case ALARM -> handleAlarm(message.payload());
             };
         } catch (Exception e) {
-            log.warn("Failed to ingest MQ message: {}", e.getMessage());
-            return MqIngestResult.failed("Lỗi xử lý thông điệp: " + e.getMessage());
+            log.warn("Failed to ingest message: {}", e.getMessage());
+            return IngestResult.failed("Lỗi xử lý thông điệp: " + e.getMessage());
         }
     }
 
-    private MqIngestResult handleTelemetrySnapshot(JsonNode payload) {
+    private IngestResult handleTelemetrySnapshot(JsonNode payload) {
         String deviceId = requiredText(payload, "deviceId");
         String operStatusWire = payload.path("operStatus").asText(null);
         OperStatus operStatus = parseEnum(OperStatus.class, operStatusWire);
         if (operStatus == null) {
-            return MqIngestResult.failed("payload.operStatus không hợp lệ: " + operStatusWire);
+            return IngestResult.failed("payload.operStatus không hợp lệ: " + operStatusWire);
         }
         RecordDeviceTelemetrySnapshotRequest request = RecordDeviceTelemetrySnapshotRequest.builder()
-                .collectedAt(MqMessage.readInstant(payload.get("collectedAt")))
+                .collectedAt(IngestMessage.readInstant(payload.get("collectedAt")))
                 .operStatus(operStatus)
                 .uptimeSeconds(readLong(payload.get("uptimeSeconds")))
                 .loadPercentage(readDouble(payload.get("loadPercentage")))
@@ -76,16 +76,16 @@ public class MqMessageHandler {
                 .temperatureCelsius(readDouble(payload.get("temperatureCelsius")))
                 .build();
         telemetryService.recordSnapshot(deviceId, request);
-        return MqIngestResult.success(1);
+        return IngestResult.success(1);
     }
 
-    private MqIngestResult handleTelemetryPoints(JsonNode payload) {
+    private IngestResult handleTelemetryPoints(JsonNode payload) {
         String deviceId = requiredText(payload, "deviceId");
         String defaultMetricName = payload.path("metricName").asText(null);
         String defaultUnit = payload.path("unit").asText(null);
         JsonNode points = payload.get("points");
         if (points == null || !points.isArray() || points.isEmpty()) {
-            return MqIngestResult.failed("payload.points phải là mảng không rỗng");
+            return IngestResult.failed("payload.points phải là mảng không rỗng");
         }
         List<RecordTelemetryPointRequest> requests = new ArrayList<>();
         int skipped = 0;
@@ -100,21 +100,21 @@ public class MqMessageHandler {
                     .metricName(metricName)
                     .value(value)
                     .unit(point.path("unit").asText(defaultUnit))
-                    .timestamp(MqMessage.readInstant(point.get("timestamp")))
+                    .timestamp(IngestMessage.readInstant(point.get("timestamp")))
                     .build());
         }
         if (requests.isEmpty()) {
-            return MqIngestResult.failed("Không có điểm đo hợp lệ trong payload.points");
+            return IngestResult.failed("Không có điểm đo hợp lệ trong payload.points");
         }
         int ingested = telemetryService.recordTimeseriesPoints(deviceId, requests);
-        return MqIngestResult.success(ingested, skipped);
+        return IngestResult.success(ingested, skipped);
     }
 
-    private MqIngestResult handleAlarm(JsonNode payload) {
+    private IngestResult handleAlarm(JsonNode payload) {
         String deviceId = requiredText(payload, "deviceId");
         String faultCode = requiredText(payload, "faultCode");
         Severity severity = parseSeverity(payload.path("severity").asText(null));
-        Instant timestamp = MqMessage.readInstant(payload.get("timestamp"));
+        Instant timestamp = IngestMessage.readInstant(payload.get("timestamp"));
         String message = payload.path("message").asText(null);
 
         Incident incident = findOpenIncident(deviceId);
@@ -133,7 +133,7 @@ public class MqMessageHandler {
                 .isCurrentIncident(true)
                 .build();
         alarmRepository.save(alarm);
-        return MqIngestResult.success(1);
+        return IngestResult.success(1);
     }
 
     private Incident findOpenIncident(String deviceId) {

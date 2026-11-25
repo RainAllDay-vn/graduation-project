@@ -1,17 +1,17 @@
-package com.gr2.noc.source.mq;
+package com.gr2.noc.source.ingest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 
-public record MqMessage(
-    MqPayloadType type,
+public record IngestMessage(
+    IngestPayloadType type,
     Instant occurredAt,
     JsonNode payload
 ) {
 
-    public static MqMessage parse(ObjectMapper mapper, String raw) {
+    public static IngestMessage parse(ObjectMapper mapper, String raw) {
         JsonNode root;
         try {
             root = mapper.readTree(raw);
@@ -29,7 +29,7 @@ public record MqMessage(
         if (payload == null || !payload.isObject()) {
             throw new IllegalArgumentException("Thiếu trường payload (object)");
         }
-        return new MqMessage(MqPayloadType.fromWire(typeWire), readInstant(root.get("occurredAt")), payload);
+        return new IngestMessage(IngestPayloadType.fromWire(typeWire), readInstant(root.get("occurredAt")), payload);
     }
 
     static Instant readInstant(JsonNode node) {
