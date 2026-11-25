@@ -3,6 +3,7 @@ import type { LinkSummary } from '@/api/topology'
 import { cn } from '@/lib/utils'
 import {
   computeEdgeCoordinates,
+  formatShortPort,
   getEdgeDashArray,
   getEdgeHealthColor,
   getEdgeStrokeWidth,
@@ -18,6 +19,7 @@ export interface TopologyEdgeProps {
   isBlastRadius?: boolean
   isLodFar?: boolean
   showPortAnchors?: boolean
+  showPortLabels?: boolean
   onClick?: (link: LinkSummary) => void
   onMouseEnter?: (link: LinkSummary, event: React.MouseEvent<SVGPathElement>) => void
   onMouseMove?: (link: LinkSummary, event: React.MouseEvent<SVGPathElement>) => void
@@ -35,6 +37,7 @@ export const TopologyEdge: React.FC<TopologyEdgeProps> = ({
   isBlastRadius = false,
   isLodFar = false,
   showPortAnchors = true,
+  showPortLabels = true,
   onClick,
   onMouseEnter,
   onMouseMove,
@@ -45,6 +48,9 @@ export const TopologyEdge: React.FC<TopologyEdgeProps> = ({
   const colorStyle = getEdgeHealthColor(link.operStatus, { isSelected, isBlastRadius })
   const strokeWidth = getEdgeStrokeWidth(link.capacityGbps)
   const dashArray = getEdgeDashArray(link.utilizationPercent, link.isBackup)
+
+  const shortSourcePort = formatShortPort(link.sourcePort)
+  const shortTargetPort = formatShortPort(link.targetPort)
 
   return (
     <g
@@ -118,6 +124,74 @@ export const TopologyEdge: React.FC<TopologyEdgeProps> = ({
             stroke={colorStyle.stroke}
             strokeWidth={1.5}
           />
+        </g>
+      )}
+
+      {/* 4b. Physical Port Text Labels (Solution 1: Offset along Bezier curve to prevent node clamping) */}
+      {!isLodFar && showPortLabels && (shortSourcePort || shortTargetPort) && (
+        <g className="port-labels pointer-events-none transition-opacity duration-200" data-testid={`port-labels-${link.linkId}`}>
+          {shortSourcePort && coords.sourceLabelPos && (
+            <g
+              transform={`translate(${coords.sourceLabelPos.x}, ${coords.sourceLabelPos.y})`}
+              className="select-none"
+            >
+              <rect
+                x={-Math.max(22, shortSourcePort.length * 5.2 + 8) / 2}
+                y={-6}
+                width={Math.max(22, shortSourcePort.length * 5.2 + 8)}
+                height={12}
+                rx={2.5}
+                className={cn(
+                  'fill-white/95 dark:fill-[#0f172a]/95 stroke-slate-200 dark:stroke-slate-700/80 shadow-xs transition-colors',
+                  (isHovered || isSelected) && 'stroke-sky-400 dark:stroke-sky-400 shadow-[0_0_6px_rgba(56,189,248,0.4)]'
+                )}
+                strokeWidth={0.75}
+              />
+              <text
+                x={0}
+                y={3}
+                textAnchor="middle"
+                className={cn(
+                  'font-mono text-[7.5px] font-bold fill-slate-600 dark:fill-slate-300 transition-colors',
+                  (isHovered || isSelected) && 'fill-sky-600 dark:fill-sky-300'
+                )}
+                style={{ fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)' }}
+              >
+                {shortSourcePort}
+              </text>
+            </g>
+          )}
+          {shortTargetPort && coords.targetLabelPos && (
+            <g
+              transform={`translate(${coords.targetLabelPos.x}, ${coords.targetLabelPos.y})`}
+              className="select-none"
+            >
+              <rect
+                x={-Math.max(22, shortTargetPort.length * 5.2 + 8) / 2}
+                y={-6}
+                width={Math.max(22, shortTargetPort.length * 5.2 + 8)}
+                height={12}
+                rx={2.5}
+                className={cn(
+                  'fill-white/95 dark:fill-[#0f172a]/95 stroke-slate-200 dark:stroke-slate-700/80 shadow-xs transition-colors',
+                  (isHovered || isSelected) && 'stroke-sky-400 dark:stroke-sky-400 shadow-[0_0_6px_rgba(56,189,248,0.4)]'
+                )}
+                strokeWidth={0.75}
+              />
+              <text
+                x={0}
+                y={3}
+                textAnchor="middle"
+                className={cn(
+                  'font-mono text-[7.5px] font-bold fill-slate-600 dark:fill-slate-300 transition-colors',
+                  (isHovered || isSelected) && 'fill-sky-600 dark:fill-sky-300'
+                )}
+                style={{ fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)' }}
+              >
+                {shortTargetPort}
+              </text>
+            </g>
+          )}
         </g>
       )}
 

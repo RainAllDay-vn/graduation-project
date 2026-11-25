@@ -11,6 +11,7 @@ import {
   TopologyLeftSidebar,
   TopologyRightSidebar,
 } from './components'
+import { type DisplaySettings, DEFAULT_DISPLAY_SETTINGS } from './components/sidebar'
 import type { KHopDistance, KHopFilterMode } from './components/canvas/egoNetwork'
 
 export interface TopologyPageProps {
@@ -105,6 +106,22 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
   })
   const [currentFilterMode, setCurrentFilterMode] = useState<KHopFilterMode>('ghost')
 
+  // Visual display toggles (Tab Hiển thị: Tier bands, centerlines, counts, port labels)
+  const [displaySettings, setDisplaySettings] = useState<DisplaySettings>(DEFAULT_DISPLAY_SETTINGS)
+
+  const handleDisplaySettingChange = <K extends keyof DisplaySettings>(
+    key: K,
+    value: DisplaySettings[K]
+  ) => {
+    setDisplaySettings((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const handleResetDisplaySettings = () => {
+    setDisplaySettings(DEFAULT_DISPLAY_SETTINGS)
+    setCurrentKHop('all')
+    setCurrentFilterMode('ghost')
+  }
+
   const selectedNode = useMemo(
     () => (selectedNodeId ? nodes.find((n) => n.id === selectedNodeId) ?? null : null),
     [selectedNodeId, nodes]
@@ -190,6 +207,13 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
           nodes={nodes}
           selectedNodeId={selectedNodeId}
           onSelectDevice={handleSelectDeviceFromSidebar}
+          displaySettings={displaySettings}
+          onDisplaySettingChange={handleDisplaySettingChange}
+          kHop={currentKHop}
+          filterMode={currentFilterMode}
+          onKHopChange={setCurrentKHop}
+          onFilterModeChange={setCurrentFilterMode}
+          onResetDisplaySettings={handleResetDisplaySettings}
           locale={locale}
         />
 
@@ -248,6 +272,10 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
               onFocusNode={handleFocusNode}
               onClearFocus={handleClearFocus}
               onSelectLink={handleSelectLink}
+              showTierBands={displaySettings.showTierBands}
+              showCenterlines={displaySettings.showCenterlines}
+              showCounts={displaySettings.showCounts}
+              showPortLabels={displaySettings.showPortLabels}
               showLegend={true}
               showControls={true}
               showKHopControls={true}

@@ -7,6 +7,7 @@ export interface TierBandsProps {
   tierBounds: TierBound[]
   dimensions: CanvasDimensions
   locale?: 'vi' | 'en'
+  showTierBands?: boolean
   showCenterlines?: boolean
   showCounts?: boolean
   className?: string
@@ -16,12 +17,17 @@ export const TierBands: React.FC<TierBandsProps> = ({
   tierBounds,
   dimensions,
   locale = 'vi',
+  showTierBands = true,
   showCenterlines = true,
   showCounts = true,
   className,
 }) => {
   const marginX = 16
   const bandWidth = Math.max(100, dimensions.width - marginX * 2)
+
+  if (!showTierBands && !showCenterlines && !showCounts) {
+    return null
+  }
 
   return (
     <g className={cn('tier-bands-layer pointer-events-none select-none', className)}>
@@ -33,16 +39,18 @@ export const TierBands: React.FC<TierBandsProps> = ({
         return (
           <g key={tier.tier} className="tier-band-item" data-tier={tier.tier}>
             {/* Dashed outer boundary rectangle */}
-            <rect
-              x={marginX}
-              y={tier.y}
-              width={bandWidth}
-              height={tier.height}
-              rx={8}
-              className="fill-slate-100/40 dark:fill-slate-900/30 stroke-slate-300/70 dark:stroke-slate-800/80 transition-colors"
-              strokeDasharray="6 4"
-              strokeWidth="1"
-            />
+            {showTierBands && (
+              <rect
+                x={marginX}
+                y={tier.y}
+                width={bandWidth}
+                height={tier.height}
+                rx={8}
+                className="fill-slate-100/40 dark:fill-slate-900/30 stroke-slate-300/70 dark:stroke-slate-800/80 transition-colors"
+                strokeDasharray="6 4"
+                strokeWidth="1"
+              />
+            )}
 
             {/* Horizontal centerline guideline */}
             {showCenterlines && (
@@ -58,15 +66,17 @@ export const TierBands: React.FC<TierBandsProps> = ({
             )}
 
             {/* Monospace uppercase Tier title */}
-            <text
-              x={marginX + 16}
-              y={tier.y + 22}
-              fill={tierColor}
-              className="font-mono text-[10px] font-extrabold tracking-[0.14em] uppercase"
-              style={{ fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)' }}
-            >
-              {title}
-            </text>
+            {showTierBands && (
+              <text
+                x={marginX + 16}
+                y={tier.y + 22}
+                fill={tierColor}
+                className="font-mono text-[10px] font-extrabold tracking-[0.14em] uppercase"
+                style={{ fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)' }}
+              >
+                {title}
+              </text>
+            )}
 
             {/* Node count indicator */}
             {showCounts && (

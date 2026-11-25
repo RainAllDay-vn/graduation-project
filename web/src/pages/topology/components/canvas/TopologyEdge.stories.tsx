@@ -182,6 +182,36 @@ export const SelectedAndBlastRadius: Story = {
   ),
 }
 
+export const WithAndWithoutPortLabels: Story = {
+  decorators: [renderInSvgDark(500, 220)],
+  render: () => (
+    <g>
+      <TopologyEdge
+        link={{
+          ...mockLinkBase,
+          linkId: 'L-WITH-PORTS',
+          sourcePort: 'HundredGig0/0/0/1',
+          targetPort: 'HundredGig0/0/0/2',
+        }}
+        sourcePos={{ x: 100, y: 40 }}
+        targetPos={{ x: 200, y: 160 }}
+        showPortLabels={true}
+      />
+      <TopologyEdge
+        link={{
+          ...mockLinkBase,
+          linkId: 'L-WITHOUT-PORTS',
+          sourcePort: 'HundredGig0/0/0/1',
+          targetPort: 'HundredGig0/0/0/2',
+        }}
+        sourcePos={{ x: 300, y: 40 }}
+        targetPos={{ x: 400, y: 160 }}
+        showPortLabels={false}
+      />
+    </g>
+  ),
+}
+
 const sampleNodes: DeviceSummary[] = [
   {
     id: 'PEER-01',

@@ -106,3 +106,60 @@ export const EnglishLocale: Story = {
     </div>
   ),
 }
+
+/** Story 7: Tab Hiển thị (Display Settings) in Dark Mode */
+export const DisplayTabDark: Story = {
+  args: {
+    nodes: sampleNodes,
+    initialTab: 'layers',
+    locale: 'vi',
+  },
+  render: (args) => (
+    <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
+      <div className="h-[620px] rounded-lg overflow-hidden border border-slate-800 shadow-xl flex">
+        <TopologyLeftSidebar {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/** Story 8: Tab Hiển thị (Display Settings) in Light Mode */
+export const DisplayTabLight: Story = {
+  args: {
+    nodes: sampleNodes,
+    initialTab: 'layers',
+    locale: 'vi',
+  },
+  render: (args) => (
+    <div className="bg-slate-100 p-6 rounded-xl border border-slate-300 flex items-center justify-center">
+      <div className="h-[620px] rounded-lg overflow-hidden border border-slate-300 shadow-lg flex">
+        <TopologyLeftSidebar {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/** Story 9: Tab Hiển thị with custom toggles & 2-Hop */
+export const DisplayTabCustomToggled: Story = {
+  args: {
+    nodes: sampleNodes,
+    initialTab: 'layers',
+    displaySettings: {
+      showTierBands: true,
+      showCenterlines: false,
+      showCounts: false,
+      showPortLabels: true,
+    },
+    kHop: 2,
+    filterMode: 'prune',
+    locale: 'vi',
+  },
+  render: (args) => (
+    <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
+      <div className="h-[620px] rounded-lg overflow-hidden border border-slate-800 shadow-xl flex">
+        <TopologyLeftSidebar {...args} />
+      </div>
+    </div>
+  ),
+}
+

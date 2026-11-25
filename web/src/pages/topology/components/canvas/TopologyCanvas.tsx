@@ -31,9 +31,11 @@ export interface TopologyCanvasProps {
   paddingX?: number
   paddingY?: number
   locale?: 'vi' | 'en'
+  showTierBands?: boolean
   showCenterlines?: boolean
   showCounts?: boolean
   showPortAnchors?: boolean
+  showPortLabels?: boolean
   showLegend?: boolean
   showControls?: boolean
   showKHopControls?: boolean
@@ -89,9 +91,11 @@ export const TopologyCanvas = forwardRef<TopologyCanvasHandle, TopologyCanvasPro
   paddingX,
   paddingY,
   locale = 'vi',
+  showTierBands = true,
   showCenterlines = true,
   showCounts = true,
   showPortAnchors = true,
+  showPortLabels = true,
   showLegend = true,
   showControls = true,
   showKHopControls = true,
@@ -464,6 +468,7 @@ export const TopologyCanvas = forwardRef<TopologyCanvasHandle, TopologyCanvasPro
           tierBounds={tierBounds}
           dimensions={dimensions}
           locale={locale}
+          showTierBands={showTierBands}
           showCenterlines={showCenterlines}
           showCounts={showCounts}
         />
@@ -502,6 +507,7 @@ export const TopologyCanvas = forwardRef<TopologyCanvasHandle, TopologyCanvasPro
                 isBlastRadius={isBlastRadius}
                 isLodFar={isLodFar}
                 showPortAnchors={showPortAnchors}
+                showPortLabels={showPortLabels}
                 onClick={handleSelectLink}
                 onMouseEnter={(l, e) => {
                   setInternalHoveredLinkId(l.linkId)

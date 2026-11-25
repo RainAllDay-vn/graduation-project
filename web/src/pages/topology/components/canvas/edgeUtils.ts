@@ -1,14 +1,53 @@
+/**
+ * Shortens telco interface names for compact edge port labels (e.g., HundredGig0/0/0/1 -> Hu0/0/0/1).
+ */
+export function formatShortPort(port?: string): string {
+  if (!port) return ''
+  return port
+    .replace(/^HundredGig(E|abitEthernet)?/i, 'Hu')
+    .replace(/^TenGig(E|abitEthernet)?/i, 'Te')
+    .replace(/^Gig(abit)?Ethernet/i, 'Gi')
+    .replace(/^FastEthernet/i, 'Fa')
+    .replace(/^Ethernet/i, 'Eth')
+}
+
 export interface EdgeCoordinates {
   path: string
   startX: number
   startY: number
   endX: number
   endY: number
+  sourceLabelPos: { x: number; y: number }
+  targetLabelPos: { x: number; y: number }
+}
+
+/**
+ * Evaluates coordinates (x, y) at parameter t along a cubic Bezier curve.
+ */
+export function evaluateCubicBezier(
+  p0: { x: number; y: number },
+  p1: { x: number; y: number },
+  p2: { x: number; y: number },
+  p3: { x: number; y: number },
+  t: number
+): { x: number; y: number } {
+  const mt = 1 - t
+  const mt2 = mt * mt
+  const t2 = t * t
+  const a = mt2 * mt
+  const b = 3 * mt2 * t
+  const c = 3 * mt * t2
+  const d = t2 * t
+  return {
+    x: a * p0.x + b * p1.x + c * p2.x + d * p3.x,
+    y: a * p0.y + b * p1.y + c * p2.y + d * p3.y,
+  }
 }
 
 /**
  * Computes smooth cubic bezier curve coordinates between two nodes.
  * Anchors properly at top or bottom borders of node cards to prevent clipping.
+ * Also computes label positions along the curve to prevent port labels from colliding.
  */
 export function computeEdgeCoordinates(
   source: { x: number; y: number },
@@ -29,7 +68,19 @@ export function computeEdgeCoordinates(
       const endY = target.y - nodeHalfHeight
       const yMid = (startY + endY) / 2
       const path = `M ${startX},${startY} C ${startX},${yMid} ${endX},${yMid} ${endX},${endY}`
-      return { path, startX, startY, endX, endY }
+
+      const p0 = { x: startX, y: startY }
+      const p1 = { x: startX, y: yMid }
+      const p2 = { x: endX, y: yMid }
+      const p3 = { x: endX, y: endY }
+
+      const dist = Math.hypot(endX - startX, endY - startY)
+      const tSource = dist > 0 ? Math.max(0.12, Math.min(0.28, 30 / dist)) : 0.16
+      const tTarget = 1 - tSource
+      const sourceLabelPos = evaluateCubicBezier(p0, p1, p2, p3, tSource)
+      const targetLabelPos = evaluateCubicBezier(p0, p1, p2, p3, tTarget)
+
+      return { path, startX, startY, endX, endY, sourceLabelPos, targetLabelPos }
     } else {
       // Source below target (upstream flow)
       const startX = source.x
@@ -38,7 +89,19 @@ export function computeEdgeCoordinates(
       const endY = target.y + nodeHalfHeight
       const yMid = (startY + endY) / 2
       const path = `M ${startX},${startY} C ${startX},${yMid} ${endX},${yMid} ${endX},${endY}`
-      return { path, startX, startY, endX, endY }
+
+      const p0 = { x: startX, y: startY }
+      const p1 = { x: startX, y: yMid }
+      const p2 = { x: endX, y: yMid }
+      const p3 = { x: endX, y: endY }
+
+      const dist = Math.hypot(endX - startX, endY - startY)
+      const tSource = dist > 0 ? Math.max(0.12, Math.min(0.28, 30 / dist)) : 0.16
+      const tTarget = 1 - tSource
+      const sourceLabelPos = evaluateCubicBezier(p0, p1, p2, p3, tSource)
+      const targetLabelPos = evaluateCubicBezier(p0, p1, p2, p3, tTarget)
+
+      return { path, startX, startY, endX, endY, sourceLabelPos, targetLabelPos }
     }
   }
 
@@ -51,7 +114,19 @@ export function computeEdgeCoordinates(
   const archOffset = Math.min(60, Math.max(30, Math.abs(dx) * 0.22))
   const ctrlY = startY - archOffset
   const path = `M ${startX},${startY} C ${startX},${ctrlY} ${endX},${ctrlY} ${endX},${endY}`
-  return { path, startX, startY, endX, endY }
+
+  const p0 = { x: startX, y: startY }
+  const p1 = { x: startX, y: ctrlY }
+  const p2 = { x: endX, y: ctrlY }
+  const p3 = { x: endX, y: endY }
+
+  const dist = Math.hypot(endX - startX, archOffset * 1.5)
+  const tSource = dist > 0 ? Math.max(0.12, Math.min(0.26, 32 / dist)) : 0.16
+  const tTarget = 1 - tSource
+  const sourceLabelPos = evaluateCubicBezier(p0, p1, p2, p3, tSource)
+  const targetLabelPos = evaluateCubicBezier(p0, p1, p2, p3, tTarget)
+
+  return { path, startX, startY, endX, endY, sourceLabelPos, targetLabelPos }
 }
 
 export interface EdgeColorStyle {

@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import type { DeviceSummary } from '@/api/topology'
 import { cn } from '@/lib/utils'
-import { DeviceDirectoryTab } from './sidebar'
+import { DeviceDirectoryTab, DisplaySettingsTab, type DisplaySettings, DEFAULT_DISPLAY_SETTINGS } from './sidebar'
+import type { KHopDistance, KHopFilterMode } from './canvas/egoNetwork'
 
 export interface TopologyLeftSidebarProps {
   /** Optional ID of active incident (unlocks Timeline & Hypothesis tabs) */
@@ -12,6 +13,22 @@ export interface TopologyLeftSidebarProps {
   selectedNodeId?: string | null
   /** Callback fired when user selects a device from the directory */
   onSelectDevice?: (device: DeviceSummary) => void
+  /** Runtime display toggle settings */
+  displaySettings?: DisplaySettings
+  /** Callback fired when any display setting toggle is changed */
+  onDisplaySettingChange?: <K extends keyof DisplaySettings>(key: K, value: DisplaySettings[K]) => void
+  /** k-Hop radius distance (1, 2, 3, or 'all') */
+  kHop?: KHopDistance
+  /** k-Hop filter mode ('ghost' or 'prune') */
+  filterMode?: KHopFilterMode
+  /** Callback fired when user changes k-Hop */
+  onKHopChange?: (kHop: KHopDistance) => void
+  /** Callback fired when user changes filter mode */
+  onFilterModeChange?: (mode: KHopFilterMode) => void
+  /** Callback fired when user resets display settings to defaults */
+  onResetDisplaySettings?: () => void
+  /** Active tab override or initial tab */
+  initialTab?: string
   /** Language locale */
   locale?: 'vi' | 'en'
   /** Additional CSS class names */
@@ -24,13 +41,21 @@ export interface TopologyLeftSidebarProps {
  * Topology Left Sidebar (Stylebook §0.1, Ch.4 & app-pages/topology.html)
  *
  * Scaffolds the left column of the 3-column workspace with tab headers
- * and the interactive Device Directory (Tab Thiết bị).
+ * and the interactive Device Directory (Tab Thiết bị) + Display Settings (Tab Hiển thị).
  */
 export const TopologyLeftSidebar: React.FC<TopologyLeftSidebarProps> = ({
   incidentId,
   nodes = [],
   selectedNodeId,
   onSelectDevice = () => {},
+  displaySettings = DEFAULT_DISPLAY_SETTINGS,
+  onDisplaySettingChange = () => {},
+  kHop = 'all',
+  filterMode = 'ghost',
+  onKHopChange,
+  onFilterModeChange,
+  onResetDisplaySettings,
+  initialTab,
   locale = 'vi',
   className,
   style,
@@ -38,7 +63,7 @@ export const TopologyLeftSidebar: React.FC<TopologyLeftSidebarProps> = ({
   const isEn = locale === 'en'
 
   // Available tabs depend on whether an incident context is elevated
-  const defaultTab = incidentId ? 'timeline' : 'inventory'
+  const defaultTab = initialTab || (incidentId ? 'timeline' : 'inventory')
   const [activeTab, setActiveTab] = useState<string>(defaultTab)
 
   const tabs = incidentId
@@ -106,40 +131,16 @@ export const TopologyLeftSidebar: React.FC<TopologyLeftSidebarProps> = ({
           locale={locale}
         />
       ) : activeTab === 'layers' ? (
-        /* Tab Hiển thị (Display & Layer Toggles Placeholder) */
-        <div className="flex-1 flex flex-col gap-2.5 overflow-y-auto no-scrollbar">
-          <div className="font-mono text-[9px] font-extrabold tracking-widest text-slate-400 dark:text-[#64748b] uppercase">
-            {isEn ? 'DISPLAY SETTINGS · CHAPTER 4.4' : 'CÀI ĐẶT HIỂN THỊ · MỤC 4.4'}
-          </div>
-
-          <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-3">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-slate-700 dark:text-slate-300">
-                {isEn ? 'Tier Bands' : 'Dải phân tầng'}
-              </span>
-              <span className="text-emerald-500 font-bold">ON</span>
-            </div>
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-slate-700 dark:text-slate-300">
-                {isEn ? 'Center Lines' : 'Đường trung tâm'}
-              </span>
-              <span className="text-emerald-500 font-bold">ON</span>
-            </div>
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-slate-700 dark:text-slate-300">
-                {isEn ? 'Device Counts' : 'Số lượng thiết bị'}
-              </span>
-              <span className="text-emerald-500 font-bold">ON</span>
-            </div>
-          </div>
-
-          <div className="mt-auto p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
-            💡 <strong>{isEn ? 'Chapter 4.4 Spec:' : 'Đặc tả Mục 4.4:'}</strong>{' '}
-            {isEn
-              ? 'Display toggles and k-hop dials will be enhanced in the next iteration.'
-              : 'Các tuỳ chọn bật/tắt dải tầng và bộ lọc hiển thị sẽ được kết nối ở bước kế tiếp.'}
-          </div>
-        </div>
+        <DisplaySettingsTab
+          settings={displaySettings}
+          onSettingChange={onDisplaySettingChange}
+          kHop={kHop}
+          filterMode={filterMode}
+          onKHopChange={onKHopChange}
+          onFilterModeChange={onFilterModeChange}
+          onResetDefaults={onResetDisplaySettings}
+          locale={locale}
+        />
       ) : (
         /* Incident Mode Tabs Placeholder (Timeline / Hypothesis) */
         <div className="flex-1 flex flex-col gap-2.5 overflow-y-auto no-scrollbar">
