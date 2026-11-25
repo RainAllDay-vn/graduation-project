@@ -7,8 +7,8 @@ import lombok.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "users", indexes = {
-    @Index(name = "idx_user_email", columnList = "email", unique = true)
+@Table(name = "users", uniqueConstraints = {
+    @UniqueConstraint(name = "idx_user_email", columnNames = "email")
 })
 @Getter
 @Setter
@@ -24,7 +24,7 @@ public class User {
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     @Column(name = "password_hash", nullable = false)

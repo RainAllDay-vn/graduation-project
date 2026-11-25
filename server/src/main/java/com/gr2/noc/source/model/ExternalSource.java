@@ -16,6 +16,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,9 +29,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "data_sources", indexes = {
-        @Index(name = "idx_data_sources_status", columnList = "status")
-})
+@Table(
+        name = "data_sources",
+        indexes = {
+                @Index(name = "idx_data_sources_status", columnList = "status")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_data_sources_name", columnNames = "name")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -42,7 +49,7 @@ public class ExternalSource {
     @Column(length = 64)
     private String id;
 
-    @Column(nullable = false, unique = true, length = 128)
+    @Column(nullable = false, length = 128)
     private String name;
 
     @Enumerated(EnumType.STRING)
