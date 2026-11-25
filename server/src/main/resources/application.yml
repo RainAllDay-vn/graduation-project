@@ -34,6 +34,10 @@ spring:
     authentication:
       username: ${NEO4J_USERNAME:neo4j}
       password: ${NEO4J_PASSWORD:password123}
+  data:
+    neo4j:
+      repositories:
+        type: imperative
 
   # RabbitMQ (one-way sync from message-queue sources)
   rabbitmq:
