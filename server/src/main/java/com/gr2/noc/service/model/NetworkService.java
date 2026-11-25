@@ -4,6 +4,7 @@ import com.gr2.noc.service.enums.ServiceStatus;
 import com.gr2.noc.service.enums.ServiceType;
 import com.gr2.noc.topology.model.NetworkDevice;
 import lombok.*;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
@@ -27,6 +28,9 @@ public class NetworkService {
 
     @Id
     private String id; // e.g. "SVC-INTERNET-HN-01"
+
+    @Version
+    private Long version;
 
     @Property("name")
     private String name;

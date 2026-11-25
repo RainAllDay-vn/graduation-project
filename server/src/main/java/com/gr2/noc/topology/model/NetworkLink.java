@@ -20,7 +20,7 @@ import org.springframework.data.neo4j.core.schema.TargetNode;
 public class NetworkLink {
 
     @RelationshipId
-    private Long id;
+    private String id;
 
     @Property("link_id")
     private String linkId;

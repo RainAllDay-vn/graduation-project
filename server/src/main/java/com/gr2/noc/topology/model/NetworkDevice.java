@@ -3,6 +3,7 @@ package com.gr2.noc.topology.model;
 import com.gr2.noc.topology.enums.DeviceLayer;
 import com.gr2.noc.topology.enums.DeviceStatus;
 import lombok.*;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
@@ -25,6 +26,9 @@ public class NetworkDevice {
 
     @Id
     private String id; // e.g. "SW-HN-02", "CORE-02", "AGG-02"
+
+    @Version
+    private Long version;
 
     @Property("name")
     private String name;
