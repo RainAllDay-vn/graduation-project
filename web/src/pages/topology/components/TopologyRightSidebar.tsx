@@ -1,6 +1,7 @@
 import React from 'react'
 import type { DeviceSummary, LinkSummary } from '@/api/topology'
 import { cn } from '@/lib/utils'
+import { NetworkOverviewPanel } from './inspector'
 
 export interface TopologyRightSidebarProps {
   /** All devices in the current topology view (used for network health overview) */
@@ -11,6 +12,10 @@ export interface TopologyRightSidebarProps {
   selectedNode?: DeviceSummary | null
   /** Currently selected link (if any) */
   selectedLink?: LinkSummary | null
+  /** Callback fired when user quick-jumps to a device from overview attention list */
+  onSelectNode?: (node: DeviceSummary) => void
+  /** Callback fired when user quick-jumps to a link from overview attention list */
+  onSelectLink?: (link: LinkSummary) => void
   /** Callback fired when user closes device inspection */
   onCloseInspect?: () => void
   /** Language locale */
@@ -24,25 +29,22 @@ export interface TopologyRightSidebarProps {
 /**
  * Topology Right Sidebar / Inspector (Stylebook §0.1, Ch.5 & app-pages/topology.html)
  *
- * Scaffolds the right column of the 3-column workspace with inspection
- * details and clean placeholder text/wireframe cards.
+ * Scaffolds the right column of the 3-column workspace with default network
+ * infrastructure KPIs, edge inspection, and device inspection slots.
  */
 export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
   nodes,
   links,
   selectedNode,
   selectedLink,
+  onSelectNode,
+  onSelectLink,
   onCloseInspect,
   locale = 'vi',
   className,
   style,
 }) => {
   const isEn = locale === 'en'
-
-  const totalDevices = nodes?.length ?? 0
-  const normalDevices = nodes ? nodes.filter((n) => n.status === 'ACTIVE').length : 0
-  const degradedOrCritDevices = nodes ? nodes.filter((n) => n.status !== 'ACTIVE').length : 0
-  const totalLinks = links?.length ?? 0
 
   return (
     <aside
@@ -280,66 +282,14 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
           </div>
         </div>
       ) : (
-        /* Default: Network Overview Cards (When no item is selected) */
-        <div className="flex-1 flex flex-col gap-2.5">
-          <div className="font-mono text-[9px] font-extrabold tracking-widest text-slate-400 dark:text-[#64748b] uppercase">
-            {isEn ? 'NETWORK HEALTH OVERVIEW' : 'TỔNG QUAN HẠ TẦNG MẠNG'}
-          </div>
-
-          {/* Metric cards */}
-          <div className="grid grid-cols-2 gap-2">
-            <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-800">
-              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                {isEn ? 'Total Devices' : 'Tổng thiết bị'}
-              </div>
-              <div className="font-mono font-extrabold text-lg text-slate-900 dark:text-white mt-0.5">
-                {totalDevices}
-              </div>
-            </div>
-
-            <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-800">
-              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                {isEn ? 'Normal State' : 'Bình thường'}
-              </div>
-              <div className="font-mono font-extrabold text-lg text-emerald-500 mt-0.5">
-                {normalDevices}
-              </div>
-            </div>
-
-            <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-800">
-              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                {isEn ? 'Degraded/Crit' : 'Cảnh báo'}
-              </div>
-              <div className="font-mono font-extrabold text-lg text-rose-500 mt-0.5">
-                {degradedOrCritDevices}
-              </div>
-            </div>
-
-            <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-800">
-              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                {isEn ? 'Trunk Links' : 'Đường trục'}
-              </div>
-              <div className="font-mono font-extrabold text-lg text-slate-900 dark:text-white mt-0.5">
-                {totalLinks}
-              </div>
-            </div>
-          </div>
-
-          {/* Wireframe skeleton blocks */}
-          <div className="p-3 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-2 mt-1">
-            <div className="h-2.5 rounded bg-slate-200 dark:bg-slate-800 w-full animate-pulse" />
-            <div className="h-2 rounded bg-slate-200/70 dark:bg-slate-800/70 w-4/5" />
-            <div className="h-2 rounded bg-slate-200/70 dark:bg-slate-800/70 w-2/3" />
-          </div>
-
-          {/* Hint callout */}
-          <div className="mt-auto p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
-            💡 <strong>{isEn ? 'Usage Hint:' : 'Hướng dẫn:'}</strong>{' '}
-            {isEn
-              ? 'Click any router or link on the canvas to inspect its hardware telemetry and port details.'
-              : 'Bấm vào bất kỳ router hoặc liên kết nào trên bản đồ để xem chi tiết thông số viễn thông và cấu hình cổng trực tiếp.'}
-          </div>
-        </div>
+        /* Default: Network Health Overview (When no node or link is selected) */
+        <NetworkOverviewPanel
+          nodes={nodes}
+          links={links}
+          onSelectNode={onSelectNode}
+          onSelectLink={onSelectLink}
+          locale={locale}
+        />
       )}
     </aside>
   )

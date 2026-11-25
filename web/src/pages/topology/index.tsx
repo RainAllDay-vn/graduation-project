@@ -283,12 +283,14 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
           )}
         </main>
 
-        {/* Right Sidebar: Hardware Telemetry & Inspector Placeholders */}
+        {/* Right Sidebar: Network Health Overview & Inspector */}
         <TopologyRightSidebar
           nodes={nodes}
           links={links}
           selectedNode={selectedNode}
           selectedLink={selectedLink}
+          onSelectNode={handleSelectDeviceFromSidebar}
+          onSelectLink={handleSelectLink}
           onCloseInspect={handleCloseInspect}
           locale={locale}
         />

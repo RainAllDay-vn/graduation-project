@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { DeviceSummary, LinkSummary } from '@/api/topology'
 import { TopologyRightSidebar } from './TopologyRightSidebar'
 import { sampleNodes, sampleLinks } from './canvas/mockTopologyData'
@@ -107,6 +107,50 @@ export const InspectingLinkDark: Story = {
   args: {
     selectedLink: mockLink,
     locale: 'vi',
+  },
+  render: (args) => (
+    <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
+      <div className="h-[620px] rounded-lg overflow-hidden border border-slate-800 shadow-xl flex">
+        <TopologyRightSidebar {...args} />
+      </div>
+    </div>
+  ),
+}
+
+const healthyNodes: DeviceSummary[] = sampleNodes.map((n) => ({
+  ...n,
+  status: 'ACTIVE',
+  accessErrorCount: 0,
+}))
+
+const healthyLinks: LinkSummary[] = sampleLinks.map((l) => ({
+  ...l,
+  operStatus: 'UP',
+  utilizationPercent: Math.min(l.utilizationPercent ?? 45, 72),
+}))
+
+/** Story 6: Unselected overview when 100% of network nodes & trunks are healthy */
+export const UnselectedHealthyNetworkDark: Story = {
+  args: {
+    locale: 'vi',
+    nodes: healthyNodes,
+    links: healthyLinks,
+  },
+  render: (args) => (
+    <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
+      <div className="h-[620px] rounded-lg overflow-hidden border border-slate-800 shadow-xl flex">
+        <TopologyRightSidebar {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/** Story 7: Empty network state (0 nodes & 0 links) */
+export const UnselectedEmptyNetworkDark: Story = {
+  args: {
+    locale: 'en',
+    nodes: [],
+    links: [],
   },
   render: (args) => (
     <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
