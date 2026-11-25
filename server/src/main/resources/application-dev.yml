@@ -1,4 +1,15 @@
 # Development Profile Configuration
+spring:
+  ai:
+    model:
+      embedding: none
+    vectorstore:
+      type: none
+
+app:
+  rag:
+    indexing-enabled: false
+
 logging:
   level:
     com.gr2.noc: DEBUG
