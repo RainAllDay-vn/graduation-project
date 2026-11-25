@@ -6,6 +6,9 @@ import { sampleNodes, sampleLinks } from './canvas/mockTopologyData'
 const meta: Meta<typeof TopologyRightSidebar> = {
   title: 'Topology/TopologyRightSidebar',
   component: TopologyRightSidebar,
+  args: {
+    onCloseInspect: () => {},
+  },
   parameters: {
     layout: 'centered',
   },
@@ -96,6 +99,38 @@ export const InspectingNodeLight: Story = {
   render: (args) => (
     <div className="bg-slate-100 p-6 rounded-xl border border-slate-300 flex items-center justify-center">
       <div className="h-[620px] rounded-lg overflow-hidden border border-slate-300 shadow-lg flex">
+        <TopologyRightSidebar {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/** Story 4b: Inspecting a selected node with Status tab open */
+export const InspectingNodeTelemetryTabDark: Story = {
+  args: {
+    selectedNode: { ...mockCoreNode, status: 'DEGRADED', id: 'AGG-02', layer: 'AGGREGATION' },
+    initialNodeTab: 'telemetry',
+    locale: 'vi',
+  },
+  render: (args) => (
+    <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
+      <div className="h-[620px] rounded-lg overflow-hidden border border-slate-800 shadow-xl flex">
+        <TopologyRightSidebar {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/** Story 4c: Inspecting a selected node during an active incident (3 tabs: Identity, Alerts, Status) */
+export const InspectingNodeIncident3TabsDark: Story = {
+  args: {
+    selectedNode: mockCoreNode,
+    incidentId: 'INC-2026-0915',
+    locale: 'vi',
+  },
+  render: (args) => (
+    <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
+      <div className="h-[620px] rounded-lg overflow-hidden border border-slate-800 shadow-xl flex">
         <TopologyRightSidebar {...args} />
       </div>
     </div>

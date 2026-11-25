@@ -289,6 +289,7 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
           links={links}
           selectedNode={selectedNode}
           selectedLink={selectedLink}
+          incidentId={incidentId}
           onSelectNode={handleSelectDeviceFromSidebar}
           onSelectLink={handleSelectLink}
           onCloseInspect={handleCloseInspect}

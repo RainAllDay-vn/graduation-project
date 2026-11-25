@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import type { DeviceSummary, LinkSummary } from '@/api/topology'
 import { cn } from '@/lib/utils'
-import { NetworkOverviewPanel } from './inspector'
+import { NetworkOverviewPanel, NodeInspectorHeader, type NodeInspectorTab } from './inspector'
 
 export interface TopologyRightSidebarProps {
   /** All devices in the current topology view (used for network health overview) */
@@ -12,6 +12,10 @@ export interface TopologyRightSidebarProps {
   selectedNode?: DeviceSummary | null
   /** Currently selected link (if any) */
   selectedLink?: LinkSummary | null
+  /** Optional active incident ID (unlocks Cảnh báo tab in Node Inspector) */
+  incidentId?: string | null
+  /** Optional initial node tab override (primarily for Storybook/tests) */
+  initialNodeTab?: NodeInspectorTab
   /** Callback fired when user quick-jumps to a device from overview attention list */
   onSelectNode?: (node: DeviceSummary) => void
   /** Callback fired when user quick-jumps to a link from overview attention list */
@@ -30,13 +34,15 @@ export interface TopologyRightSidebarProps {
  * Topology Right Sidebar / Inspector (Stylebook §0.1, Ch.5 & app-pages/topology.html)
  *
  * Scaffolds the right column of the 3-column workspace with default network
- * infrastructure KPIs, edge inspection, and device inspection slots.
+ * infrastructure KPIs, common node identity chrome + tab bar, and edge inspection.
  */
 export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
   nodes,
   links,
   selectedNode,
   selectedLink,
+  incidentId,
+  initialNodeTab = 'identity',
   onSelectNode,
   onSelectLink,
   onCloseInspect,
@@ -45,6 +51,10 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
   style,
 }) => {
   const isEn = locale === 'en'
+  const [activeNodeTab, setActiveNodeTab] = useState<NodeInspectorTab>(initialNodeTab)
+
+  const effectiveNodeTab: NodeInspectorTab =
+    !incidentId && activeNodeTab === 'alerts' ? 'identity' : activeNodeTab
 
   return (
     <aside
@@ -58,7 +68,7 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
       data-testid="topology-right-sidebar"
     >
       {/* 1. Header & Section Identifier */}
-      <div className="flex items-baseline justify-between mb-3.5 pb-2 border-b border-slate-200 dark:border-slate-800">
+      <div className="flex items-baseline justify-between mb-3.5 pb-2 border-b border-slate-200 dark:border-slate-800 shrink-0">
         <div>
           <div className="font-mono text-[11px] font-extrabold tracking-wider text-slate-800 dark:text-[#94a3b8] uppercase">
             {isEn ? 'INSPECTOR' : 'INSPECTOR'}
@@ -68,7 +78,7 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
           </div>
         </div>
 
-        {(selectedNode || selectedLink) && (
+        {selectedLink && !selectedNode && (
           <button
             type="button"
             onClick={onCloseInspect}
@@ -81,79 +91,69 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
 
       {/* 2. Content Area */}
       {selectedNode ? (
-        /* Inspecting a Selected Node */
-        <div className="flex-1 flex flex-col gap-3">
-          {/* Node Identity Card */}
-          <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60">
-            <div className="flex items-center gap-2 mb-1">
-              <span
-                className={cn(
-                  'w-2 h-2 rounded-full shrink-0',
-                  selectedNode.status === 'ACTIVE'
-                    ? 'bg-emerald-500'
-                    : selectedNode.status === 'DEGRADED'
-                    ? 'bg-amber-500'
-                    : 'bg-rose-500'
-                )}
-              />
-              <span className="font-mono font-extrabold text-sm text-slate-900 dark:text-white">
-                {selectedNode.id}
-              </span>
-              <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
-                {selectedNode.site}
-              </span>
-            </div>
-            <div className="font-mono text-[10px] text-slate-500 dark:text-slate-400">
-              {selectedNode.model} · {selectedNode.ipAddress}
-            </div>
-          </div>
+        /* Inspecting a Selected Node (Stylebook §5.0: Common Header Strip + Tab Ribbon) */
+        <div className="flex-1 flex flex-col gap-3 min-h-0" data-testid="node-inspector-panel">
+          <NodeInspectorHeader
+            node={selectedNode}
+            activeTab={effectiveNodeTab}
+            onTabChange={setActiveNodeTab}
+            onBack={onCloseInspect}
+            incidentId={incidentId}
+            locale={locale}
+          />
 
-          {/* Wireframe Placeholder for Telemetry & Charts */}
-          <div className="font-mono text-[9px] font-extrabold tracking-widest text-slate-400 dark:text-[#64748b] uppercase mt-1">
-            {isEn ? 'HARDWARE TELEMETRY · PLACEHOLDER' : 'THÔNG SỐ PHẦN CỨNG · PLACEHOLDER'}
-          </div>
-
-          <div className="p-3 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-2">
-            <div className="flex justify-between text-[10px] font-mono text-slate-500">
-              <span>CPU Core Load</span>
-              <span className="font-bold">42%</span>
+          {effectiveNodeTab === 'identity' ? (
+            <div
+              className="flex-1 flex flex-col gap-2.5"
+              role="tabpanel"
+              data-testid="inspector-panel-identity"
+            >
+              <div className="p-3 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-2">
+                <div className="font-mono text-[9px] font-extrabold tracking-widest text-slate-400 dark:text-[#64748b] uppercase">
+                  {isEn ? 'DEVICE IDENTITY · §5.1 NEXT' : 'ĐỊNH DANH THIẾT BỊ · MỤC 5.1'}
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
+                  {isEn
+                    ? `Identity details (model, site/region, IP, access cluster) and Quick CLI commands for ${selectedNode.id} will be rendered in this tab.`
+                    : `Thông tin định danh thực tế (model, vị trí site/region, IP quản lý, cụm access) và khung Quick CLI cho ${selectedNode.id} sẽ hiển thị tại tab này.`}
+                </p>
+              </div>
             </div>
-            <div className="h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-              <div className="h-full bg-sky-500 w-[42%]" />
+          ) : effectiveNodeTab === 'alerts' ? (
+            <div
+              className="flex-1 flex flex-col gap-2.5"
+              role="tabpanel"
+              data-testid="inspector-panel-alerts"
+            >
+              <div className="p-3 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-2">
+                <div className="font-mono text-[9px] font-extrabold tracking-widest text-slate-400 dark:text-[#64748b] uppercase">
+                  {isEn ? 'DEVICE ALERTS · §5.2 INCIDENT' : 'CẢNH BÁO THIẾT BỊ · MỤC 5.2'}
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
+                  {isEn
+                    ? `Active and historical alarms scoped to ${selectedNode.id} (${incidentId}) will be rendered here.`
+                    : `Danh sách cảnh báo của ${selectedNode.id} (thuộc sự cố ${incidentId}) sẽ hiển thị tại tab này.`}
+                </p>
+              </div>
             </div>
-
-            <div className="flex justify-between text-[10px] font-mono text-slate-500 mt-2">
-              <span>RAM Allocation</span>
-              <span className="font-bold">68%</span>
+          ) : (
+            <div
+              className="flex-1 flex flex-col gap-2.5"
+              role="tabpanel"
+              data-testid="inspector-panel-telemetry"
+            >
+              <div className="p-3 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-2">
+                <div className="font-mono text-[9px] font-extrabold tracking-widest text-slate-400 dark:text-[#64748b] uppercase">
+                  {isEn ? 'OPERATIONAL STATUS · §5.3 NEXT' : 'TRẠNG THÁI HIỆN TẠI · MỤC 5.3'}
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
+                  {isEn
+                    ? `Current operational status and direct physical trunk links for ${selectedNode.id} will be rendered in this tab.`
+                    : `Trạng thái vận hành và danh sách liên kết trực tiếp của ${selectedNode.id} từ backend sẽ hiển thị tại tab này.`}
+                </p>
+              </div>
             </div>
-            <div className="h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-              <div className="h-full bg-indigo-500 w-[68%]" />
-            </div>
-          </div>
-
-          {/* Wireframe Placeholder for Physical Ports */}
-          <div className="font-mono text-[9px] font-extrabold tracking-widest text-slate-400 dark:text-[#64748b] uppercase mt-1">
-            {isEn ? 'PORT CONFIGURATION · PLACEHOLDER' : 'CẤU HÌNH CỔNG VẬT LÝ · PLACEHOLDER'}
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="h-6 rounded bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 px-2 flex items-center justify-between text-[10px] font-mono text-slate-500 dark:text-slate-400">
-              <span>HundredGig0/0/0/1</span>
-              <span className="text-emerald-500 font-bold">UP (100G)</span>
-            </div>
-            <div className="h-6 rounded bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 px-2 flex items-center justify-between text-[10px] font-mono text-slate-500 dark:text-slate-400">
-              <span>HundredGig0/0/0/2</span>
-              <span className="text-emerald-500 font-bold">UP (100G)</span>
-            </div>
-          </div>
-
-          {/* Placeholder Notice */}
-          <div className="mt-auto p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
-            💡 <strong>{isEn ? 'Chapter 5 Spec:' : 'Đặc tả Chương 5:'}</strong>{' '}
-            {isEn
-              ? 'Real-time telemetry, SFP optical diagnostics, and CLI diagnostic executor will be wired here.'
-              : 'Dữ liệu telemetry đo quang SFP, thông số BGP/OSPF và lệnh CLI sẽ được gắn tại đây.'}
-          </div>
+          )}
         </div>
       ) : selectedLink ? (
         /* Inspecting a Selected Link (Stylebook §5.4: Edge Inspector) */
