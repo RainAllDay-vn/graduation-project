@@ -1,12 +1,29 @@
 import React, { useState } from 'react'
+import type { AlarmSummary } from '@/api/incidents'
 import type { DeviceSummary } from '@/api/topology'
 import { cn } from '@/lib/utils'
-import { DeviceDirectoryTab, DisplaySettingsTab, type DisplaySettings, DEFAULT_DISPLAY_SETTINGS } from './sidebar'
+import {
+  DeviceDirectoryTab,
+  DisplaySettingsTab,
+  IncidentTimelineTab,
+  type DisplaySettings,
+  DEFAULT_DISPLAY_SETTINGS,
+} from './sidebar'
 import type { KHopDistance, KHopFilterMode } from './canvas/egoNetwork'
 
 export interface TopologyLeftSidebarProps {
   /** Optional ID of active incident (unlocks Timeline & Hypothesis tabs) */
   incidentId?: string | null
+  /** Alarms linked to active incident for Timeline tab (§4.2) */
+  alarms?: AlarmSummary[]
+  /** Loading flag for incident alarms */
+  isLoadingAlarms?: boolean
+  /** Currently selected alarm ID in Timeline tab */
+  selectedAlarmId?: string | null
+  /** Callback fired when user selects an alarm row in Timeline tab */
+  onSelectAlarm?: (alarm: AlarmSummary) => void
+  /** Callback fired when user clicks a faultCode badge in Timeline tab (§4.2 -> Step 3.4b) */
+  onSelectFaultCode?: (faultCode: string, alarm: AlarmSummary) => void
   /** List of devices from the topology graph */
   nodes?: DeviceSummary[]
   /** Currently selected node ID */
@@ -45,6 +62,11 @@ export interface TopologyLeftSidebarProps {
  */
 export const TopologyLeftSidebar: React.FC<TopologyLeftSidebarProps> = ({
   incidentId,
+  alarms = [],
+  isLoadingAlarms = false,
+  selectedAlarmId,
+  onSelectAlarm = () => {},
+  onSelectFaultCode,
   nodes = [],
   selectedNodeId,
   onSelectDevice = () => {},
@@ -65,6 +87,10 @@ export const TopologyLeftSidebar: React.FC<TopologyLeftSidebarProps> = ({
   // Available tabs depend on whether an incident context is elevated
   const defaultTab = initialTab || (incidentId ? 'timeline' : 'inventory')
   const [activeTab, setActiveTab] = useState<string>(defaultTab)
+  const effectiveActiveTab =
+    !incidentId && (activeTab === 'timeline' || activeTab === 'hypothesis')
+      ? 'inventory'
+      : activeTab
 
   const tabs = incidentId
     ? [
@@ -100,9 +126,9 @@ export const TopologyLeftSidebar: React.FC<TopologyLeftSidebarProps> = ({
       </div>
 
       {/* 2. Tab Navigation Bar */}
-      <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-lg mb-3 shrink-0">
+      <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-lg mb-3 shrink-0">
         {tabs.map((tab) => {
-          const isActive = activeTab === tab.id
+          const isActive = effectiveActiveTab === tab.id
           return (
             <button
               key={tab.id}
@@ -110,7 +136,7 @@ export const TopologyLeftSidebar: React.FC<TopologyLeftSidebarProps> = ({
               data-testid={`left-sidebar-tab-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'flex-1 py-1 text-center font-mono text-[10px] font-bold tracking-wide rounded transition-all outline-none cursor-pointer',
+                'py-1.5 px-2 text-center font-mono text-[10px] font-bold tracking-wide whitespace-nowrap rounded transition-all outline-none cursor-pointer',
                 isActive
                   ? 'bg-white dark:bg-[#0f172a] text-[#1d4ed8] dark:text-[#38bdf8] shadow-xs'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
@@ -123,14 +149,14 @@ export const TopologyLeftSidebar: React.FC<TopologyLeftSidebarProps> = ({
       </div>
 
       {/* 3. Tab Contents */}
-      {activeTab === 'inventory' ? (
+      {effectiveActiveTab === 'inventory' ? (
         <DeviceDirectoryTab
           nodes={nodes}
           selectedNodeId={selectedNodeId}
           onSelectDevice={onSelectDevice}
           locale={locale}
         />
-      ) : activeTab === 'layers' ? (
+      ) : effectiveActiveTab === 'layers' ? (
         <DisplaySettingsTab
           settings={displaySettings}
           onSettingChange={onDisplaySettingChange}
@@ -141,11 +167,21 @@ export const TopologyLeftSidebar: React.FC<TopologyLeftSidebarProps> = ({
           onResetDefaults={onResetDisplaySettings}
           locale={locale}
         />
+      ) : effectiveActiveTab === 'timeline' ? (
+        <IncidentTimelineTab
+          incidentId={incidentId}
+          alarms={alarms}
+          isLoading={isLoadingAlarms}
+          selectedAlarmId={selectedAlarmId}
+          onSelectAlarm={onSelectAlarm}
+          onSelectFaultCode={onSelectFaultCode}
+          locale={locale}
+        />
       ) : (
-        /* Incident Mode Tabs Placeholder (Timeline / Hypothesis) */
+        /* Incident Hypothesis Placeholder (Step 3.3) */
         <div className="flex-1 flex flex-col gap-2.5 overflow-y-auto no-scrollbar">
           <div className="font-mono text-[9px] font-extrabold tracking-widest text-slate-400 dark:text-[#64748b] uppercase">
-            {activeTab.toUpperCase()} · PLACEHOLDER
+            {effectiveActiveTab.toUpperCase()} · PLACEHOLDER
           </div>
 
           <div className="p-2.5 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-2">

@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import type { BlastRadiusReport, DeviceSummary, LinkSummary } from '@/api/topology'
 import { getBlastRadius, getSubgraph, getTopology } from '@/api/topology'
-import { getIncidentById, type IncidentDetails } from '@/api/incidents'
+import { getIncidentById, type AlarmSummary, type IncidentDetails } from '@/api/incidents'
 import { useTheme } from '@/context'
 import {
   TopologyCanvas,
@@ -115,6 +115,8 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
   // Single click: Selected device or link that controls the Inspector (Chapter 5)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [selectedLinkId, setSelectedLinkId] = useState<string | null>(null)
+  const [selectedAlarmId, setSelectedAlarmId] = useState<string | null>(null)
+  const [selectedFaultCode, setSelectedFaultCode] = useState<string | null>(null)
   const canvasRef = useRef<TopologyCanvasHandle>(null)
   const autoPannedIncidentRef = useRef<string | null>(null)
 
@@ -200,17 +202,53 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
     return blastRadiusReport.affectedLinkIds
   }, [incidentId, blastRadiusReport])
 
+  const incidentAlarms = useMemo(
+    () => incidentData?.alarms ?? [],
+    [incidentData]
+  )
+
   // Single click: Only updates selection and inspector context (Stylebook §3.5: "không đụng beacon")
   const handleSelectNode = (node: DeviceSummary) => {
     setSelectedNodeId((prev) => (prev === node.id ? null : node.id))
     setSelectedLinkId(null)
+    setSelectedAlarmId(null)
   }
 
   // Device selection from Left Sidebar directory: updates selection in inspector and pans canvas to center node
   const handleSelectDeviceFromSidebar = (device: DeviceSummary) => {
     setSelectedNodeId(device.id)
     setSelectedLinkId(null)
+    setSelectedAlarmId(null)
     canvasRef.current?.panToNode(device.id)
+  }
+
+  // Timeline alarm row click (§4.2): center & focus alarm.deviceId + open Node Inspector
+  const handleSelectAlarmFromTimeline = (alarm: AlarmSummary) => {
+    setSelectedAlarmId(alarm.id)
+    setSelectedNodeId(alarm.deviceId)
+    setSelectedLinkId(null)
+
+    if (
+      incidentId &&
+      incidentPrimaryDeviceId === alarm.deviceId &&
+      currentEpicenterKey
+    ) {
+      setDismissedEpicenterKey(null)
+    }
+
+    setFocusedNodeIds((prev) => {
+      const next = new Set(prev)
+      next.add(alarm.deviceId)
+      return next
+    })
+
+    canvasRef.current?.panToNode(alarm.deviceId)
+  }
+
+  // Fault code badge click (§4.2 -> connects to FaultDocDrawer in Step 3.4b)
+  const handleSelectFaultCode = (faultCode: string, alarm: AlarmSummary) => {
+    setSelectedFaultCode(faultCode)
+    handleSelectAlarmFromTimeline(alarm)
   }
 
   // Double click: Toggles beacon focus on / off (Stylebook §3.5: "Bấm đúp một node → beacon... Bấm đúp lại → biến mất")
@@ -259,12 +297,14 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
   const handleCloseInspect = () => {
     setSelectedNodeId(null)
     setSelectedLinkId(null)
+    setSelectedAlarmId(null)
   }
 
   return (
     <div
       className="w-full h-full flex flex-col bg-[#f8fafc] dark:bg-[#070a10] text-[#0f172a] dark:text-[#f8fafc] overflow-hidden select-none"
       data-testid="topology-page"
+      data-active-fault-code={selectedFaultCode || undefined}
     >
       {/* 1. Contextual Thin Top Header (Stylebook §0.1) */}
       <TopologyHeader
@@ -290,6 +330,11 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
         {/* Left Sidebar: Navigation & Directory */}
         <TopologyLeftSidebar
           incidentId={incidentId}
+          alarms={incidentAlarms}
+          isLoadingAlarms={Boolean(incidentId && !mockData && !mockIncident && incidentQuery.isLoading)}
+          selectedAlarmId={selectedAlarmId}
+          onSelectAlarm={handleSelectAlarmFromTimeline}
+          onSelectFaultCode={handleSelectFaultCode}
           nodes={nodes}
           selectedNodeId={selectedNodeId}
           onSelectDevice={handleSelectDeviceFromSidebar}

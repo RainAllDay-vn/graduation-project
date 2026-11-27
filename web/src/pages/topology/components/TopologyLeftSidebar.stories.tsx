@@ -1,6 +1,40 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { AlarmSummary } from '@/api/incidents'
 import { TopologyLeftSidebar } from './TopologyLeftSidebar'
 import { sampleNodes } from './canvas/mockTopologyData'
+
+const sampleAlarms: AlarmSummary[] = [
+  {
+    id: 'ALM-2037',
+    deviceId: 'CORE-02',
+    timestamp: '2026-11-27T11:20:00Z',
+    severity: 'WARNING',
+    alarmType: 'RULE_BASED',
+    faultCode: 'BGP_FLAP',
+    message: 'BGP session với peer PEER-01 đã flap 3 lần trong 10 phút gần nhất',
+    isCurrentIncident: true,
+  },
+  {
+    id: 'ALM-2036',
+    deviceId: 'CORE-02',
+    timestamp: '2026-11-27T11:13:00Z',
+    severity: 'CRITICAL',
+    alarmType: 'FAULT_CODE',
+    faultCode: 'OPTICS_RX_POWER_LOW',
+    message: 'Cường độ tín hiệu RX quang giảm xuống -24.2 dBm (ngưỡng -22.0 dBm)',
+    isCurrentIncident: true,
+  },
+  {
+    id: 'ALM-2035',
+    deviceId: 'AGG-02',
+    timestamp: '2026-11-27T11:07:00Z',
+    severity: 'ERROR',
+    alarmType: 'FAULT_CODE',
+    faultCode: 'OPTICS_TEMP_HIGH',
+    message: 'Nhiệt độ module quang vượt ngưỡng 78°C (ngưỡng 75°C)',
+    isCurrentIncident: true,
+  },
+]
 
 const meta: Meta<typeof TopologyLeftSidebar> = {
   title: 'Topology/TopologyLeftSidebar',
@@ -79,6 +113,8 @@ export const EmptyDirectory: Story = {
 export const IncidentElevationDark: Story = {
   args: {
     incidentId: 'INC-2026-0915',
+    alarms: sampleAlarms,
+    selectedAlarmId: 'ALM-2036',
     nodes: sampleNodes,
     locale: 'vi',
   },
@@ -95,6 +131,8 @@ export const IncidentElevationDark: Story = {
 export const EnglishLocale: Story = {
   args: {
     incidentId: 'INC-2026-0915',
+    alarms: sampleAlarms,
+    selectedAlarmId: 'ALM-2037',
     nodes: sampleNodes,
     locale: 'en',
   },
