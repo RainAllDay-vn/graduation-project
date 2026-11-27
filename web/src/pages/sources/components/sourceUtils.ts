@@ -1,5 +1,6 @@
 import type {
   ExternalSourceSummary,
+  SyncHistoryPage,
   SyncRunSummary,
   SyncStatus,
 } from '@/api/sources'
@@ -166,6 +167,56 @@ export function formatSyncTime(isoString?: string): string {
     })
   } catch {
     return '--:--'
+  }
+}
+
+/**
+ * Formats ISO string into HH:mm:ss format for detailed sync history entries.
+ */
+export function formatSyncTimestamp(isoString?: string): string {
+  if (!isoString) return '--:--:--'
+  try {
+    const date = new Date(isoString)
+    if (isNaN(date.getTime())) return '--:--:--'
+    return date.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    })
+  } catch {
+    return '--:--:--'
+  }
+}
+
+/**
+ * Merges a newly pushed sync run into page 0 of a cached SyncHistoryPage,
+ * keeping records ordered by latest update first.
+ */
+export function mergeSyncRecordIntoPage(
+  existing: SyncHistoryPage | undefined,
+  record: SyncRunSummary,
+  pageSize: number
+): SyncHistoryPage {
+  const effectiveSize = existing?.size && existing.size > 0 ? existing.size : pageSize
+  const prevContent = existing?.content ?? []
+  const alreadyPresent = prevContent.some((item) => item.id === record.id)
+  const totalElements = (existing?.totalElements ?? 0) + (alreadyPresent ? 0 : 1)
+  const totalPages = Math.max(1, Math.ceil(totalElements / effectiveSize))
+
+  const merged = [record, ...prevContent.filter((item) => item.id !== record.id)]
+  merged.sort((a, b) => {
+    const aTime = new Date(a.updatedAt ?? a.finishedAt ?? a.startedAt).getTime()
+    const bTime = new Date(b.updatedAt ?? b.finishedAt ?? b.startedAt).getTime()
+    return bTime - aTime
+  })
+
+  return {
+    content: merged.slice(0, effectiveSize),
+    page: 0,
+    size: effectiveSize,
+    totalElements,
+    totalPages,
   }
 }
 

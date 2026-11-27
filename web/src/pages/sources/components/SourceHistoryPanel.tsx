@@ -7,26 +7,36 @@ import { Button } from '@/components/ui/button'
 import {
   formatStreamLatency,
   formatSyncRecordResult,
-  formatSyncTime,
+  formatSyncTimestamp,
   getSyncStatusBadge,
 } from './sourceUtils'
-import { Loader2, RefreshCw, Radio } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Loader2, RefreshCw, Radio } from 'lucide-react'
 
 export interface SourceHistoryPanelProps {
   source: ExternalSourceSummary | ExternalSourceDetails | null
   history: SyncRunSummary[]
+  page?: number
+  totalPages?: number
+  totalElements?: number
   isResyncing?: boolean
   isLoading?: boolean
+  isLiveConnected?: boolean
   onResync?: () => void
+  onPageChange?: (page: number) => void
   locale?: 'vi' | 'en'
 }
 
 export function SourceHistoryPanel({
   source,
   history,
+  page = 0,
+  totalPages = 0,
+  totalElements = 0,
   isResyncing = false,
   isLoading = false,
+  isLiveConnected = false,
   onResync,
+  onPageChange,
   locale = 'vi',
 }: SourceHistoryPanelProps) {
   const isEn = locale === 'en'
@@ -36,7 +46,15 @@ export function SourceHistoryPanel({
     <div className="bg-white dark:bg-[#0f172a] border border-[#e2e8f0] dark:border-[#1e293b] rounded-xl overflow-hidden shadow-xs">
       {/* Header */}
       <div className="flex items-center justify-between font-mono font-extrabold text-[11px] tracking-[0.14em] text-[#64748b] dark:text-[#94a3b8] px-4 py-3.5 border-b border-[#e2e8f0] dark:border-[#1e293b] select-none">
-        <span>{isEn ? 'SYNC HISTORY' : 'LỊCH SỬ ĐỒNG BỘ'}</span>
+        <div className="flex items-center gap-2">
+          <span>{isEn ? 'SYNC HISTORY' : 'LỊCH SỬ ĐỒNG BỘ'}</span>
+          {!isMq && isLiveConnected && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 px-2 py-0.5 text-[9.5px] font-bold tracking-[0.06em] text-emerald-700 dark:text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              {isEn ? 'LIVE' : 'TRỰC TIẾP'}
+            </span>
+          )}
+        </div>
         {source && (
           <span className="font-mono font-bold text-[11px] text-[#334155] dark:text-[#cbd5e1] bg-[#f1f5f9] dark:bg-[#1e293b] rounded-full px-2.5 py-0.5 tracking-normal truncate max-w-[180px]">
             {source.name}
@@ -96,7 +114,9 @@ export function SourceHistoryPanel({
           ) : (
             <div className="divide-y divide-[#e2e8f0] dark:divide-[#1e293b]">
               {history.map((record) => {
-                const timeStr = formatSyncTime(record.startedAt)
+                const timeStr = formatSyncTimestamp(
+                  record.updatedAt ?? record.finishedAt ?? record.startedAt
+                )
                 const badge = getSyncStatusBadge(record.status, locale)
                 const resultText = formatSyncRecordResult(record, locale)
 
@@ -105,7 +125,7 @@ export function SourceHistoryPanel({
                     key={record.id}
                     className="flex items-center gap-3 px-4 py-2.5 text-[12.5px] hover:bg-[#f8fafc] dark:hover:bg-[#1e293b]/40 transition-colors"
                   >
-                    <span className="font-mono font-bold text-[12px] text-[#334155] dark:text-[#cbd5e1] shrink-0 w-12">
+                    <span className="font-mono font-bold text-[12px] text-[#334155] dark:text-[#cbd5e1] shrink-0 w-16">
                       {timeStr}
                     </span>
 
@@ -121,6 +141,41 @@ export function SourceHistoryPanel({
                   </div>
                 )
               })}
+            </div>
+          )}
+
+          {!isLoading && onPageChange && totalPages > 1 && (
+            <div className="border-t border-[#e2e8f0] dark:border-[#1e293b] px-4 py-2.5 flex items-center justify-between">
+              <span className="text-[11.5px] text-[#64748b] dark:text-[#94a3b8]">
+                {isEn ? 'Page' : 'Trang'} {page + 1} / {totalPages}
+                {totalElements > 0 && (
+                  <>
+                    {' '}
+                    · {totalElements.toLocaleString(isEn ? 'en-US' : 'vi-VN')}{' '}
+                    {isEn ? 'records' : 'bản ghi'}
+                  </>
+                )}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={page === 0}
+                  onClick={() => onPageChange(page - 1)}
+                  className="p-1.5 rounded-lg border border-[#e2e8f0] dark:border-[#1e293b] text-[#0f172a] dark:text-[#f8fafc] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition-colors cursor-pointer"
+                  aria-label={isEn ? 'Previous page' : 'Trang trước'}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  disabled={page >= totalPages - 1}
+                  onClick={() => onPageChange(page + 1)}
+                  className="p-1.5 rounded-lg border border-[#e2e8f0] dark:border-[#1e293b] text-[#0f172a] dark:text-[#f8fafc] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition-colors cursor-pointer"
+                  aria-label={isEn ? 'Next page' : 'Trang sau'}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           )}
 

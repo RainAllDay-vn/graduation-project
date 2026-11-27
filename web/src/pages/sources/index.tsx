@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { useTheme } from '@/context'
 import {
   getSources,
   getSourceById,
   getSyncHistory,
+  subscribeSyncHistory,
   testConnection,
   resyncFromScratch,
   updateSource,
   createSource,
   type ExternalSourceSummary,
   type ExternalSourceDetails,
+  type SyncHistoryPage,
   type SyncRunSummary,
   type TestConnectionResult,
   type CreateExternalSourceRequest,
@@ -22,6 +24,7 @@ import {
   SourceHistoryPanel,
   SourceConfigPanel,
   AddSourceModal,
+  mergeSyncRecordIntoPage,
 } from './components'
 import { LandingFooter } from '@/pages/_components/LandingFooter'
 import { Button } from '@/components/ui/button'
@@ -32,6 +35,10 @@ export interface SourcesViewProps {
   selectedId: string | null
   selectedSourceDetails: ExternalSourceDetails | null
   syncHistory: SyncRunSummary[]
+  historyPage?: number
+  historyTotalPages?: number
+  historyTotalElements?: number
+  isLiveConnected?: boolean
   isLoadingSources: boolean
   isLoadingDetails: boolean
   isLoadingHistory: boolean
@@ -42,6 +49,7 @@ export interface SourcesViewProps {
   isAddingSource: boolean
   locale?: 'vi' | 'en'
   onSelectSource: (source: ExternalSourceSummary) => void
+  onHistoryPageChange?: (page: number) => void
   onTestConnection: () => void
   onResync: () => void
   onSaveSource: (data: UpdateExternalSourceRequest) => void
@@ -55,6 +63,10 @@ export function SourcesView({
   selectedId,
   selectedSourceDetails,
   syncHistory,
+  historyPage = 0,
+  historyTotalPages = 0,
+  historyTotalElements = 0,
+  isLiveConnected = false,
   isLoadingSources,
   isLoadingDetails,
   isLoadingHistory,
@@ -65,6 +77,7 @@ export function SourcesView({
   isAddingSource,
   locale = 'vi',
   onSelectSource,
+  onHistoryPageChange,
   onTestConnection,
   onResync,
   onSaveSource,
@@ -115,9 +128,14 @@ export function SourcesView({
             <SourceHistoryPanel
               source={selectedSourceDetails || sources.find((s) => s.id === selectedId) || null}
               history={syncHistory}
+              page={historyPage}
+              totalPages={historyTotalPages}
+              totalElements={historyTotalElements}
+              isLiveConnected={isLiveConnected}
               isResyncing={isResyncing}
               isLoading={isLoadingHistory}
               onResync={onResync}
+              onPageChange={onHistoryPageChange}
               locale={locale}
             />
           </div>
@@ -158,23 +176,31 @@ export function SourcesView({
   )
 }
 
+const HISTORY_PAGE_SIZE = 10
+
 export default function SourcesPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { locale } = useTheme()
   const queryClient = useQueryClient()
 
-  const [testResult, setTestResult] = useState<TestConnectionResult | null>(null)
+  const [testResultState, setTestResultState] = useState<{
+    sourceId: string
+    result: TestConnectionResult
+  } | null>(null)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [historyPage, setHistoryPage] = useState(0)
+  const [liveSourceId, setLiveSourceId] = useState<string | null>(null)
+
+  // Selected Source ID from URL params (defaults to first source once loaded)
+  const paramId = searchParams.get('id')
 
   // 1. Fetch Sources List
   const { data: sources = [], isLoading: isLoadingSources } = useQuery({
     queryKey: ['sources'],
     queryFn: () => getSources(),
-    refetchInterval: 5000,
+    refetchInterval: liveSourceId && liveSourceId === paramId ? 30000 : 5000,
   })
 
-  // Selected Source ID from URL params (defaults to first source once loaded)
-  const paramId = searchParams.get('id')
   const selectedId =
     paramId && sources.some((s) => s.id === paramId)
       ? paramId
@@ -189,40 +215,92 @@ export default function SourcesPage() {
     }
   }, [paramId, selectedId, setSearchParams])
 
-  // Clear connection test result when active source changes
-  useEffect(() => {
-    setTestResult(null)
-  }, [selectedId])
-
   // 2. Fetch Selected Source Details
+  const activeSourceSummary = sources.find((s) => s.id === selectedId)
+  const isRestSource = activeSourceSummary?.type === 'REST'
+  const isLiveConnected = !!selectedId && isRestSource && liveSourceId === selectedId
+  const testResult =
+    selectedId && testResultState?.sourceId === selectedId ? testResultState.result : null
+
   const { data: selectedSourceDetails = null, isLoading: isLoadingDetails } = useQuery({
     queryKey: ['source', selectedId],
     queryFn: () => getSourceById(selectedId!),
     enabled: !!selectedId,
-    refetchInterval: 5000,
+    refetchInterval: isLiveConnected ? 30000 : 5000,
   })
 
-  // 3. Fetch Sync History for REST sources
-  const activeSourceSummary = sources.find((s) => s.id === selectedId)
-  const isRestSource = activeSourceSummary?.type === 'REST'
-
-  const { data: syncHistory = [], isLoading: isLoadingHistory } = useQuery({
-    queryKey: ['sourceHistory', selectedId],
-    queryFn: () => getSyncHistory(selectedId!),
+  // 3. Fetch Paged Sync History + Subscribe to Real-Time SSE for REST sources
+  const { data: syncHistoryPage, isLoading: isLoadingHistory } = useQuery({
+    queryKey: ['sourceHistory', selectedId, historyPage],
+    queryFn: () => getSyncHistory(selectedId!, { page: historyPage, size: HISTORY_PAGE_SIZE }),
     enabled: !!selectedId && isRestSource,
-    refetchInterval: 5000,
+    placeholderData: keepPreviousData,
+    refetchInterval: isLiveConnected ? false : 5000,
   })
+
+  useEffect(() => {
+    if (!selectedId || !isRestSource) {
+      return
+    }
+    return subscribeSyncHistory(selectedId, {
+      onConnectionChange: (connected) => {
+        setLiveSourceId(connected ? selectedId : null)
+      },
+      onSyncRecord: (event) => {
+        if (event.record) {
+          queryClient.setQueryData<SyncHistoryPage>(
+            ['sourceHistory', selectedId, 0],
+            (prev) => mergeSyncRecordIntoPage(prev, event.record!, HISTORY_PAGE_SIZE)
+          )
+        }
+        queryClient.setQueryData<ExternalSourceSummary[]>(['sources'], (prev) =>
+          prev?.map((item) =>
+            item.id === event.sourceId
+              ? {
+                  ...item,
+                  status: event.sourceStatus,
+                  lastSyncAt: event.lastSyncAt ?? item.lastSyncAt,
+                  lastSyncStatus: event.lastSyncStatus ?? item.lastSyncStatus,
+                  lastSyncMessage: event.lastSyncMessage,
+                }
+              : item
+          )
+        )
+        queryClient.setQueryData<ExternalSourceDetails>(['source', selectedId], (prev) =>
+          prev && prev.id === event.sourceId
+            ? {
+                ...prev,
+                status: event.sourceStatus,
+                lastSyncAt: event.lastSyncAt ?? prev.lastSyncAt,
+                lastSyncStatus: event.lastSyncStatus ?? prev.lastSyncStatus,
+                lastSyncMessage: event.lastSyncMessage,
+              }
+            : prev
+        )
+        queryClient.invalidateQueries({ queryKey: ['sourceHistory', selectedId] })
+        queryClient.invalidateQueries({ queryKey: ['sources'] })
+        queryClient.invalidateQueries({ queryKey: ['source', selectedId] })
+      },
+    })
+  }, [selectedId, isRestSource, queryClient])
+
+  const syncHistory = syncHistoryPage?.content ?? []
+  const historyTotalPages = syncHistoryPage?.totalPages ?? 0
+  const historyTotalElements = syncHistoryPage?.totalElements ?? 0
 
   // 4. Mutations
   const testConnMutation = useMutation({
     mutationFn: (id: string) => testConnection(id),
-    onSuccess: (result) => {
-      setTestResult(result)
+    onSuccess: (result, id) => {
+      setTestResultState({ sourceId: id, result })
     },
-    onError: (err: Error) => {
-      setTestResult({
-        success: false,
-        message: err.message || (locale === 'en' ? 'Connection test failed' : 'Kiểm tra kết nối thất bại'),
+    onError: (err: Error, id) => {
+      setTestResultState({
+        sourceId: id,
+        result: {
+          success: false,
+          message: err.message || (locale === 'en' ? 'Connection test failed' : 'Kiểm tra kết nối thất bại'),
+        },
       })
     },
   })
@@ -230,6 +308,7 @@ export default function SourcesPage() {
   const resyncMutation = useMutation({
     mutationFn: (id: string) => resyncFromScratch(id),
     onSuccess: () => {
+      setHistoryPage(0)
       queryClient.invalidateQueries({ queryKey: ['sources'] })
       queryClient.invalidateQueries({ queryKey: ['source', selectedId] })
       queryClient.invalidateQueries({ queryKey: ['sourceHistory', selectedId] })
@@ -249,12 +328,14 @@ export default function SourcesPage() {
     mutationFn: (data: CreateExternalSourceRequest) => createSource(data),
     onSuccess: (newSource) => {
       queryClient.invalidateQueries({ queryKey: ['sources'] })
+      setHistoryPage(0)
       setSearchParams({ id: newSource.id })
       setIsAddModalOpen(false)
     },
   })
 
   const handleSelectSource = (source: ExternalSourceSummary) => {
+    setHistoryPage(0)
     setSearchParams({ id: source.id })
   }
 
@@ -286,6 +367,10 @@ export default function SourcesPage() {
       selectedId={selectedId}
       selectedSourceDetails={selectedSourceDetails}
       syncHistory={syncHistory}
+      historyPage={historyPage}
+      historyTotalPages={historyTotalPages}
+      historyTotalElements={historyTotalElements}
+      isLiveConnected={isLiveConnected}
       isLoadingSources={isLoadingSources}
       isLoadingDetails={isLoadingDetails}
       isLoadingHistory={isLoadingHistory}
@@ -296,6 +381,7 @@ export default function SourcesPage() {
       isAddingSource={createMutation.isPending}
       locale={locale}
       onSelectSource={handleSelectSource}
+      onHistoryPageChange={setHistoryPage}
       onTestConnection={handleTestConnection}
       onResync={handleResync}
       onSaveSource={handleSaveSource}

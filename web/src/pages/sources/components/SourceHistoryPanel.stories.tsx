@@ -88,6 +88,7 @@ const meta: Meta<typeof SourceHistoryPanel> = {
   tags: ['autodocs'],
   argTypes: {
     onResync: { action: 'resync triggered' },
+    onPageChange: { action: 'page changed' },
   },
 }
 
@@ -141,5 +142,18 @@ export const EnglishLocale: Story = {
     source: MOCK_ZABBIX,
     history: MOCK_ZABBIX_HISTORY,
     locale: 'en',
+  },
+}
+
+export const PaginatedLive: Story = {
+  args: {
+    source: MOCK_ZABBIX,
+    history: MOCK_ZABBIX_HISTORY,
+    page: 0,
+    totalPages: 4,
+    totalElements: 36,
+    isLiveConnected: true,
+    onPageChange: () => {},
+    locale: 'vi',
   },
 }

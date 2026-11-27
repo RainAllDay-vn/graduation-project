@@ -45,6 +45,34 @@ export interface SyncRunSummary {
   message?: string
   startedAt: string
   finishedAt?: string
+  updatedAt?: string
+}
+
+export interface SyncHistoryPage {
+  content: SyncRunSummary[]
+  page: number
+  size: number
+  totalElements: number
+  totalPages: number
+}
+
+export interface GetSyncHistoryParams {
+  page?: number
+  size?: number
+}
+
+export interface SyncHistoryStreamEvent {
+  sourceId: string
+  record: SyncRunSummary | null
+  sourceStatus: SourceStatus
+  lastSyncAt?: string
+  lastSyncStatus?: SyncStatus
+  lastSyncMessage?: string
+}
+
+export interface SyncHistoryStreamHandlers {
+  onSyncRecord: (event: SyncHistoryStreamEvent) => void
+  onConnectionChange?: (connected: boolean) => void
 }
 
 export interface TestConnectionResult {
@@ -148,11 +176,55 @@ export async function resyncFromScratch(id: string): Promise<SyncRunSummary> {
 }
 
 /**
- * Retrieve sync history records for a REST data source (most recent first).
+ * Retrieve paginated sync history records for a REST data source (latest update first).
  */
-export async function getSyncHistory(id: string): Promise<SyncRunSummary[]> {
-  const response = await apiClient.get<SyncRunSummary[]>(
-    `/sources/${encodeURIComponent(id)}/sync-history`
+export async function getSyncHistory(
+  id: string,
+  params?: GetSyncHistoryParams
+): Promise<SyncHistoryPage> {
+  const response = await apiClient.get<SyncHistoryPage>(
+    `/sources/${encodeURIComponent(id)}/sync-history`,
+    { params }
   )
   return response.data
+}
+
+/**
+ * Subscribe to real-time sync history SSE updates for a REST data source.
+ */
+export function subscribeSyncHistory(
+  id: string,
+  handlers: SyncHistoryStreamHandlers
+): () => void {
+  const url = `/api/sources/${encodeURIComponent(id)}/sync-history/stream`
+  const eventSource = new EventSource(url, { withCredentials: true })
+
+  const handleConnected = () => {
+    handlers.onConnectionChange?.(true)
+  }
+
+  const handleSyncRecord = (messageEvent: MessageEvent<string>) => {
+    try {
+      const payload = JSON.parse(messageEvent.data) as SyncHistoryStreamEvent
+      handlers.onSyncRecord(payload)
+    } catch {
+      // Ignore malformed SSE payloads
+    }
+  }
+
+  eventSource.addEventListener('connected', handleConnected)
+  eventSource.addEventListener('sync-record', handleSyncRecord as EventListener)
+  eventSource.onopen = () => {
+    handlers.onConnectionChange?.(true)
+  }
+  eventSource.onerror = () => {
+    handlers.onConnectionChange?.(false)
+  }
+
+  return () => {
+    eventSource.removeEventListener('connected', handleConnected)
+    eventSource.removeEventListener('sync-record', handleSyncRecord as EventListener)
+    eventSource.close()
+    handlers.onConnectionChange?.(false)
+  }
 }
