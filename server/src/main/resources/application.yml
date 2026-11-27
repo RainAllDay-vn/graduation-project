@@ -96,6 +96,7 @@ app:
     connect-timeout-seconds: 5
     scheduler:
       enabled: false
+      scan-interval-ms: 1000
     max-auto-retries: 5
   rag:
     indexing-enabled: true
