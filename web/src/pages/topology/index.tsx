@@ -1,9 +1,22 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { BlastRadiusReport, DeviceSummary, LinkSummary } from '@/api/topology'
 import { getBlastRadius, getSubgraph, getTopology } from '@/api/topology'
-import { getIncidentById, type AlarmSummary, type IncidentDetails } from '@/api/incidents'
+import {
+  getIncidentById,
+  updateIncidentStatus,
+  type AlarmSummary,
+  type IncidentDetails,
+} from '@/api/incidents'
+import {
+  getHypotheses,
+  getHypothesisById,
+  updateHypothesisStatus,
+  type HypothesisDetails,
+  type HypothesisSummary,
+  type UpdateHypothesisStatusPayload,
+} from '@/api/hypotheses'
 import { useTheme } from '@/context'
 import {
   TopologyCanvas,
@@ -29,6 +42,8 @@ export interface TopologyPageProps {
   mockIncident?: IncidentDetails | null
   /** Optional mocked blast radius report strictly for Storybook/tests */
   mockBlastRadius?: BlastRadiusReport | null
+  /** Optional mocked hypotheses strictly for Storybook/tests */
+  mockHypotheses?: HypothesisSummary[]
 }
 
 export const TopologyPage: React.FC<TopologyPageProps> = ({
@@ -37,9 +52,11 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
   mockData,
   mockIncident,
   mockBlastRadius,
+  mockHypotheses,
 }) => {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { locale } = useTheme()
 
   // 1. Resolve URL search parameters vs props
@@ -100,6 +117,93 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
 
   const blastRadiusReport = mockBlastRadius ?? blastRadiusQuery.data ?? null
 
+  // 2c. Fetch AI hypotheses & details for active incident (Step 3.3 / §4.3)
+  const hypothesesQuery = useQuery({
+    queryKey: ['hypotheses', incidentId],
+    queryFn: () => getHypotheses(incidentId as string),
+    enabled: Boolean(incidentId && !mockData && !mockHypotheses),
+    staleTime: 30000,
+  })
+
+  const hypotheses = useMemo(
+    () => mockHypotheses ?? hypothesesQuery.data ?? [],
+    [mockHypotheses, hypothesesQuery.data]
+  )
+
+  const [expandedHypothesisId, setExpandedHypothesisId] = useState<number | null>(null)
+
+  const hypothesisDetailQuery = useQuery({
+    queryKey: ['hypothesis', 'detail', incidentId, expandedHypothesisId],
+    queryFn: () => getHypothesisById(incidentId as string, expandedHypothesisId as number),
+    enabled: Boolean(incidentId && expandedHypothesisId != null && !mockData && !mockHypotheses),
+    staleTime: 30000,
+  })
+
+  const rejectedHypothesisIds = useMemo(
+    () => hypotheses.filter((h) => h.status === 'REJECTED').map((h) => h.id),
+    [hypotheses]
+  )
+
+  const rejectedDetailQueries = useQueries({
+    queries: rejectedHypothesisIds.map((id) => ({
+      queryKey: ['hypothesis', 'detail', incidentId, id],
+      queryFn: () => getHypothesisById(incidentId as string, id),
+      enabled: Boolean(incidentId && !mockData && !mockHypotheses),
+      staleTime: 30000,
+    })),
+  })
+
+  const hypothesisDetailsById = useMemo(() => {
+    const map: Record<number, HypothesisDetails> = {}
+    if (hypothesisDetailQuery.data) {
+      map[hypothesisDetailQuery.data.id] = hypothesisDetailQuery.data
+    }
+    rejectedDetailQueries.forEach((q) => {
+      if (q.data) {
+        map[q.data.id] = q.data
+      }
+    })
+    return map
+  }, [hypothesisDetailQuery.data, rejectedDetailQueries])
+
+  const updateHypothesisMutation = useMutation({
+    mutationFn: ({
+      hypothesisId,
+      payload,
+    }: {
+      hypothesisId: number
+      payload: UpdateHypothesisStatusPayload
+    }) => updateHypothesisStatus(incidentId as string, hypothesisId, payload),
+    onSuccess: async (updatedDetails, variables) => {
+      if (!incidentId) return
+      queryClient.setQueryData(
+        ['hypothesis', 'detail', incidentId, variables.hypothesisId],
+        updatedDetails
+      )
+      queryClient.setQueryData<HypothesisSummary[]>(
+        ['hypotheses', incidentId],
+        (prev) =>
+          prev?.map((item) =>
+            item.id === variables.hypothesisId
+              ? { ...item, status: updatedDetails.status }
+              : item
+          ) ?? []
+      )
+      queryClient.invalidateQueries({ queryKey: ['hypotheses', incidentId] })
+
+      if (
+        variables.payload.status === 'CONFIRMED' &&
+        incidentData &&
+        (incidentData.status === 'OPEN' || incidentData.status === 'PRIORITIZED')
+      ) {
+        await updateIncidentStatus(incidentId, 'INVESTIGATING')
+        queryClient.invalidateQueries({ queryKey: ['incident', 'detail', incidentId] })
+        queryClient.invalidateQueries({ queryKey: ['overview'] })
+        queryClient.invalidateQueries({ queryKey: ['incidents', 'badge'] })
+      }
+    },
+  })
+
   // Use provided mockData strictly for Storybook/tests; otherwise use remoteData from API
   const nodes = useMemo(() => {
     if (mockData) return mockData.nodes
@@ -127,6 +231,7 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
     return s
   })
   const [dismissedEpicenterKey, setDismissedEpicenterKey] = useState<string | null>(null)
+  const lastPannedHypothesisRef = useRef<string | null>(null)
 
   const incidentPrimaryDeviceId = incidentData?.primaryDeviceId
   const currentEpicenterKey =
@@ -134,9 +239,29 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
       ? `${incidentId}:${incidentPrimaryDeviceId}`
       : null
 
+  const expandedHypothesisDetails =
+    expandedHypothesisId != null ? hypothesisDetailsById[expandedHypothesisId] ?? null : null
+
+  const hypothesisFocusNodeIds = useMemo(() => {
+    if (!incidentId || !expandedHypothesisDetails) return []
+    const candidates = [
+      expandedHypothesisDetails.sourceNode,
+      expandedHypothesisDetails.targetNode,
+      expandedHypothesisDetails.targetType === 'NODE'
+        ? expandedHypothesisDetails.targetId
+        : null,
+    ].filter((id): id is string => Boolean(id))
+
+    return Array.from(new Set(candidates)).filter((id) =>
+      nodes.some((n) => n.id === id)
+    )
+  }, [incidentId, expandedHypothesisDetails, nodes])
+
   const effectiveFocusedNodeIds = useMemo(() => {
     const next = new Set(focusedNodeIds)
-    if (
+    if (hypothesisFocusNodeIds.length > 0) {
+      hypothesisFocusNodeIds.forEach((id) => next.add(id))
+    } else if (
       incidentId &&
       incidentPrimaryDeviceId &&
       dismissedEpicenterKey !== currentEpicenterKey
@@ -144,7 +269,22 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
       next.add(incidentPrimaryDeviceId)
     }
     return next
-  }, [focusedNodeIds, incidentId, incidentPrimaryDeviceId, dismissedEpicenterKey, currentEpicenterKey])
+  }, [
+    focusedNodeIds,
+    hypothesisFocusNodeIds,
+    incidentId,
+    incidentPrimaryDeviceId,
+    dismissedEpicenterKey,
+    currentEpicenterKey,
+  ])
+
+  useEffect(() => {
+    if (expandedHypothesisId == null || hypothesisFocusNodeIds.length === 0) return
+    const panKey = `${expandedHypothesisId}:${hypothesisFocusNodeIds.join(',')}`
+    if (lastPannedHypothesisRef.current === panKey) return
+    lastPannedHypothesisRef.current = panKey
+    canvasRef.current?.panToNode(hypothesisFocusNodeIds[0])
+  }, [expandedHypothesisId, hypothesisFocusNodeIds])
 
   // Auto-pan canvas once to incident epicenter when incident details & graph load (Step 3.1)
   useEffect(() => {
@@ -206,6 +346,30 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
     () => incidentData?.alarms ?? [],
     [incidentData]
   )
+
+  const confirmedHypothesis = useMemo(
+    () => hypotheses.find((h) => h.status === 'CONFIRMED') ?? null,
+    [hypotheses]
+  )
+
+  // Toggle hypothesis accordion without altering Right Inspector selection (§4.3)
+  const handleToggleHypothesis = (hypothesis: HypothesisSummary) => {
+    setExpandedHypothesisId((prev) => {
+      const next = prev === hypothesis.id ? null : hypothesis.id
+      if (next === null) {
+        lastPannedHypothesisRef.current = null
+      }
+      return next
+    })
+  }
+
+  const handleUpdateHypothesisStatus = async (
+    hypothesisId: number,
+    payload: UpdateHypothesisStatusPayload
+  ) => {
+    if (!incidentId) return
+    await updateHypothesisMutation.mutateAsync({ hypothesisId, payload })
+  }
 
   // Single click: Only updates selection and inspector context (Stylebook §3.5: "không đụng beacon")
   const handleSelectNode = (node: DeviceSummary) => {
@@ -311,6 +475,9 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
         incidentId={incidentId}
         incidentTitle={incidentData?.title}
         incidentStatus={incidentData?.status}
+        confirmedHypothesisLabel={
+          confirmedHypothesis ? confirmedHypothesis.shortTitle || confirmedHypothesis.title : null
+        }
         onExitIncident={incidentId ? () => navigate('/topology') : undefined}
         totalNodes={nodes.length}
         totalLinks={links.length}
@@ -335,6 +502,15 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
           selectedAlarmId={selectedAlarmId}
           onSelectAlarm={handleSelectAlarmFromTimeline}
           onSelectFaultCode={handleSelectFaultCode}
+          hypotheses={hypotheses}
+          expandedHypothesisId={expandedHypothesisId}
+          expandedHypothesisDetails={expandedHypothesisDetails}
+          hypothesisDetailsById={hypothesisDetailsById}
+          isLoadingHypotheses={Boolean(incidentId && !mockData && !mockHypotheses && hypothesesQuery.isLoading)}
+          isLoadingHypothesisDetails={Boolean(expandedHypothesisId != null && hypothesisDetailQuery.isLoading)}
+          isUpdatingHypothesisStatus={updateHypothesisMutation.isPending}
+          onToggleHypothesis={handleToggleHypothesis}
+          onUpdateHypothesisStatus={handleUpdateHypothesisStatus}
           nodes={nodes}
           selectedNodeId={selectedNodeId}
           onSelectDevice={handleSelectDeviceFromSidebar}

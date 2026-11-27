@@ -1,7 +1,71 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { AlarmSummary } from '@/api/incidents'
+import type { HypothesisDetails, HypothesisSummary } from '@/api/hypotheses'
 import { TopologyLeftSidebar } from './TopologyLeftSidebar'
 import { sampleNodes } from './canvas/mockTopologyData'
+
+const sampleHypotheses: HypothesisSummary[] = [
+  {
+    id: 1,
+    rank: 1,
+    matchScore: 88,
+    title: 'Suy hao tín hiệu cáp quang CORE-02 ↔ AGG-02',
+    shortTitle: 'Suy hao tín hiệu cáp quang',
+    targetType: 'EDGE',
+    targetId: 'CORE-02 ↔ AGG-02',
+    status: 'UNDER_CONSIDERATION',
+    cliCommand: 'show interfaces transceiver HundredGigE0/0/1 detail',
+  },
+  {
+    id: 2,
+    rank: 2,
+    matchScore: 74,
+    title: 'Lỗi giao diện phần cứng / Thẻ module quang SFP+ bị hỏng',
+    shortTitle: 'Thẻ module quang lỗi',
+    targetType: 'NODE',
+    targetId: 'SW-HN-02',
+    status: 'UNDER_CONSIDERATION',
+    cliCommand: 'show environment temperature',
+  },
+  {
+    id: 3,
+    rank: 3,
+    matchScore: 45,
+    title: 'Quá tải CPU điều khiển dẫn đến BGP Keepalive Timeout',
+    shortTitle: 'BGP Keepalive Timeout do CPU',
+    targetType: 'NODE',
+    targetId: 'SW-HN-02',
+    status: 'REJECTED',
+    cliCommand: 'show processes cpu sorted',
+  },
+]
+
+const sampleHypothesisDetails: Record<number, HypothesisDetails> = {
+  1: {
+    ...sampleHypotheses[0],
+    incidentId: 'INC-2026-0915',
+    sourceNode: 'CORE-02',
+    targetNode: 'AGG-02',
+    confidenceRationale:
+      'Công suất RX quang -24.2 dBm dưới ngưỡng an toàn (-22.0 dBm), kết hợp BGP flap 3 lần.',
+    evidence: [
+      'Công suất RX quang -24.2 dBm',
+      'BGP neighbor Down/Up 3 lần trong 10 phút',
+    ],
+    contradictingEvidence: ['TX CORE-02 duy trì +1.2 dBm'],
+    verificationCmd: 'show ip bgp summary',
+    createdAt: '2026-11-27T11:05:00Z',
+  },
+  3: {
+    ...sampleHypotheses[2],
+    incidentId: 'INC-2026-0915',
+    sourceNode: 'SW-HN-02',
+    rejectionReason: 'CPU chỉ 24.5%, OSPF vẫn Full',
+    evidence: ['BGP Hold Timer Expired'],
+    contradictingEvidence: ['CPU control plane bình thường (24.5%)'],
+    createdAt: '2026-11-27T11:06:00Z',
+  },
+}
 
 const sampleAlarms: AlarmSummary[] = [
   {
@@ -190,6 +254,27 @@ export const DisplayTabCustomToggled: Story = {
     },
     kHop: 2,
     filterMode: 'prune',
+    locale: 'vi',
+  },
+  render: (args) => (
+    <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
+      <div className="h-[620px] rounded-lg overflow-hidden border border-slate-800 shadow-xl flex">
+        <TopologyLeftSidebar {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/** Story 10: AI Hypothesis Tab in Dark Mode (§4.3) */
+export const HypothesisTabDark: Story = {
+  args: {
+    incidentId: 'INC-2026-0915',
+    initialTab: 'hypothesis',
+    hypotheses: sampleHypotheses,
+    expandedHypothesisId: 1,
+    expandedHypothesisDetails: sampleHypothesisDetails[1],
+    hypothesisDetailsById: sampleHypothesisDetails,
+    nodes: sampleNodes,
     locale: 'vi',
   },
   render: (args) => (

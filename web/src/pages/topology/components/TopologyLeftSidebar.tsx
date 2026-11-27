@@ -1,10 +1,16 @@
 import React, { useState } from 'react'
 import type { AlarmSummary } from '@/api/incidents'
+import type {
+  HypothesisDetails,
+  HypothesisSummary,
+  UpdateHypothesisStatusPayload,
+} from '@/api/hypotheses'
 import type { DeviceSummary } from '@/api/topology'
 import { cn } from '@/lib/utils'
 import {
   DeviceDirectoryTab,
   DisplaySettingsTab,
+  HypothesisTab,
   IncidentTimelineTab,
   type DisplaySettings,
   DEFAULT_DISPLAY_SETTINGS,
@@ -24,6 +30,27 @@ export interface TopologyLeftSidebarProps {
   onSelectAlarm?: (alarm: AlarmSummary) => void
   /** Callback fired when user clicks a faultCode badge in Timeline tab (§4.2 -> Step 3.4b) */
   onSelectFaultCode?: (faultCode: string, alarm: AlarmSummary) => void
+  /** AI-generated root-cause hypotheses for Hypothesis tab (§4.3) */
+  hypotheses?: HypothesisSummary[]
+  /** Expanded hypothesis ID in accordion */
+  expandedHypothesisId?: number | null
+  /** Full details for expanded hypothesis */
+  expandedHypothesisDetails?: HypothesisDetails | null
+  /** Cached hypothesis details map (e.g. for rejection reasons) */
+  hypothesisDetailsById?: Record<number, HypothesisDetails>
+  /** Loading flag for hypotheses list */
+  isLoadingHypotheses?: boolean
+  /** Loading flag for hypothesis details */
+  isLoadingHypothesisDetails?: boolean
+  /** Pending mutation flag for hypothesis status update */
+  isUpdatingHypothesisStatus?: boolean
+  /** Callback fired when user toggles/expands a hypothesis card */
+  onToggleHypothesis?: (hypothesis: HypothesisSummary) => void
+  /** Callback fired when user confirms/rejects/reopens a hypothesis */
+  onUpdateHypothesisStatus?: (
+    hypothesisId: number,
+    payload: UpdateHypothesisStatusPayload
+  ) => Promise<void> | void
   /** List of devices from the topology graph */
   nodes?: DeviceSummary[]
   /** Currently selected node ID */
@@ -67,6 +94,15 @@ export const TopologyLeftSidebar: React.FC<TopologyLeftSidebarProps> = ({
   selectedAlarmId,
   onSelectAlarm = () => {},
   onSelectFaultCode,
+  hypotheses = [],
+  expandedHypothesisId = null,
+  expandedHypothesisDetails = null,
+  hypothesisDetailsById = {},
+  isLoadingHypotheses = false,
+  isLoadingHypothesisDetails = false,
+  isUpdatingHypothesisStatus = false,
+  onToggleHypothesis = () => {},
+  onUpdateHypothesisStatus = () => {},
   nodes = [],
   selectedNodeId,
   onSelectDevice = () => {},
@@ -178,23 +214,19 @@ export const TopologyLeftSidebar: React.FC<TopologyLeftSidebarProps> = ({
           locale={locale}
         />
       ) : (
-        /* Incident Hypothesis Placeholder (Step 3.3) */
-        <div className="flex-1 flex flex-col gap-2.5 overflow-y-auto no-scrollbar">
-          <div className="font-mono text-[9px] font-extrabold tracking-widest text-slate-400 dark:text-[#64748b] uppercase">
-            {effectiveActiveTab.toUpperCase()} · PLACEHOLDER
-          </div>
-
-          <div className="p-2.5 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-2">
-            <div className="h-2.5 rounded bg-slate-200 dark:bg-slate-800 w-full animate-pulse" />
-            <div className="h-2 rounded bg-slate-200/70 dark:bg-slate-800/70 w-3/4" />
-            <div className="h-2 rounded bg-slate-200/70 dark:bg-slate-800/70 w-5/6" />
-          </div>
-
-          <div className="mt-auto p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
-            💡 <strong>{isEn ? 'Incident Context:' : 'Ngữ cảnh Sự cố:'}</strong>{' '}
-            {incidentId}
-          </div>
-        </div>
+        <HypothesisTab
+          incidentId={incidentId}
+          hypotheses={hypotheses}
+          expandedHypothesisId={expandedHypothesisId}
+          expandedDetails={expandedHypothesisDetails}
+          detailsById={hypothesisDetailsById}
+          isLoading={isLoadingHypotheses}
+          isLoadingDetails={isLoadingHypothesisDetails}
+          isUpdatingStatus={isUpdatingHypothesisStatus}
+          onToggleExpand={onToggleHypothesis}
+          onUpdateStatus={onUpdateHypothesisStatus}
+          locale={locale}
+        />
       )}
     </aside>
   )

@@ -8,6 +8,8 @@ export interface TopologyHeaderProps {
   incidentTitle?: string
   /** Status of the incident (e.g. 'OPEN' / 'INVESTIGATING' / 'RESOLVED') */
   incidentStatus?: string
+  /** Optional confirmed root-cause hypothesis label displayed in Incident Elevation header */
+  confirmedHypothesisLabel?: string | null
   /** Optional callback to exit Incident Mode back to Standard Full Network */
   onExitIncident?: () => void
   /** Total device count across managed topology */
@@ -36,6 +38,7 @@ export const TopologyHeader: React.FC<TopologyHeaderProps> = ({
   incidentId,
   incidentTitle,
   incidentStatus = 'INVESTIGATING',
+  confirmedHypothesisLabel,
   onExitIncident,
   totalNodes = 78,
   totalLinks = 152,
@@ -121,6 +124,19 @@ export const TopologyHeader: React.FC<TopologyHeaderProps> = ({
                 {incidentTitle ? ` · ${incidentTitle}` : ''}
               </span>
             </div>
+
+            {confirmedHypothesisLabel && (
+              <div
+                data-testid="topology-confirmed-hypothesis-chip"
+                title={confirmedHypothesisLabel}
+                className="hidden lg:flex items-center gap-1.5 px-2 py-1 rounded-md border border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-mono text-[10px] font-bold max-w-[220px]"
+              >
+                <span className="shrink-0">✓</span>
+                <span className="truncate">
+                  {isEn ? 'ROOT CAUSE:' : 'NGUYÊN NHÂN:'} {confirmedHypothesisLabel}
+                </span>
+              </div>
+            )}
 
             {onExitIncident && (
               <button

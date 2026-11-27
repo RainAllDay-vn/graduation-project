@@ -5,6 +5,7 @@ import com.gr2.noc.hypothesis.model.Hypothesis;
 import lombok.Builder;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,8 +54,8 @@ public record HypothesisDetails(
                 .rejectionReason(hypothesis.getRejectionReason())
                 .cliCommand(hypothesis.getCliCommand())
                 .verificationCmd(hypothesis.getVerificationCmd())
-                .evidence(hypothesis.getEvidence() != null ? hypothesis.getEvidence() : Collections.emptyList())
-                .contradictingEvidence(hypothesis.getContradictingEvidence() != null ? hypothesis.getContradictingEvidence() : Collections.emptyList())
+                .evidence(hypothesis.getEvidence() != null ? new ArrayList<>(hypothesis.getEvidence()) : Collections.emptyList())
+                .contradictingEvidence(hypothesis.getContradictingEvidence() != null ? new ArrayList<>(hypothesis.getContradictingEvidence()) : Collections.emptyList())
                 .createdAt(hypothesis.getCreatedAt())
                 .build();
     }
