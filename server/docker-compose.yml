@@ -3,6 +3,8 @@ services:
     image: pgvector/pgvector:pg16
     container_name: noc_postgres
     restart: unless-stopped
+    command: ["postgres", "-c", "shared_buffers=64MB", "-c", "work_mem=4MB", "-c", "max_connections=30"]
+    mem_limit: 256m
     ports:
       - "5432:5432"
     environment:
@@ -21,13 +23,15 @@ services:
     image: neo4j:5.26-community
     container_name: noc_neo4j
     restart: unless-stopped
+    mem_limit: 768m
     ports:
       - "7474:7474" # Neo4j Browser UI
       - "7687:7687" # Bolt protocol
     environment:
       NEO4J_AUTH: neo4j/password123
-      NEO4J_PLUGINS: '["apoc"]'
-      NEO4J_dbms_security_procedures_unrestricted: apoc.*
+      NEO4J_server_memory_heap_initial__size: 256m
+      NEO4J_server_memory_heap_max__size: 256m
+      NEO4J_server_memory_pagecache_size: 128m
     volumes:
       - neo4j_data:/data
       - neo4j_logs:/logs
@@ -38,12 +42,12 @@ services:
       retries: 5
 
   rabbitmq:
-    image: rabbitmq:3.13-management
+    image: rabbitmq:3.13-alpine
     container_name: noc_rabbitmq
     restart: unless-stopped
+    mem_limit: 256m
     ports:
       - "5672:5672" # AMQP protocol
-      - "15672:15672" # RabbitMQ Management UI
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -60,6 +64,7 @@ services:
       context: ../mock-source
     container_name: noc_mock_source
     restart: unless-stopped
+    mem_limit: 128m
     ports:
       - "8001:8000" # Mock external REST source: GET /events?since=..., GET /health
     environment:
