@@ -1,7 +1,12 @@
 import React, { useState } from 'react'
 import type { DeviceSummary, LinkSummary } from '@/api/topology'
 import { cn } from '@/lib/utils'
-import { NetworkOverviewPanel, NodeInspectorHeader, type NodeInspectorTab } from './inspector'
+import {
+  NetworkOverviewPanel,
+  NodeIdentityTab,
+  NodeInspectorHeader,
+  type NodeInspectorTab,
+} from './inspector'
 
 export interface TopologyRightSidebarProps {
   /** All devices in the current topology view (used for network health overview) */
@@ -103,22 +108,7 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
           />
 
           {effectiveNodeTab === 'identity' ? (
-            <div
-              className="flex-1 flex flex-col gap-2.5"
-              role="tabpanel"
-              data-testid="inspector-panel-identity"
-            >
-              <div className="p-3 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-2">
-                <div className="font-mono text-[9px] font-extrabold tracking-widest text-slate-400 dark:text-[#64748b] uppercase">
-                  {isEn ? 'DEVICE IDENTITY · §5.1 NEXT' : 'ĐỊNH DANH THIẾT BỊ · MỤC 5.1'}
-                </div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
-                  {isEn
-                    ? `Identity details (model, site/region, IP, access cluster) and Quick CLI commands for ${selectedNode.id} will be rendered in this tab.`
-                    : `Thông tin định danh thực tế (model, vị trí site/region, IP quản lý, cụm access) và khung Quick CLI cho ${selectedNode.id} sẽ hiển thị tại tab này.`}
-                </p>
-              </div>
-            </div>
+            <NodeIdentityTab node={selectedNode} locale={locale} />
           ) : effectiveNodeTab === 'alerts' ? (
             <div
               className="flex-1 flex flex-col gap-2.5"

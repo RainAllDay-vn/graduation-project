@@ -137,6 +137,32 @@ export const InspectingNodeIncident3TabsDark: Story = {
   ),
 }
 
+/** Story 4d: Inspecting Huawei Exchange hub with access cluster error badge */
+export const InspectingHuaweiExchIdentityDark: Story = {
+  args: {
+    selectedNode: {
+      id: 'EXCH-HN-02',
+      name: 'hn-exch-02',
+      layer: 'EXCHANGE',
+      region: 'Miền Bắc - Hà Nội',
+      site: 'EXCH-HN-02',
+      ipAddress: '10.100.10.2',
+      model: 'Huawei S9704',
+      status: 'ACTIVE',
+      accessDeviceCount: 12,
+      accessErrorCount: 2,
+    },
+    locale: 'vi',
+  },
+  render: (args) => (
+    <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
+      <div className="h-[620px] rounded-lg overflow-hidden border border-slate-800 shadow-xl flex">
+        <TopologyRightSidebar {...args} />
+      </div>
+    </div>
+  ),
+}
+
 /** Story 5: Inspecting a selected link */
 export const InspectingLinkDark: Story = {
   args: {
