@@ -2,9 +2,13 @@ package com.gr2.noc.topology;
 
 import com.gr2.noc.topology.dto.create.CreateDeviceRequest;
 import com.gr2.noc.topology.dto.create.CreateLinkRequest;
+import com.gr2.noc.topology.dto.get.DeviceDetails;
 import com.gr2.noc.topology.dto.get.LinkSummary;
 import com.gr2.noc.topology.dto.get.TopologyGraph;
+import com.gr2.noc.topology.dto.update.UpdateDeviceStatusRequest;
+import com.gr2.noc.topology.dto.update.UpdateLinkStatusRequest;
 import com.gr2.noc.topology.enums.DeviceLayer;
+import com.gr2.noc.topology.enums.DeviceStatus;
 import com.gr2.noc.topology.enums.LinkType;
 import com.gr2.noc.topology.repository.NetworkDeviceRepository;
 import com.gr2.noc.topology.service.TopologyService;
@@ -142,6 +146,121 @@ class TopologyNeo4jPersistenceIntegrationTest {
         TopologyGraph graph = topologyService.getFullGraph();
         // A device without links must still be mapped (collect() over empty match)
         assertThat(graph.nodes()).extracting(n -> n.id()).contains("IT-CYPER-LONE");
+    }
+
+    @Test
+    @DisplayName("Upsert, status update, and soft/hard remove persist device changes in Neo4j while preserving links")
+    void shouldUpsertUpdateAndRemoveDevicesInNeo4j() {
+        topologyService.upsertDevice(CreateDeviceRequest.builder()
+                .id("IT-UPS-A")
+                .name("Upsert Probe A")
+                .layer(DeviceLayer.CORE)
+                .region("Initial")
+                .ipAddress("10.10.0.1")
+                .build());
+        topologyService.upsertDevice(CreateDeviceRequest.builder()
+                .id("IT-UPS-B")
+                .name("Upsert Probe B")
+                .layer(DeviceLayer.AGGREGATION)
+                .region("Initial")
+                .build());
+        topologyService.upsertLink(CreateLinkRequest.builder()
+                .linkId("LINK-IT-UPS-AB")
+                .sourceDeviceId("IT-UPS-A")
+                .targetDeviceId("IT-UPS-B")
+                .sourcePort("et-0/0/1")
+                .targetPort("et-0/0/2")
+                .build());
+
+        // Re-upsert device A: updates metadata without wiping outgoing link
+        DeviceDetails updated = topologyService.upsertDevice(CreateDeviceRequest.builder()
+                .id("IT-UPS-A")
+                .name("Upsert Probe A v2")
+                .layer(DeviceLayer.CORE)
+                .model("Nokia 7750 SR")
+                .build());
+        assertThat(updated.name()).isEqualTo("Upsert Probe A v2");
+        assertThat(updated.region()).isEqualTo("Initial");
+        assertThat(updated.model()).isEqualTo("Nokia 7750 SR");
+        assertThat(query("MATCH (:NetworkDevice {id: 'IT-UPS-A'})-[r:CONNECTED_TO {link_id: 'LINK-IT-UPS-AB'}]->() RETURN r"))
+                .hasSize(1);
+
+        // Partial status update
+        topologyService.updateDeviceStatus("IT-UPS-A", UpdateDeviceStatusRequest.builder()
+                .status(DeviceStatus.DEGRADED)
+                .accessDeviceCount(15)
+                .accessErrorCount(2)
+                .build());
+        List<Record> statusRows = query(
+                "MATCH (d:NetworkDevice {id: 'IT-UPS-A'}) RETURN d.status AS status, d.access_error_count AS errs");
+        assertThat(statusRows.get(0).get("status").asString()).isEqualTo("DEGRADED");
+        assertThat(statusRows.get(0).get("errs").asInt()).isEqualTo(2);
+
+        // Soft remove marks OFFLINE; hard remove deletes node
+        topologyService.removeDevice("IT-UPS-B", false);
+        assertThat(query("MATCH (d:NetworkDevice {id: 'IT-UPS-B'}) RETURN d.status AS status")
+                .get(0).get("status").asString()).isEqualTo("OFFLINE");
+
+        topologyService.removeDevice("IT-UPS-B", true);
+        assertThat(query("MATCH (d:NetworkDevice {id: 'IT-UPS-B'}) RETURN d")).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Upsert, move across sources, status update, and remove persist link changes in Neo4j")
+    void shouldUpsertMoveUpdateAndRemoveLinksInNeo4j() {
+        topologyService.upsertDevice(CreateDeviceRequest.builder()
+                .id("IT-LNK-S1").name("Src 1").layer(DeviceLayer.CORE).build());
+        topologyService.upsertDevice(CreateDeviceRequest.builder()
+                .id("IT-LNK-S2").name("Src 2").layer(DeviceLayer.CORE).build());
+        topologyService.upsertDevice(CreateDeviceRequest.builder()
+                .id("IT-LNK-T").name("Target").layer(DeviceLayer.AGGREGATION).build());
+
+        topologyService.upsertLink(CreateLinkRequest.builder()
+                .linkId("LINK-IT-MOVE")
+                .sourceDeviceId("IT-LNK-S1")
+                .targetDeviceId("IT-LNK-T")
+                .sourcePort("ge-0/0/1")
+                .targetPort("ge-0/0/2")
+                .capacityGbps(10)
+                .build());
+
+        // Move same linkId to S2 and update capacity
+        topologyService.upsertLink(CreateLinkRequest.builder()
+                .linkId("LINK-IT-MOVE")
+                .sourceDeviceId("IT-LNK-S2")
+                .targetDeviceId("IT-LNK-T")
+                .sourcePort("et-0/0/1")
+                .targetPort("et-0/0/2")
+                .capacityGbps(100)
+                .build());
+
+        assertThat(query("MATCH ()-[r:CONNECTED_TO {link_id: 'LINK-IT-MOVE'}]->() RETURN r")).hasSize(1);
+        List<Record> moved = query(
+                "MATCH (s:NetworkDevice)-[r:CONNECTED_TO {link_id: 'LINK-IT-MOVE'}]->(t:NetworkDevice) " +
+                "RETURN s.id AS src, t.id AS tgt, r.capacity_gbps AS cap");
+        assertThat(moved.get(0).get("src").asString()).isEqualTo("IT-LNK-S2");
+        assertThat(moved.get(0).get("cap").asInt()).isEqualTo(100);
+
+        // Partial link status update
+        topologyService.updateLinkStatus("LINK-IT-MOVE", UpdateLinkStatusRequest.builder()
+                .operStatus("DEGRADED")
+                .utilizationPercent(82.5)
+                .rxPowerDbm(-18.2)
+                .build());
+        List<Record> updated = query(
+                "MATCH ()-[r:CONNECTED_TO {link_id: 'LINK-IT-MOVE'}]->() " +
+                "RETURN r.oper_status AS op, r.utilization_percent AS util, r.rx_power_dbm AS rx");
+        assertThat(updated.get(0).get("op").asString()).isEqualTo("DEGRADED");
+        assertThat(updated.get(0).get("util").asDouble()).isEqualTo(82.5);
+        assertThat(updated.get(0).get("rx").asDouble()).isEqualTo(-18.2);
+
+        // Soft remove sets DOWN; hard remove deletes edge
+        topologyService.removeLink("LINK-IT-MOVE", false);
+        assertThat(query("MATCH ()-[r:CONNECTED_TO {link_id: 'LINK-IT-MOVE'}]->() RETURN r.oper_status AS op")
+                .get(0).get("op").asString()).isEqualTo("DOWN");
+
+        topologyService.removeLink("LINK-IT-MOVE", true);
+        assertThat(query("MATCH ()-[r:CONNECTED_TO {link_id: 'LINK-IT-MOVE'}]->() RETURN r")).isEmpty();
     }
 
     private List<Record> query(String cypher) {

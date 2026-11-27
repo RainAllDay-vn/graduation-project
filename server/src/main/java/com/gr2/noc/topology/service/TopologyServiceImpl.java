@@ -5,6 +5,8 @@ import com.gr2.noc.incident.repository.IncidentRepository;
 import com.gr2.noc.topology.dto.create.CreateDeviceRequest;
 import com.gr2.noc.topology.dto.create.CreateLinkRequest;
 import com.gr2.noc.topology.dto.get.*;
+import com.gr2.noc.topology.dto.update.UpdateDeviceStatusRequest;
+import com.gr2.noc.topology.dto.update.UpdateLinkStatusRequest;
 import com.gr2.noc.topology.enums.DeviceLayer;
 import com.gr2.noc.topology.enums.DeviceStatus;
 import com.gr2.noc.topology.enums.LinkType;
@@ -359,7 +361,200 @@ public class TopologyServiceImpl implements TopologyService {
             );
         }
 
-        NetworkDevice device = NetworkDevice.builder()
+        NetworkDevice saved = saveDevice(buildNewDevice(request));
+        return DeviceDetails.from(saved);
+    }
+
+    @Override
+    public DeviceDetails upsertDevice(CreateDeviceRequest request) {
+        Optional<NetworkDevice> existingOpt = findDeviceById(request.id());
+        if (existingOpt.isEmpty()) {
+            return DeviceDetails.from(saveDevice(buildNewDevice(request)));
+        }
+
+        NetworkDevice existing = existingOpt.get();
+        if (request.name() != null) {
+            existing.setName(request.name());
+        }
+        if (request.layer() != null) {
+            existing.setLayer(request.layer());
+        }
+        if (request.region() != null) {
+            existing.setRegion(request.region());
+        }
+        if (request.site() != null) {
+            existing.setSite(request.site());
+        }
+        if (request.ipAddress() != null) {
+            existing.setIpAddress(request.ipAddress());
+        }
+        if (request.model() != null) {
+            existing.setModel(request.model());
+        }
+        if (request.status() != null) {
+            existing.setStatus(request.status());
+        }
+        if (request.accessDeviceCount() != null) {
+            existing.setAccessDeviceCount(request.accessDeviceCount());
+        }
+        if (request.accessErrorCount() != null) {
+            existing.setAccessErrorCount(request.accessErrorCount());
+        }
+        return DeviceDetails.from(saveDevice(existing));
+    }
+
+    @Override
+    public DeviceDetails updateDeviceStatus(String id, UpdateDeviceStatusRequest request) {
+        NetworkDevice device = findDeviceById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Device not found with ID: " + id
+                ));
+        if (request.status() != null) {
+            device.setStatus(request.status());
+        }
+        if (request.accessDeviceCount() != null) {
+            device.setAccessDeviceCount(request.accessDeviceCount());
+        }
+        if (request.accessErrorCount() != null) {
+            device.setAccessErrorCount(request.accessErrorCount());
+        }
+        return DeviceDetails.from(saveDevice(device));
+    }
+
+    @Override
+    public void removeDevice(String id, boolean hardDelete) {
+        NetworkDevice device = findDeviceById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Device not found with ID: " + id
+                ));
+        if (hardDelete) {
+            networkDeviceRepository.deleteById(id);
+            return;
+        }
+        device.setStatus(DeviceStatus.OFFLINE);
+        saveDevice(device);
+    }
+
+    @Override
+    public LinkSummary createLink(CreateLinkRequest request) {
+        NetworkDevice source = requireDevice(request.sourceDeviceId(), "Source");
+        NetworkDevice target = requireDevice(request.targetDeviceId(), "Target");
+        NetworkLink link = buildNewLink(request, target);
+        source.addLink(link);
+        saveDevice(source);
+        return LinkSummary.from(source.getId(), link);
+    }
+
+    @Override
+    public LinkSummary upsertLink(CreateLinkRequest request) {
+        NetworkDevice source = requireDevice(request.sourceDeviceId(), "Source");
+        NetworkDevice target = requireDevice(request.targetDeviceId(), "Target");
+
+        // Remove any existing edge with the same linkId from a previous source node if it moved
+        for (NetworkDevice holder : networkDeviceRepository.findSourcesByLinkId(request.linkId())) {
+            if (!Objects.equals(holder.getId(), source.getId()) && holder.getLinks() != null) {
+                if (holder.getLinks().removeIf(l -> Objects.equals(request.linkId(), l.getLinkId()))) {
+                    saveDevice(holder);
+                }
+            }
+        }
+
+        NetworkLink existing = findLinkOnDevice(source, request.linkId());
+        if (existing == null) {
+            NetworkLink created = buildNewLink(request, target);
+            source.addLink(created);
+            saveDevice(source);
+            return LinkSummary.from(source.getId(), created);
+        }
+
+        existing.setSourcePort(request.sourcePort());
+        existing.setTargetPort(request.targetPort());
+        existing.setTargetDevice(target);
+        if (request.linkType() != null) {
+            existing.setLinkType(request.linkType());
+        }
+        if (request.capacityGbps() != null) {
+            existing.setCapacityGbps(request.capacityGbps());
+        }
+        if (request.operStatus() != null) {
+            existing.setOperStatus(request.operStatus());
+        }
+        if (request.rxPowerDbm() != null) {
+            existing.setRxPowerDbm(request.rxPowerDbm());
+        }
+        if (request.txPowerDbm() != null) {
+            existing.setTxPowerDbm(request.txPowerDbm());
+        }
+        if (request.utilizationPercent() != null) {
+            existing.setUtilizationPercent(request.utilizationPercent());
+        }
+        if (request.isBackup() != null) {
+            existing.setIsBackup(request.isBackup());
+        }
+        saveDevice(source);
+        return LinkSummary.from(source.getId(), existing);
+    }
+
+    @Override
+    public LinkSummary updateLinkStatus(String linkId, UpdateLinkStatusRequest request) {
+        List<NetworkDevice> holders = networkDeviceRepository.findSourcesByLinkId(linkId);
+        if (holders.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Link not found with ID: " + linkId);
+        }
+        NetworkDevice source = holders.get(0);
+        NetworkLink link = findLinkOnDevice(source, linkId);
+        if (link == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Link not found with ID: " + linkId);
+        }
+        if (request.operStatus() != null) {
+            link.setOperStatus(request.operStatus());
+        }
+        if (request.utilizationPercent() != null) {
+            link.setUtilizationPercent(request.utilizationPercent());
+        }
+        if (request.rxPowerDbm() != null) {
+            link.setRxPowerDbm(request.rxPowerDbm());
+        }
+        if (request.txPowerDbm() != null) {
+            link.setTxPowerDbm(request.txPowerDbm());
+        }
+        saveDevice(source);
+        return LinkSummary.from(source.getId(), link);
+    }
+
+    @Override
+    public void removeLink(String linkId, boolean hardDelete) {
+        List<NetworkDevice> holders = networkDeviceRepository.findSourcesByLinkId(linkId);
+        if (holders.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Link not found with ID: " + linkId);
+        }
+        for (NetworkDevice holder : holders) {
+            if (holder.getLinks() == null) {
+                continue;
+            }
+            if (hardDelete) {
+                if (holder.getLinks().removeIf(l -> Objects.equals(linkId, l.getLinkId()))) {
+                    saveDevice(holder);
+                }
+            } else {
+                boolean updated = false;
+                for (NetworkLink link : holder.getLinks()) {
+                    if (Objects.equals(linkId, link.getLinkId())) {
+                        link.setOperStatus("DOWN");
+                        updated = true;
+                    }
+                }
+                if (updated) {
+                    saveDevice(holder);
+                }
+            }
+        }
+    }
+
+    private NetworkDevice buildNewDevice(CreateDeviceRequest request) {
+        return NetworkDevice.builder()
                 .id(request.id())
                 .name(request.name())
                 .layer(request.layer())
@@ -371,26 +566,10 @@ public class TopologyServiceImpl implements TopologyService {
                 .accessDeviceCount(request.accessDeviceCount() != null ? request.accessDeviceCount() : 0)
                 .accessErrorCount(request.accessErrorCount() != null ? request.accessErrorCount() : 0)
                 .build();
-
-        NetworkDevice saved = saveDevice(device);
-        return DeviceDetails.from(saved);
     }
 
-    @Override
-    public LinkSummary createLink(CreateLinkRequest request) {
-        NetworkDevice source = findDeviceById(request.sourceDeviceId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Source device not found with ID: " + request.sourceDeviceId()
-                ));
-
-        NetworkDevice target = findDeviceById(request.targetDeviceId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Target device not found with ID: " + request.targetDeviceId()
-                ));
-
-        NetworkLink link = NetworkLink.builder()
+    private NetworkLink buildNewLink(CreateLinkRequest request, NetworkDevice target) {
+        return NetworkLink.builder()
                 .linkId(request.linkId())
                 .sourcePort(request.sourcePort())
                 .targetPort(request.targetPort())
@@ -403,11 +582,24 @@ public class TopologyServiceImpl implements TopologyService {
                 .isBackup(request.isBackup() != null ? request.isBackup() : false)
                 .targetDevice(target)
                 .build();
+    }
 
-        source.addLink(link);
-        saveDevice(source);
+    private NetworkDevice requireDevice(String deviceId, String role) {
+        return findDeviceById(deviceId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        role + " device not found with ID: " + deviceId
+                ));
+    }
 
-        return LinkSummary.from(source.getId(), link);
+    private NetworkLink findLinkOnDevice(NetworkDevice device, String linkId) {
+        if (device.getLinks() == null || linkId == null) {
+            return null;
+        }
+        return device.getLinks().stream()
+                .filter(link -> linkId.equals(link.getLinkId()))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override

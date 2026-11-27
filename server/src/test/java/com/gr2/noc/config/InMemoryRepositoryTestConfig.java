@@ -178,16 +178,31 @@ public class InMemoryRepositoryTestConfig {
         @Override
         public void deleteById(String id) {
             store.remove(id);
+            detachIncomingLinks(id);
         }
 
         @Override
         public void delete(NetworkDevice entity) {
-            store.remove(idOf(entity));
+            String id = idOf(entity);
+            store.remove(id);
+            detachIncomingLinks(id);
         }
 
         @Override
         public void deleteAllById(Iterable<? extends String> ids) {
-            ids.forEach(store::remove);
+            ids.forEach(this::deleteById);
+        }
+
+        private void detachIncomingLinks(String targetId) {
+            if (targetId == null) {
+                return;
+            }
+            for (NetworkDevice device : store.values()) {
+                if (device.getLinks() != null) {
+                    device.getLinks().removeIf(link ->
+                            link.getTargetDevice() != null && targetId.equals(link.getTargetDevice().getId()));
+                }
+            }
         }
 
         @Override
@@ -267,6 +282,17 @@ public class InMemoryRepositoryTestConfig {
         @Override
         public Optional<NetworkDevice> findByIdWithLinks(String deviceId) {
             return findById(deviceId);
+        }
+
+        @Override
+        public List<NetworkDevice> findSourcesByLinkId(String linkId) {
+            if (linkId == null) {
+                return List.of();
+            }
+            return store.values().stream()
+                    .filter(d -> d.getLinks() != null && d.getLinks().stream()
+                            .anyMatch(l -> linkId.equals(l.getLinkId())))
+                    .toList();
         }
 
         @Override

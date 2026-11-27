@@ -7,6 +7,8 @@ import com.gr2.noc.topology.dto.get.DeviceDetails;
 import com.gr2.noc.topology.dto.get.DeviceDirectoryPage;
 import com.gr2.noc.topology.dto.get.LinkSummary;
 import com.gr2.noc.topology.dto.get.TopologyGraph;
+import com.gr2.noc.topology.dto.update.UpdateDeviceStatusRequest;
+import com.gr2.noc.topology.dto.update.UpdateLinkStatusRequest;
 import com.gr2.noc.topology.enums.DeviceLayer;
 import com.gr2.noc.topology.enums.DeviceStatus;
 
@@ -32,7 +34,19 @@ public interface TopologyService {
 
     DeviceDetails createDevice(CreateDeviceRequest request);
 
+    DeviceDetails upsertDevice(CreateDeviceRequest request);
+
+    DeviceDetails updateDeviceStatus(String id, UpdateDeviceStatusRequest request);
+
+    void removeDevice(String id, boolean hardDelete);
+
     LinkSummary createLink(CreateLinkRequest request);
+
+    LinkSummary upsertLink(CreateLinkRequest request);
+
+    LinkSummary updateLinkStatus(String linkId, UpdateLinkStatusRequest request);
+
+    void removeLink(String linkId, boolean hardDelete);
 
     void clearAll();
 }

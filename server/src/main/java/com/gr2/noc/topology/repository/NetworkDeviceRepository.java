@@ -35,6 +35,16 @@ public interface NetworkDeviceRepository extends Neo4jRepository<NetworkDevice, 
     Optional<NetworkDevice> findByIdWithLinks(String deviceId);
 
     /**
+     * Retrieve source device(s) owning an outgoing CONNECTED_TO link with the given link_id,
+     * along with all of their outgoing links so updates preserve sibling edges and @Version.
+     */
+    @Query("MATCH (d:NetworkDevice)-[:CONNECTED_TO {link_id: $linkId}]->(:NetworkDevice) " +
+           "WITH DISTINCT d " +
+           "OPTIONAL MATCH (d)-[r:CONNECTED_TO]->(t:NetworkDevice) " +
+           "RETURN d, collect(r), collect(t)")
+    List<NetworkDevice> findSourcesByLinkId(String linkId);
+
+    /**
      * Retrieve 1-hop ego-network subgraph around a focus device.
      */
     @Query("MATCH (d:NetworkDevice {id: $deviceId}) " +
