@@ -154,13 +154,14 @@ export const NodeTelemetryTab: React.FC<NodeTelemetryTabProps> = ({
     return found ?? null
   }
 
+  const collectedAt = snapshot?.collectedAt
   const effectiveAnchor: TimeAnchorMode =
-    timeAnchor === 'collected' && snapshot?.collectedAt ? 'collected' : 'now'
+    timeAnchor === 'collected' && collectedAt ? 'collected' : 'now'
 
   const { startIso, endIso } = useMemo(() => {
     const endMs =
-      effectiveAnchor === 'collected' && snapshot?.collectedAt
-        ? new Date(snapshot.collectedAt).getTime()
+      effectiveAnchor === 'collected' && collectedAt
+        ? new Date(collectedAt).getTime()
         : nowMillis
     const safeEndMs = Number.isNaN(endMs) ? nowMillis : endMs
     const startMs = safeEndMs - WINDOW_MINUTES[timeWindow] * 60 * 1000
@@ -168,7 +169,7 @@ export const NodeTelemetryTab: React.FC<NodeTelemetryTabProps> = ({
       startIso: new Date(startMs).toISOString(),
       endIso: new Date(safeEndMs).toISOString(),
     }
-  }, [effectiveAnchor, snapshot?.collectedAt, nowMillis, timeWindow])
+  }, [effectiveAnchor, collectedAt, nowMillis, timeWindow])
 
   const seriesQuery = useQuery({
     queryKey: ['telemetry', 'series', node.id, selectedMetric, startIso, endIso],
