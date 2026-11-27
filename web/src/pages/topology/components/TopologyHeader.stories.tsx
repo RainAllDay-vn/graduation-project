@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { TopologyHeader } from './TopologyHeader'
 
 const meta: Meta<typeof TopologyHeader> = {
@@ -45,8 +45,9 @@ export const OverviewModeLight: Story = {
 export const IncidentElevationDark: Story = {
   args: {
     incidentId: 'INC-2026-0915',
-    incidentTitle: 'Mất liên lạc Core BGP giữa Core-02 và Agg-02',
-    incidentStatus: 'ĐANG XỬ LÝ',
+    incidentTitle: 'Suy hao quang học và BGP Flapping',
+    incidentStatus: 'INVESTIGATING',
+    onExitIncident: () => {},
     locale: 'vi',
   },
   render: (args) => (

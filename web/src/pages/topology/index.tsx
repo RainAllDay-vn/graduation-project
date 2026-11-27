@@ -1,8 +1,9 @@
-import React, { useMemo, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import type { DeviceSummary, LinkSummary } from '@/api/topology'
-import { getTopology, getSubgraph } from '@/api/topology'
+import type { BlastRadiusReport, DeviceSummary, LinkSummary } from '@/api/topology'
+import { getBlastRadius, getSubgraph, getTopology } from '@/api/topology'
+import { getIncidentById, type IncidentDetails } from '@/api/incidents'
 import { useTheme } from '@/context'
 import {
   TopologyCanvas,
@@ -24,14 +25,21 @@ export interface TopologyPageProps {
     nodes: DeviceSummary[]
     links: LinkSummary[]
   }
+  /** Optional mocked incident details strictly for Storybook/tests */
+  mockIncident?: IncidentDetails | null
+  /** Optional mocked blast radius report strictly for Storybook/tests */
+  mockBlastRadius?: BlastRadiusReport | null
 }
 
 export const TopologyPage: React.FC<TopologyPageProps> = ({
   initialIncidentId,
   initialFocusNodeId,
   mockData,
+  mockIncident,
+  mockBlastRadius,
 }) => {
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const { locale } = useTheme()
 
   // 1. Resolve URL search parameters vs props
@@ -73,6 +81,25 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
     staleTime: 30000,
   })
 
+  // 2b. Fetch active incident details & blast radius in Incident Mode (Step 3.1 / §5.6)
+  const incidentQuery = useQuery({
+    queryKey: ['incident', 'detail', incidentId],
+    queryFn: () => getIncidentById(incidentId as string),
+    enabled: Boolean(incidentId && !mockData && !mockIncident),
+    staleTime: 30000,
+  })
+
+  const incidentData = mockIncident ?? incidentQuery.data ?? null
+
+  const blastRadiusQuery = useQuery({
+    queryKey: ['topology', 'blast-radius', incidentData?.primaryDeviceId],
+    queryFn: () => getBlastRadius(incidentData!.primaryDeviceId),
+    enabled: Boolean(incidentId && incidentData?.primaryDeviceId && !mockData && !mockBlastRadius),
+    staleTime: 30000,
+  })
+
+  const blastRadiusReport = mockBlastRadius ?? blastRadiusQuery.data ?? null
+
   // Use provided mockData strictly for Storybook/tests; otherwise use remoteData from API
   const nodes = useMemo(() => {
     if (mockData) return mockData.nodes
@@ -89,14 +116,49 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [selectedLinkId, setSelectedLinkId] = useState<string | null>(null)
   const canvasRef = useRef<TopologyCanvasHandle>(null)
+  const autoPannedIncidentRef = useRef<string | null>(null)
 
   // Double click: Set of active beacon focus nodes (Stylebook §3.5: multiple beacons)
   const [focusedNodeIds, setFocusedNodeIds] = useState<Set<string>>(() => {
     const s = new Set<string>()
     if (focusNodeId) s.add(focusNodeId)
-    if (incidentId) s.add('CORE-02')
     return s
   })
+  const [dismissedEpicenterKey, setDismissedEpicenterKey] = useState<string | null>(null)
+
+  const incidentPrimaryDeviceId = incidentData?.primaryDeviceId
+  const currentEpicenterKey =
+    incidentId && incidentPrimaryDeviceId
+      ? `${incidentId}:${incidentPrimaryDeviceId}`
+      : null
+
+  const effectiveFocusedNodeIds = useMemo(() => {
+    const next = new Set(focusedNodeIds)
+    if (
+      incidentId &&
+      incidentPrimaryDeviceId &&
+      dismissedEpicenterKey !== currentEpicenterKey
+    ) {
+      next.add(incidentPrimaryDeviceId)
+    }
+    return next
+  }, [focusedNodeIds, incidentId, incidentPrimaryDeviceId, dismissedEpicenterKey, currentEpicenterKey])
+
+  // Auto-pan canvas once to incident epicenter when incident details & graph load (Step 3.1)
+  useEffect(() => {
+    const epicenterId = incidentData?.primaryDeviceId
+    if (!incidentId || !epicenterId || nodes.length === 0) return
+    const panKey = `${incidentId}:${epicenterId}`
+    if (autoPannedIncidentRef.current === panKey) return
+    if (!nodes.some((n) => n.id === epicenterId)) return
+
+    const timer = window.setTimeout(() => {
+      canvasRef.current?.panToNode(epicenterId)
+      autoPannedIncidentRef.current = panKey
+    }, 80)
+
+    return () => window.clearTimeout(timer)
+  }, [incidentId, incidentData?.primaryDeviceId, nodes])
   const [currentKHop, setCurrentKHop] = useState<KHopDistance>(() => {
     const p = searchParams.get('kHop')
     if (p === '1' || p === '2' || p === '3') {
@@ -132,11 +194,11 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
     [selectedLinkId, links]
   )
 
-  // Incident blast radius logic (to be loaded dynamically via API in Incident Mode 5.6)
+  // Incident blast radius affected links from BlastRadiusReport API (Step 3.1 / §5.6)
   const blastRadiusLinkIds = useMemo(() => {
-    if (!incidentId) return undefined
-    return undefined
-  }, [incidentId])
+    if (!incidentId || !blastRadiusReport?.affectedLinkIds?.length) return undefined
+    return blastRadiusReport.affectedLinkIds
+  }, [incidentId, blastRadiusReport])
 
   // Single click: Only updates selection and inspector context (Stylebook §3.5: "không đụng beacon")
   const handleSelectNode = (node: DeviceSummary) => {
@@ -153,6 +215,24 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
 
   // Double click: Toggles beacon focus on / off (Stylebook §3.5: "Bấm đúp một node → beacon... Bấm đúp lại → biến mất")
   const handleFocusNode = (node: DeviceSummary) => {
+    if (
+      incidentId &&
+      incidentData?.primaryDeviceId === node.id &&
+      currentEpicenterKey
+    ) {
+      if (effectiveFocusedNodeIds.has(node.id)) {
+        setDismissedEpicenterKey(currentEpicenterKey)
+        setFocusedNodeIds((prev) => {
+          const next = new Set(prev)
+          next.delete(node.id)
+          return next
+        })
+      } else {
+        setDismissedEpicenterKey(null)
+      }
+      return
+    }
+
     setFocusedNodeIds((prev) => {
       const next = new Set(prev)
       if (next.has(node.id)) {
@@ -166,6 +246,9 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
 
   const handleClearFocus = () => {
     setFocusedNodeIds(new Set())
+    if (currentEpicenterKey) {
+      setDismissedEpicenterKey(currentEpicenterKey)
+    }
   }
 
   const handleSelectLink = (link: LinkSummary) => {
@@ -186,13 +269,16 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
       {/* 1. Contextual Thin Top Header (Stylebook §0.1) */}
       <TopologyHeader
         incidentId={incidentId}
+        incidentTitle={incidentData?.title}
+        incidentStatus={incidentData?.status}
+        onExitIncident={incidentId ? () => navigate('/topology') : undefined}
         totalNodes={nodes.length}
         totalLinks={links.length}
         focusNodeId={
-          focusedNodeIds.size === 1
-            ? Array.from(focusedNodeIds)[0]
-            : focusedNodeIds.size > 1
-              ? `${focusedNodeIds.size} TIÊU ĐIỂM`
+          effectiveFocusedNodeIds.size === 1
+            ? Array.from(effectiveFocusedNodeIds)[0]
+            : effectiveFocusedNodeIds.size > 1
+              ? `${effectiveFocusedNodeIds.size} TIÊU ĐIỂM`
               : null
         }
         focusHop={currentKHop}
@@ -235,7 +321,7 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
                 {locale === 'en' ? 'Failed to Load Topology Graph' : 'Không thể tải bản đồ topology'}
               </h3>
               <p className="font-mono text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md">
-                {(error as any)?.response?.data?.message || (error as Error)?.message || (locale === 'en' ? 'Unable to connect to topology service' : 'Không thể kết nối đến máy chủ topology')}
+                {(error as { response?: { data?: { message?: string } } })?.response?.data?.message || (error as Error)?.message || (locale === 'en' ? 'Unable to connect to topology service' : 'Không thể kết nối đến máy chủ topology')}
               </p>
               <button
                 type="button"
@@ -262,8 +348,10 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
               locale={locale}
               selectedNodeId={selectedNodeId || undefined}
               selectedLinkId={selectedLinkId || undefined}
-              focusedNodeIds={Array.from(focusedNodeIds)}
+              focusedNodeIds={Array.from(effectiveFocusedNodeIds)}
               blastRadiusLinkIds={blastRadiusLinkIds}
+              blastRadiusReport={blastRadiusReport}
+              isIncidentMode={Boolean(incidentId)}
               kHop={currentKHop}
               filterMode={currentFilterMode}
               onKHopChange={setCurrentKHop}

@@ -6,8 +6,10 @@ export interface TopologyHeaderProps {
   incidentId?: string | null
   /** Optional title of the incident */
   incidentTitle?: string
-  /** Status of the incident (e.g. 'ĐANG XỬ LÝ' / 'IN_PROGRESS') */
+  /** Status of the incident (e.g. 'OPEN' / 'INVESTIGATING' / 'RESOLVED') */
   incidentStatus?: string
+  /** Optional callback to exit Incident Mode back to Standard Full Network */
+  onExitIncident?: () => void
   /** Total device count across managed topology */
   totalNodes?: number
   /** Total link count across managed topology */
@@ -33,7 +35,8 @@ export interface TopologyHeaderProps {
 export const TopologyHeader: React.FC<TopologyHeaderProps> = ({
   incidentId,
   incidentTitle,
-  incidentStatus = 'ĐANG XỬ LÝ',
+  incidentStatus = 'INVESTIGATING',
+  onExitIncident,
   totalNodes = 78,
   totalLinks = 152,
   focusNodeId,
@@ -43,6 +46,26 @@ export const TopologyHeader: React.FC<TopologyHeaderProps> = ({
   style,
 }) => {
   const isEn = locale === 'en'
+
+  const normalizedStatus = (incidentStatus || 'INVESTIGATING').toUpperCase()
+  const isResolved = normalizedStatus === 'RESOLVED' || normalizedStatus === 'MITIGATED'
+  const statusLabel = (() => {
+    if (isEn) return normalizedStatus
+    switch (normalizedStatus) {
+      case 'OPEN':
+        return 'ĐANG MỞ'
+      case 'PRIORITIZED':
+        return 'ƯU TIÊN'
+      case 'INVESTIGATING':
+        return 'ĐANG ĐIỀU TRA'
+      case 'MITIGATED':
+        return 'ĐÃ GIẢM THIỂU'
+      case 'RESOLVED':
+        return 'ĐÃ XỬ LÝ'
+      default:
+        return incidentStatus
+    }
+  })()
 
   return (
     <header
@@ -72,22 +95,44 @@ export const TopologyHeader: React.FC<TopologyHeaderProps> = ({
       </div>
 
       {/* Center: Contextual Status Chips (Stylebook §0.1) */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 min-w-0">
         {/* Incident Active Badge (Elevated Context) */}
         {incidentId ? (
-          <div
-            className={cn(
-              'flex items-center gap-2 px-2.5 py-1 rounded-md border',
-              'bg-amber-500/10 border-amber-500/40 text-amber-600 dark:text-amber-400',
-              'font-mono text-[10.5px] font-bold tracking-wide animate-pulse shadow-xs'
+          <div className="flex items-center gap-1.5 min-w-0">
+            <div
+              className={cn(
+                'flex items-center gap-2 px-2.5 py-1 rounded-md border min-w-0',
+                isResolved
+                  ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-700 dark:text-emerald-300'
+                  : 'bg-amber-500/10 border-amber-500/40 text-amber-700 dark:text-amber-300 animate-pulse',
+                'font-mono text-[10.5px] font-bold tracking-wide shadow-xs'
+              )}
+              title={incidentTitle || `Sự cố ${incidentId}`}
+              data-testid="topology-incident-chip"
+            >
+              <span
+                className={cn(
+                  'w-2 h-2 rounded-full inline-block shrink-0',
+                  isResolved ? 'bg-emerald-500' : 'bg-rose-500'
+                )}
+              />
+              <span className="truncate max-w-[360px]">
+                {incidentId} · {statusLabel}
+                {incidentTitle ? ` · ${incidentTitle}` : ''}
+              </span>
+            </div>
+
+            {onExitIncident && (
+              <button
+                type="button"
+                onClick={onExitIncident}
+                data-testid="topology-exit-incident-btn"
+                title={isEn ? 'Exit incident investigation view' : 'Thoát chế độ sự cố'}
+                className="shrink-0 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-mono text-[10px] font-bold transition-colors cursor-pointer"
+              >
+                × {isEn ? 'Exit' : 'Thoát'}
+              </button>
             )}
-            title={incidentTitle || `Sự cố ${incidentId}`}
-            data-testid="topology-incident-chip"
-          >
-            <span className="w-2 h-2 rounded-full bg-amber-500 inline-block shrink-0" />
-            <span>
-              {incidentId} · {isEn ? 'INVESTIGATING' : incidentStatus}
-            </span>
           </div>
         ) : focusNodeId ? (
           /* Focus Node Badge */

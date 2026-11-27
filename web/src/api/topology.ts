@@ -49,6 +49,14 @@ export interface DeviceDetails extends DeviceSummary {
   links: LinkSummary[]
 }
 
+export interface BlastRadiusReport {
+  rootCauseDeviceId: string
+  affectedDeviceIds: string[]
+  affectedLinkIds: string[]
+  estimatedAffectedSubscribers: number
+  description: string
+}
+
 export interface GetTopologyParams {
   focusNodeIds?: string[]
   focusLayer?: DeviceLayer
@@ -119,5 +127,15 @@ export async function getTopologyLinks(): Promise<LinkSummary[]> {
  */
 export async function getDeviceById(id: string): Promise<DeviceDetails> {
   const response = await apiClient.get<DeviceDetails>(`/topology/devices/${encodeURIComponent(id)}`)
+  return response.data
+}
+
+/**
+ * Calculate outage blast radius (affected downstream devices, links, subscribers) for a root-cause device.
+ */
+export async function getBlastRadius(deviceId: string): Promise<BlastRadiusReport> {
+  const response = await apiClient.get<BlastRadiusReport>(
+    `/topology/blast-radius/${encodeURIComponent(deviceId)}`
+  )
   return response.data
 }

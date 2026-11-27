@@ -1,5 +1,5 @@
 import React, { useEffect, useImperativeHandle, useMemo, useState, forwardRef } from 'react'
-import type { DeviceSummary, LinkSummary } from '@/api/topology'
+import type { BlastRadiusReport, DeviceSummary, LinkSummary } from '@/api/topology'
 import { cn } from '@/lib/utils'
 import { computeStratifiedLayout } from './layoutEngine'
 import { SiteLegend } from './SiteLegend'
@@ -58,6 +58,8 @@ export interface TopologyCanvasProps {
   selectedLinkId?: string
   dimmedLinkIds?: string[]
   blastRadiusLinkIds?: string[]
+  blastRadiusReport?: BlastRadiusReport | null
+  isIncidentMode?: boolean
   hoveredLinkId?: string
   zoom?: number
   pan?: { x: number; y: number }
@@ -118,6 +120,8 @@ export const TopologyCanvas = forwardRef<TopologyCanvasHandle, TopologyCanvasPro
   selectedLinkId,
   dimmedLinkIds: explicitDimmedLinkIds,
   blastRadiusLinkIds,
+  blastRadiusReport,
+  isIncidentMode,
   hoveredLinkId: externalHoveredLinkId,
   zoom,
   pan,
@@ -494,6 +498,8 @@ export const TopologyCanvas = forwardRef<TopologyCanvasHandle, TopologyCanvasPro
             const isHovered = activeHoveredLinkId === link.linkId
             const isDimmed = effectiveDimmedLinkIds.has(link.linkId)
             const isBlastRadius = blastRadiusLinkIds?.includes(link.linkId)
+            const effectiveIncidentMode =
+              isIncidentMode ?? Boolean(blastRadiusReport || (blastRadiusLinkIds && blastRadiusLinkIds.length > 0))
 
             return (
               <TopologyEdge
@@ -505,6 +511,7 @@ export const TopologyCanvas = forwardRef<TopologyCanvasHandle, TopologyCanvasPro
                 isHovered={isHovered}
                 isDimmed={isDimmed}
                 isBlastRadius={isBlastRadius}
+                isIncidentMode={effectiveIncidentMode}
                 isLodFar={isLodFar}
                 showPortAnchors={showPortAnchors}
                 showPortLabels={showPortLabels}
@@ -681,6 +688,38 @@ export const TopologyCanvas = forwardRef<TopologyCanvasHandle, TopologyCanvasPro
           containerRef={containerRef}
           locale={locale}
         />
+      )}
+
+      {/* HTML Floating Overlay 5: Blast Radius Impact Badge (Incident Mode §5.6) */}
+      {blastRadiusReport && (
+        <div
+          className="absolute bottom-4 right-4 z-20 max-w-xs px-3 py-2 rounded-lg border border-amber-500/40 bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-xs shadow-md pointer-events-auto select-none"
+          data-testid="blast-radius-badge"
+          title={blastRadiusReport.description}
+        >
+          <div className="flex items-center gap-1.5 font-mono text-[9.5px] font-extrabold tracking-wider text-amber-600 dark:text-amber-400 uppercase">
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
+            <span>
+              BLAST RADIUS · {blastRadiusReport.rootCauseDeviceId}
+            </span>
+          </div>
+          <div className="mt-1 font-mono text-[10px] font-semibold text-slate-700 dark:text-slate-200 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span>
+              {blastRadiusReport.affectedDeviceIds.length}{' '}
+              {locale === 'en' ? 'devices' : 'thiết bị'}
+            </span>
+            <span className="text-slate-300 dark:text-slate-600">·</span>
+            <span>
+              {blastRadiusReport.affectedLinkIds.length}{' '}
+              {locale === 'en' ? 'links' : 'đường trục'}
+            </span>
+            <span className="text-slate-300 dark:text-slate-600">·</span>
+            <span className="text-amber-600 dark:text-amber-400 font-bold">
+              ~{blastRadiusReport.estimatedAffectedSubscribers.toLocaleString()}{' '}
+              {locale === 'en' ? 'subs' : 'thuê bao'}
+            </span>
+          </div>
+        </div>
       )}
     </div>
   )

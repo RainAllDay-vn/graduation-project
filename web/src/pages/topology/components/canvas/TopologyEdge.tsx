@@ -17,6 +17,7 @@ export interface TopologyEdgeProps {
   isHovered?: boolean
   isDimmed?: boolean
   isBlastRadius?: boolean
+  isIncidentMode?: boolean
   isLodFar?: boolean
   showPortAnchors?: boolean
   showPortLabels?: boolean
@@ -35,6 +36,7 @@ export const TopologyEdge: React.FC<TopologyEdgeProps> = ({
   isHovered = false,
   isDimmed = false,
   isBlastRadius = false,
+  isIncidentMode = false,
   isLodFar = false,
   showPortAnchors = true,
   showPortLabels = true,
@@ -48,6 +50,14 @@ export const TopologyEdge: React.FC<TopologyEdgeProps> = ({
   const colorStyle = getEdgeHealthColor(link.operStatus, { isSelected, isBlastRadius })
   const strokeWidth = getEdgeStrokeWidth(link.capacityGbps)
   const dashArray = getEdgeDashArray(link.utilizationPercent, link.isBackup)
+
+  const upperStatus = (link.operStatus || '').toUpperCase().trim()
+  const isFaultLink =
+    upperStatus === 'DOWN' ||
+    upperStatus === 'CRITICAL' ||
+    upperStatus === 'FAULT' ||
+    upperStatus === 'ERROR' ||
+    upperStatus === 'DEGRADED'
 
   const shortSourcePort = formatShortPort(link.sourcePort)
   const shortTargetPort = formatShortPort(link.targetPort)
@@ -76,7 +86,21 @@ export const TopologyEdge: React.FC<TopologyEdgeProps> = ({
         />
       )}
 
-      {/* 2. Blast Radius Warning Path (Incident Mode) */}
+      {/* 1b. Incident Mode Red Pulsing Fault Halo (Stylebook §5.6) */}
+      {isIncidentMode && isFaultLink && !isLodFar && (
+        <path
+          d={coords.path}
+          fill="none"
+          stroke="#ef4444"
+          strokeWidth={strokeWidth + 4.5}
+          strokeOpacity={0.5}
+          strokeLinecap="round"
+          data-testid={`fault-pulse-${link.linkId}`}
+          className="animate-pulse pointer-events-none"
+        />
+      )}
+
+      {/* 2. Blast Radius Warning Path (Incident Mode — Orange dashed halo) */}
       {isBlastRadius && (
         <path
           d={coords.path}
@@ -84,9 +108,10 @@ export const TopologyEdge: React.FC<TopologyEdgeProps> = ({
           stroke="#f59e0b"
           strokeWidth={strokeWidth + 2.5}
           strokeDasharray="6 4"
-          strokeOpacity={0.8}
+          strokeOpacity={0.85}
           strokeLinecap="round"
-          className="pointer-events-none"
+          data-testid={`blast-radius-path-${link.linkId}`}
+          className={cn('pointer-events-none', isIncidentMode && 'animate-pulse')}
         />
       )}
 
