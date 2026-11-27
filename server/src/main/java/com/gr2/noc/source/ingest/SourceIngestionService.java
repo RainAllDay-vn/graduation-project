@@ -64,11 +64,51 @@ public class SourceIngestionService {
                 case TELEMETRY_SNAPSHOT -> handleTelemetrySnapshot(message.payload());
                 case TELEMETRY_POINTS -> handleTelemetryPoints(message.payload());
                 case ALARM -> handleAlarm(message.payload());
+                case NODE_DISCOVERED -> {
+                    TopologyIngestPayloads.parseNodeDiscovered(message.payload());
+                    yield pendingSyncResult(message.type());
+                }
+                case NODE_STATUS -> {
+                    TopologyIngestPayloads.parseNodeStatus(message.payload());
+                    yield pendingSyncResult(message.type());
+                }
+                case NODE_REMOVED -> {
+                    TopologyIngestPayloads.parseNodeRemoved(message.payload());
+                    yield pendingSyncResult(message.type());
+                }
+                case LINK_DISCOVERED -> {
+                    TopologyIngestPayloads.parseLinkDiscovered(message.payload());
+                    yield pendingSyncResult(message.type());
+                }
+                case LINK_STATUS -> {
+                    TopologyIngestPayloads.parseLinkStatus(message.payload());
+                    yield pendingSyncResult(message.type());
+                }
+                case LINK_REMOVED -> {
+                    TopologyIngestPayloads.parseLinkRemoved(message.payload());
+                    yield pendingSyncResult(message.type());
+                }
+                case SERVICE_DISCOVERED -> {
+                    TopologyIngestPayloads.parseServiceDiscovered(message.payload());
+                    yield pendingSyncResult(message.type());
+                }
+                case SERVICE_STATUS -> {
+                    TopologyIngestPayloads.parseServiceStatus(message.payload());
+                    yield pendingSyncResult(message.type());
+                }
+                case SERVICE_DEPENDENCY -> {
+                    TopologyIngestPayloads.parseServiceDependency(message.payload());
+                    yield pendingSyncResult(message.type());
+                }
             };
         } catch (Exception e) {
             log.warn("Failed to ingest message: {}", e.getMessage());
             return IngestResult.failed("Lỗi xử lý thông điệp: " + e.getMessage());
         }
+    }
+
+    private IngestResult pendingSyncResult(IngestPayloadType type) {
+        return IngestResult.failed("Chưa kích hoạt xử lý đồng bộ cho loại thông điệp: " + type.wire());
     }
 
     private IngestResult handleTelemetrySnapshot(JsonNode payload) {
