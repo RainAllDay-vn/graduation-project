@@ -1,8 +1,14 @@
 package com.gr2.noc.topology;
 
+import com.gr2.noc.service.dto.create.CreateNetworkServiceRequest;
+import com.gr2.noc.service.dto.get.NetworkServiceDetails;
+import com.gr2.noc.service.enums.ServiceStatus;
+import com.gr2.noc.service.enums.ServiceType;
+import com.gr2.noc.service.service.NetworkServiceService;
 import com.gr2.noc.topology.dto.create.CreateDeviceRequest;
 import com.gr2.noc.topology.dto.create.CreateLinkRequest;
 import com.gr2.noc.topology.dto.get.DeviceDetails;
+import com.gr2.noc.topology.dto.get.DeviceSummary;
 import com.gr2.noc.topology.dto.get.LinkSummary;
 import com.gr2.noc.topology.dto.get.TopologyGraph;
 import com.gr2.noc.topology.dto.update.UpdateDeviceStatusRequest;
@@ -58,6 +64,9 @@ class TopologyNeo4jPersistenceIntegrationTest {
 
     @Autowired
     private TopologyService topologyService;
+
+    @Autowired
+    private NetworkServiceService networkServiceService;
 
     @Autowired
     private NetworkDeviceRepository networkDeviceRepository;
@@ -261,6 +270,58 @@ class TopologyNeo4jPersistenceIntegrationTest {
 
         topologyService.removeLink("LINK-IT-MOVE", true);
         assertThat(query("MATCH ()-[r:CONNECTED_TO {link_id: 'LINK-IT-MOVE'}]->() RETURN r")).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Upsert service, status update, and syncDependencies persist in Neo4j without clobbering device links")
+    void shouldUpsertServiceAndSyncDependenciesInNeo4j() {
+        topologyService.upsertDevice(CreateDeviceRequest.builder()
+                .id("IT-SVC-D1").name("Svc Dev 1").layer(DeviceLayer.CORE).build());
+        topologyService.upsertDevice(CreateDeviceRequest.builder()
+                .id("IT-SVC-D2").name("Svc Dev 2").layer(DeviceLayer.AGGREGATION).build());
+        topologyService.upsertLink(CreateLinkRequest.builder()
+                .linkId("LINK-IT-SVC-12")
+                .sourceDeviceId("IT-SVC-D1")
+                .targetDeviceId("IT-SVC-D2")
+                .sourcePort("et-0/0/1")
+                .targetPort("et-0/0/2")
+                .build());
+
+        NetworkServiceDetails created = networkServiceService.upsertService(CreateNetworkServiceRequest.builder()
+                .id("IT-SVC-01")
+                .name("Test MPLS")
+                .type(ServiceType.VPN_MPLS)
+                .region("North")
+                .subscriberCount(100)
+                .dependentDeviceIds(List.of("IT-SVC-D1"))
+                .build());
+        assertThat(created.dependentDevices()).extracting(DeviceSummary::id).containsExactly("IT-SVC-D1");
+
+        // Update metadata without dependentDeviceIds -> preserves DEPENDS_ON and device's CONNECTED_TO link
+        NetworkServiceDetails updated = networkServiceService.upsertService(CreateNetworkServiceRequest.builder()
+                .id("IT-SVC-01")
+                .name("Test MPLS v2")
+                .type(ServiceType.VPN_MPLS)
+                .subscriberCount(250)
+                .build());
+        assertThat(updated.name()).isEqualTo("Test MPLS v2");
+        assertThat(updated.dependentDevices()).extracting(DeviceSummary::id).containsExactly("IT-SVC-D1");
+
+        // Update status
+        networkServiceService.updateServiceStatus("IT-SVC-01", ServiceStatus.DEGRADED);
+        assertThat(query("MATCH (s:NetworkService {id: 'IT-SVC-01'}) RETURN s.status AS st")
+                .get(0).get("st").asString()).isEqualTo("DEGRADED");
+
+        // Sync dependencies to D2
+        NetworkServiceDetails synced = networkServiceService.syncDependencies("IT-SVC-01", List.of("IT-SVC-D2"));
+        assertThat(synced.dependentDevices()).extracting(DeviceSummary::id).containsExactly("IT-SVC-D2");
+        assertThat(query("MATCH (:NetworkService {id: 'IT-SVC-01'})-[:DEPENDS_ON]->(d:NetworkDevice) RETURN d.id AS id"))
+                .extracting(r -> r.get("id").asString())
+                .containsExactly("IT-SVC-D2");
+
+        // Verify device D1's outgoing CONNECTED_TO link was NOT clobbered
+        assertThat(query("MATCH (:NetworkDevice {id: 'IT-SVC-D1'})-[r:CONNECTED_TO {link_id: 'LINK-IT-SVC-12'}]->() RETURN r"))
+                .hasSize(1);
     }
 
     private List<Record> query(String cypher) {

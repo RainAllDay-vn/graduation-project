@@ -20,18 +20,20 @@ public interface NetworkServiceRepository extends Neo4jRepository<NetworkService
     List<NetworkService> findByStatus(ServiceStatus status);
 
     /**
-     * Retrieve all services along with their dependent devices.
+     * Retrieve all services along with their dependent devices and device links.
      */
     @Query("MATCH (s:NetworkService) " +
-           "OPTIONAL MATCH (s)-[:DEPENDS_ON]->(d:NetworkDevice) " +
-           "RETURN s, collect(d)")
+           "OPTIONAL MATCH (s)-[dep:DEPENDS_ON]->(d:NetworkDevice) " +
+           "OPTIONAL MATCH (d)-[r:CONNECTED_TO]->(t:NetworkDevice) " +
+           "RETURN s, collect(dep), collect(d), collect(r), collect(t)")
     List<NetworkService> findAllWithDevices();
 
     /**
-     * Retrieve a specific service along with its dependent devices.
+     * Retrieve a specific service along with its dependent devices and device links.
      */
     @Query("MATCH (s:NetworkService {id: $serviceId}) " +
-           "OPTIONAL MATCH (s)-[:DEPENDS_ON]->(d:NetworkDevice) " +
-           "RETURN s, collect(d)")
+           "OPTIONAL MATCH (s)-[dep:DEPENDS_ON]->(d:NetworkDevice) " +
+           "OPTIONAL MATCH (d)-[r:CONNECTED_TO]->(t:NetworkDevice) " +
+           "RETURN s, collect(dep), collect(d), collect(r), collect(t)")
     Optional<NetworkService> findByIdWithDevices(String serviceId);
 }

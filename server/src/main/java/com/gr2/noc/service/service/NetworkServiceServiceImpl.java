@@ -72,7 +72,68 @@ public class NetworkServiceServiceImpl implements NetworkServiceService {
             );
         }
 
-        NetworkService service = NetworkService.builder()
+        NetworkService service = buildNewService(request);
+        if (request.dependentDeviceIds() != null) {
+            replaceDependentDevices(service, request.dependentDeviceIds());
+        }
+
+        NetworkService saved = saveService(service);
+        return NetworkServiceDetails.from(saved);
+    }
+
+    @Override
+    public NetworkServiceDetails upsertService(CreateNetworkServiceRequest request) {
+        Optional<NetworkService> existingOpt = findServiceById(request.id());
+        if (existingOpt.isEmpty()) {
+            NetworkService created = buildNewService(request);
+            if (request.dependentDeviceIds() != null) {
+                replaceDependentDevices(created, request.dependentDeviceIds());
+            }
+            return NetworkServiceDetails.from(saveService(created));
+        }
+
+        NetworkService existing = existingOpt.get();
+        if (request.name() != null) {
+            existing.setName(request.name());
+        }
+        if (request.description() != null) {
+            existing.setDescription(request.description());
+        }
+        if (request.type() != null) {
+            existing.setType(request.type());
+        }
+        if (request.region() != null) {
+            existing.setRegion(request.region());
+        }
+        if (request.status() != null) {
+            existing.setStatus(request.status());
+        }
+        if (request.subscriberCount() != null) {
+            existing.setSubscriberCount(request.subscriberCount());
+        }
+        if (request.dependentDeviceIds() != null) {
+            replaceDependentDevices(existing, request.dependentDeviceIds());
+        }
+        return NetworkServiceDetails.from(saveService(existing));
+    }
+
+    @Override
+    public NetworkServiceDetails syncDependencies(String id, List<String> dependentDeviceIds) {
+        if (dependentDeviceIds == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Dependent device IDs list must not be null"
+            );
+        }
+        NetworkService service = findServiceById(id)
+                .orElseThrow(() -> notFound(id));
+
+        replaceDependentDevices(service, dependentDeviceIds);
+        return NetworkServiceDetails.from(saveService(service));
+    }
+
+    private NetworkService buildNewService(CreateNetworkServiceRequest request) {
+        return NetworkService.builder()
                 .id(request.id())
                 .name(request.name())
                 .description(request.description())
@@ -81,15 +142,17 @@ public class NetworkServiceServiceImpl implements NetworkServiceService {
                 .status(request.status() != null ? request.status() : ServiceStatus.OPERATIONAL)
                 .subscriberCount(request.subscriberCount() != null ? request.subscriberCount() : 0)
                 .build();
+    }
 
-        if (request.dependentDeviceIds() != null) {
-            for (String deviceId : request.dependentDeviceIds()) {
-                service.addDependentDevice(resolveDevice(deviceId));
-            }
+    private void replaceDependentDevices(NetworkService service, List<String> dependentDeviceIds) {
+        List<NetworkDevice> resolved = new ArrayList<>();
+        for (String deviceId : dependentDeviceIds) {
+            resolved.add(resolveDevice(deviceId));
         }
-
-        NetworkService saved = saveService(service);
-        return NetworkServiceDetails.from(saved);
+        service.setDependentDevices(List.of());
+        for (NetworkDevice device : resolved) {
+            service.addDependentDevice(device);
+        }
     }
 
     @Override

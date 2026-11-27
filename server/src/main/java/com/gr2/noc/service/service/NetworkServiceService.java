@@ -34,6 +34,16 @@ public interface NetworkServiceService {
     NetworkServiceDetails createService(CreateNetworkServiceRequest request);
 
     /**
+     * Create a service if missing, or update non-null fields and dependencies if it exists.
+     */
+    NetworkServiceDetails upsertService(CreateNetworkServiceRequest request);
+
+    /**
+     * Replace the dependent devices (DEPENDS_ON edges) for an existing service.
+     */
+    NetworkServiceDetails syncDependencies(String id, List<String> dependentDeviceIds);
+
+    /**
      * Update lifecycle status of a service (OPERATIONAL, DEGRADED, OUTAGE).
      */
     NetworkServiceDetails updateServiceStatus(String id, ServiceStatus status);
