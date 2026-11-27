@@ -170,7 +170,7 @@ export default function SourcesPage() {
   const { data: sources = [], isLoading: isLoadingSources } = useQuery({
     queryKey: ['sources'],
     queryFn: () => getSources(),
-    refetchInterval: 30000,
+    refetchInterval: 5000,
   })
 
   // Selected Source ID from URL params (defaults to first source once loaded)
@@ -199,7 +199,7 @@ export default function SourcesPage() {
     queryKey: ['source', selectedId],
     queryFn: () => getSourceById(selectedId!),
     enabled: !!selectedId,
-    refetchInterval: 30000,
+    refetchInterval: 5000,
   })
 
   // 3. Fetch Sync History for REST sources
@@ -210,7 +210,7 @@ export default function SourcesPage() {
     queryKey: ['sourceHistory', selectedId],
     queryFn: () => getSyncHistory(selectedId!),
     enabled: !!selectedId && isRestSource,
-    refetchInterval: 15000,
+    refetchInterval: 5000,
   })
 
   // 4. Mutations

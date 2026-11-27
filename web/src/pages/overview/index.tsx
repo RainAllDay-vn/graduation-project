@@ -26,7 +26,7 @@ export default function OverviewPage() {
   } = useQuery({
     queryKey: ['overview'],
     queryFn: () => getOverview(),
-    refetchInterval: 30000,
+    refetchInterval: 5000,
   })
 
   const metrics = overview?.metrics

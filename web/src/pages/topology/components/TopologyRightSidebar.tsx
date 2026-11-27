@@ -5,7 +5,9 @@ import {
   NetworkOverviewPanel,
   NodeIdentityTab,
   NodeInspectorHeader,
+  NodeTelemetryTab,
   type NodeInspectorTab,
+  type TelemetryMockData,
 } from './inspector'
 
 export interface TopologyRightSidebarProps {
@@ -21,6 +23,10 @@ export interface TopologyRightSidebarProps {
   incidentId?: string | null
   /** Optional initial node tab override (primarily for Storybook/tests) */
   initialNodeTab?: NodeInspectorTab
+  /** Optional initial selected timeseries metric in Telemetry tab (Storybook/tests) */
+  initialTelemetryMetric?: string | null
+  /** Optional mock telemetry strictly for Storybook/tests */
+  mockTelemetry?: TelemetryMockData
   /** Callback fired when user quick-jumps to a device from overview attention list */
   onSelectNode?: (node: DeviceSummary) => void
   /** Callback fired when user quick-jumps to a link from overview attention list */
@@ -48,6 +54,8 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
   selectedLink,
   incidentId,
   initialNodeTab = 'identity',
+  initialTelemetryMetric = null,
+  mockTelemetry,
   onSelectNode,
   onSelectLink,
   onCloseInspect,
@@ -127,22 +135,15 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
               </div>
             </div>
           ) : (
-            <div
-              className="flex-1 flex flex-col gap-2.5"
-              role="tabpanel"
-              data-testid="inspector-panel-telemetry"
-            >
-              <div className="p-3 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-2">
-                <div className="font-mono text-[9px] font-extrabold tracking-widest text-slate-400 dark:text-[#64748b] uppercase">
-                  {isEn ? 'OPERATIONAL STATUS · §5.3 NEXT' : 'TRẠNG THÁI HIỆN TẠI · MỤC 5.3'}
-                </div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
-                  {isEn
-                    ? `Current operational status and direct physical trunk links for ${selectedNode.id} will be rendered in this tab.`
-                    : `Trạng thái vận hành và danh sách liên kết trực tiếp của ${selectedNode.id} từ backend sẽ hiển thị tại tab này.`}
-                </p>
-              </div>
-            </div>
+            <NodeTelemetryTab
+              key={selectedNode.id}
+              node={selectedNode}
+              links={links}
+              onSelectLink={onSelectLink}
+              initialMetric={initialTelemetryMetric}
+              mockTelemetry={mockTelemetry}
+              locale={locale}
+            />
           )}
         </div>
       ) : selectedLink ? (

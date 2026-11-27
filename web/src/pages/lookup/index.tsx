@@ -239,7 +239,7 @@ export default function LookupPage() {
         page: devicePage,
         size: DEVICE_PAGE_SIZE,
       }),
-    refetchInterval: 30000,
+    refetchInterval: 5000,
   })
 
   // 2. Fetch links & services
@@ -259,7 +259,7 @@ export default function LookupPage() {
   const { data: incidents = [] } = useQuery({
     queryKey: ['incidents'],
     queryFn: () => getIncidents(),
-    refetchInterval: 30000,
+    refetchInterval: 5000,
   })
 
   const devices = useMemo(() => deviceDirectory?.content || [], [deviceDirectory])

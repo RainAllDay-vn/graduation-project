@@ -1,11 +1,26 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { DeviceSummary, LinkSummary } from '@/api/topology'
+import type { TelemetryMockData } from './inspector'
 import { TopologyRightSidebar } from './TopologyRightSidebar'
 import { sampleNodes, sampleLinks } from './canvas/mockTopologyData'
+
+const storyQueryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false, staleTime: Infinity },
+  },
+})
 
 const meta: Meta<typeof TopologyRightSidebar> = {
   title: 'Topology/TopologyRightSidebar',
   component: TopologyRightSidebar,
+  decorators: [
+    (Story) => (
+      <QueryClientProvider client={storyQueryClient}>
+        <Story />
+      </QueryClientProvider>
+    ),
+  ],
   args: {
     onCloseInspect: () => {},
   },
@@ -105,16 +120,102 @@ export const InspectingNodeLight: Story = {
   ),
 }
 
-/** Story 4b: Inspecting a selected node with Status tab open */
+const sampleTelemetryMock: TelemetryMockData = {
+  snapshot: {
+    deviceId: 'AGG-02',
+    collectedAt: '2026-11-25T15:11:13.000Z',
+    operStatus: 'DEGRADED',
+    uptimeSeconds: 3636000,
+    loadPercentage: 34.0,
+    routesLearned: 1284,
+    routesUsed: 976,
+    cpuPercent: 78.5,
+    memoryPercent: 62.1,
+    temperatureCelsius: 52.0,
+  },
+  availableMetrics: ['CPU', 'TEMPERATURE'],
+  seriesByMetric: {
+    CPU: {
+      deviceId: 'AGG-02',
+      metricName: 'CPU',
+      unit: '%',
+      points: [
+        { timestamp: '2026-11-25T14:11:13.000Z', value: 35.0, unit: '%' },
+        { timestamp: '2026-11-25T14:21:13.000Z', value: 38.2, unit: '%' },
+        { timestamp: '2026-11-25T14:31:13.000Z', value: 41.0, unit: '%' },
+        { timestamp: '2026-11-25T14:41:13.000Z', value: 52.5, unit: '%' },
+        { timestamp: '2026-11-25T14:51:13.000Z', value: 68.0, unit: '%' },
+        { timestamp: '2026-11-25T15:01:13.000Z', value: 74.2, unit: '%' },
+        { timestamp: '2026-11-25T15:11:13.000Z', value: 78.5, unit: '%' },
+      ],
+    },
+    TEMPERATURE: {
+      deviceId: 'AGG-02',
+      metricName: 'TEMPERATURE',
+      unit: '°C',
+      points: [
+        { timestamp: '2026-11-25T14:11:13.000Z', value: 42.0, unit: '°C' },
+        { timestamp: '2026-11-25T14:21:13.000Z', value: 43.5, unit: '°C' },
+        { timestamp: '2026-11-25T14:31:13.000Z', value: 45.0, unit: '°C' },
+        { timestamp: '2026-11-25T14:41:13.000Z', value: 47.2, unit: '°C' },
+        { timestamp: '2026-11-25T14:51:13.000Z', value: 49.8, unit: '°C' },
+        { timestamp: '2026-11-25T15:01:13.000Z', value: 51.2, unit: '°C' },
+        { timestamp: '2026-11-25T15:11:13.000Z', value: 52.0, unit: '°C' },
+      ],
+    },
+  },
+}
+
+/** Story 4b: Inspecting a selected node with Status tab open (default: empty chart per §5.3) */
 export const InspectingNodeTelemetryTabDark: Story = {
   args: {
     selectedNode: { ...mockCoreNode, status: 'DEGRADED', id: 'AGG-02', layer: 'AGGREGATION' },
+    links: sampleLinks,
     initialNodeTab: 'telemetry',
+    mockTelemetry: sampleTelemetryMock,
     locale: 'vi',
   },
   render: (args) => (
     <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
-      <div className="h-[620px] rounded-lg overflow-hidden border border-slate-800 shadow-xl flex">
+      <div className="h-[680px] rounded-lg overflow-hidden border border-slate-800 shadow-xl flex">
+        <TopologyRightSidebar {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/** Story 4b-2: Status tab with CPU timeseries highlighted & plotted (Dark Mode) */
+export const InspectingNodeTelemetryChartActiveDark: Story = {
+  args: {
+    selectedNode: { ...mockCoreNode, status: 'DEGRADED', id: 'AGG-02', layer: 'AGGREGATION' },
+    links: sampleLinks,
+    initialNodeTab: 'telemetry',
+    initialTelemetryMetric: 'CPU',
+    mockTelemetry: sampleTelemetryMock,
+    locale: 'vi',
+  },
+  render: (args) => (
+    <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
+      <div className="h-[680px] rounded-lg overflow-hidden border border-slate-800 shadow-xl flex">
+        <TopologyRightSidebar {...args} />
+      </div>
+    </div>
+  ),
+}
+
+/** Story 4b-3: Status tab with Temperature timeseries plotted (Light Mode) */
+export const InspectingNodeTelemetryChartActiveLight: Story = {
+  args: {
+    selectedNode: { ...mockCoreNode, status: 'DEGRADED', id: 'AGG-02', layer: 'AGGREGATION' },
+    links: sampleLinks,
+    initialNodeTab: 'telemetry',
+    initialTelemetryMetric: 'TEMPERATURE',
+    mockTelemetry: sampleTelemetryMock,
+    locale: 'vi',
+  },
+  render: (args) => (
+    <div className="bg-slate-100 p-6 rounded-xl border border-slate-300 flex items-center justify-center">
+      <div className="h-[680px] rounded-lg overflow-hidden border border-slate-300 shadow-lg flex">
         <TopologyRightSidebar {...args} />
       </div>
     </div>
