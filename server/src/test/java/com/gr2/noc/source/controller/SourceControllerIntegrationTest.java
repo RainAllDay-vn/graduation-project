@@ -1,5 +1,9 @@
 package com.gr2.noc.source.controller;
 
+import com.gr2.noc.source.enums.SyncStatus;
+import com.gr2.noc.source.enums.SyncTriggerType;
+import com.gr2.noc.source.model.SourceSyncRecord;
+import com.gr2.noc.source.repository.SourceSyncRecordRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jayway.jsonpath.JsonPath;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -29,6 +36,9 @@ class SourceControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private SourceSyncRecordRepository syncRecordRepository;
 
     @NonNull
     private String uniqueName(@NonNull String prefix) {
@@ -391,8 +401,13 @@ class SourceControllerIntegrationTest {
 
             mockMvc.perform(get("/api/sources/DS-MOCK-01/sync-history"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(1)))
-                    .andExpect(jsonPath("$[0].id", is(runId)));
+                    .andExpect(jsonPath("$.page", is(0)))
+                    .andExpect(jsonPath("$.size", is(10)))
+                    .andExpect(jsonPath("$.totalElements", is(1)))
+                    .andExpect(jsonPath("$.totalPages", is(1)))
+                    .andExpect(jsonPath("$.content", hasSize(1)))
+                    .andExpect(jsonPath("$.content[0].id", is(runId)))
+                    .andExpect(jsonPath("$.content[0].updatedAt", notNullValue()));
         }
 
         @Test
@@ -436,32 +451,86 @@ class SourceControllerIntegrationTest {
     class SyncHistoryTests {
 
         @Test
-        @DisplayName("Should return sync history most recent first")
-        void shouldReturnHistoryDesc() throws Exception {
-            MvcResult first = mockMvc.perform(post("/api/sources/DS-MOCK-01/resync"))
-                    .andExpect(status().isOk())
-                    .andReturn();
-            MvcResult second = mockMvc.perform(post("/api/sources/DS-MOCK-01/resync"))
-                    .andExpect(status().isOk())
-                    .andReturn();
-            String firstRunId = JsonPath.read(first.getResponse().getContentAsString(), "$.id");
-            String secondRunId = JsonPath.read(second.getResponse().getContentAsString(), "$.id");
+        @DisplayName("Should return paginated sync history with latest update first")
+        void shouldReturnHistoryPagedLatestUpdateFirst() throws Exception {
+            Instant base = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+            // Older started run that finished/updated most recently must come first
+            syncRecordRepository.saveAndFlush(SourceSyncRecord.builder()
+                    .id("SYNC-IT-01")
+                    .sourceId("DS-MOCK-01")
+                    .triggerType(SyncTriggerType.MANUAL)
+                    .status(SyncStatus.SUCCESS)
+                    .recordsFetched(10)
+                    .startedAt(base.minusSeconds(120))
+                    .finishedAt(base.minusSeconds(5))
+                    .updatedAt(base.minusSeconds(5))
+                    .build());
+            syncRecordRepository.saveAndFlush(SourceSyncRecord.builder()
+                    .id("SYNC-IT-02")
+                    .sourceId("DS-MOCK-01")
+                    .triggerType(SyncTriggerType.SCHEDULED)
+                    .status(SyncStatus.SUCCESS)
+                    .recordsFetched(5)
+                    .startedAt(base.minusSeconds(30))
+                    .finishedAt(base.minusSeconds(30))
+                    .updatedAt(base.minusSeconds(30))
+                    .build());
+            syncRecordRepository.saveAndFlush(SourceSyncRecord.builder()
+                    .id("SYNC-IT-03")
+                    .sourceId("DS-MOCK-01")
+                    .triggerType(SyncTriggerType.SCHEDULED)
+                    .status(SyncStatus.FAILED)
+                    .message("timeout")
+                    .startedAt(base.minusSeconds(60))
+                    .finishedAt(base.minusSeconds(60))
+                    .updatedAt(base.minusSeconds(60))
+                    .build());
 
-            mockMvc.perform(get("/api/sources/DS-MOCK-01/sync-history"))
+            mockMvc.perform(get("/api/sources/DS-MOCK-01/sync-history")
+                            .param("page", "0")
+                            .param("size", "2"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(2)))
-                    .andExpect(jsonPath("$[0].id", is(secondRunId)))
-                    .andExpect(jsonPath("$[1].id", is(firstRunId)))
-                    .andExpect(jsonPath("$[0].triggerType", is("MANUAL")));
+                    .andExpect(jsonPath("$.page", is(0)))
+                    .andExpect(jsonPath("$.size", is(2)))
+                    .andExpect(jsonPath("$.totalElements", is(3)))
+                    .andExpect(jsonPath("$.totalPages", is(2)))
+                    .andExpect(jsonPath("$.content", hasSize(2)))
+                    .andExpect(jsonPath("$.content[0].id", is("SYNC-IT-01")))
+                    .andExpect(jsonPath("$.content[0].triggerType", is("MANUAL")))
+                    .andExpect(jsonPath("$.content[1].id", is("SYNC-IT-02")));
+
+            mockMvc.perform(get("/api/sources/DS-MOCK-01/sync-history")
+                            .param("page", "1")
+                            .param("size", "2"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.page", is(1)))
+                    .andExpect(jsonPath("$.size", is(2)))
+                    .andExpect(jsonPath("$.totalElements", is(3)))
+                    .andExpect(jsonPath("$.totalPages", is(2)))
+                    .andExpect(jsonPath("$.content", hasSize(1)))
+                    .andExpect(jsonPath("$.content[0].id", is("SYNC-IT-03")));
+
+            mockMvc.perform(get("/api/sources/DS-MOCK-01/sync-history")
+                            .param("page", "5")
+                            .param("size", "2"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.page", is(5)))
+                    .andExpect(jsonPath("$.totalElements", is(3)))
+                    .andExpect(jsonPath("$.totalPages", is(2)))
+                    .andExpect(jsonPath("$.content", hasSize(0)));
         }
 
         @Test
-        @DisplayName("Should return empty history for message queue source")
+        @DisplayName("Should return empty page for message queue source")
         void shouldReturnEmptyHistoryForMq() throws Exception {
             String mqId = createSource(mqPayload(uniqueName("MQ EmptyHist")));
             mockMvc.perform(get("/api/sources/" + mqId + "/sync-history"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(0)));
+                    .andExpect(jsonPath("$.page", is(0)))
+                    .andExpect(jsonPath("$.size", is(10)))
+                    .andExpect(jsonPath("$.totalElements", is(0)))
+                    .andExpect(jsonPath("$.totalPages", is(0)))
+                    .andExpect(jsonPath("$.content", hasSize(0)));
         }
 
         @Test

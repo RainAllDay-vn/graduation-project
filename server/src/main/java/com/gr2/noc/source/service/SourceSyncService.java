@@ -1,5 +1,6 @@
 package com.gr2.noc.source.service;
 
+import com.gr2.noc.source.dto.get.SyncHistoryPage;
 import com.gr2.noc.source.dto.get.SyncRunSummary;
 import com.gr2.noc.source.dto.get.TestConnectionResult;
 import com.gr2.noc.source.enums.SourceStatus;
@@ -11,18 +12,21 @@ import com.gr2.noc.source.model.SourceSyncRecord;
 import com.gr2.noc.source.repository.ExternalSourceRepository;
 import com.gr2.noc.source.repository.SourceSyncRecordRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class SourceSyncService {
+
+    private static final int MAX_HISTORY_PAGE_SIZE = 100;
 
     private final ExternalSourceRepository sourceRepository;
     private final SourceSyncRecordRepository syncRecordRepository;
@@ -33,12 +37,15 @@ public class SourceSyncService {
         return connector.testConnection(source);
     }
 
-    public List<SyncRunSummary> getSyncHistory(String id) {
+    public SyncHistoryPage getSyncHistory(String id, int page, int size) {
         ExternalSource source = findSource(id);
-        return syncRecordRepository.findBySourceIdOrderByStartedAtDesc(source.getId())
-                .stream()
-                .map(SyncRunSummary::from)
-                .toList();
+        int safePage = Math.max(page, 0);
+        int effectiveSize = Math.min(Math.max(size, 1), MAX_HISTORY_PAGE_SIZE);
+        Page<SourceSyncRecord> recordPage = syncRecordRepository.findPageBySourceIdLatestFirst(
+                source.getId(),
+                PageRequest.of(safePage, effectiveSize)
+        );
+        return SyncHistoryPage.from(recordPage);
     }
 
     @Transactional
@@ -57,12 +64,14 @@ public class SourceSyncService {
             );
         }
 
+        Instant startedAt = Instant.now();
         SourceSyncRecord run = SourceSyncRecord.builder()
                 .id(generateRunId())
                 .sourceId(source.getId())
                 .triggerType(trigger != null ? trigger : SyncTriggerType.MANUAL)
                 .status(SyncStatus.RUNNING)
-                .startedAt(Instant.now())
+                .startedAt(startedAt)
+                .updatedAt(startedAt)
                 .build();
         if (run == null) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create sync run");
@@ -98,6 +107,7 @@ public class SourceSyncService {
             source.setRetryAttempts(source.getRetryAttempts() + 1);
         }
 
+        run.setUpdatedAt(finishedAt);
         syncRecordRepository.save(run);
         sourceRepository.save(source);
         return SyncRunSummary.from(run);

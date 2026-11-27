@@ -16,12 +16,16 @@ public record SyncRunSummary(
     int recordsFailed,
     String message,
     Instant startedAt,
-    Instant finishedAt
+    Instant finishedAt,
+    Instant updatedAt
 ) {
     public static SyncRunSummary from(SourceSyncRecord record) {
         if (record == null) {
             return null;
         }
+        Instant effectiveUpdatedAt = record.getUpdatedAt() != null
+                ? record.getUpdatedAt()
+                : (record.getFinishedAt() != null ? record.getFinishedAt() : record.getStartedAt());
         return SyncRunSummary.builder()
                 .id(record.getId())
                 .triggerType(record.getTriggerType())
@@ -31,6 +35,7 @@ public record SyncRunSummary(
                 .message(record.getMessage())
                 .startedAt(record.getStartedAt())
                 .finishedAt(record.getFinishedAt())
+                .updatedAt(effectiveUpdatedAt)
                 .build();
     }
 }

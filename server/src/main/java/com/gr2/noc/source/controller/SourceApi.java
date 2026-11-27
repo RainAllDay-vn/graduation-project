@@ -3,6 +3,7 @@ package com.gr2.noc.source.controller;
 import com.gr2.noc.source.dto.create.CreateExternalSourceRequest;
 import com.gr2.noc.source.dto.get.ExternalSourceDetails;
 import com.gr2.noc.source.dto.get.ExternalSourceSummary;
+import com.gr2.noc.source.dto.get.SyncHistoryPage;
 import com.gr2.noc.source.dto.get.SyncRunSummary;
 import com.gr2.noc.source.dto.get.TestConnectionResult;
 import com.gr2.noc.source.dto.update.UpdateExternalSourceRequest;
@@ -79,9 +80,13 @@ public interface SourceApi {
     ResponseEntity<SyncRunSummary> resyncFromScratch(@PathVariable String id);
 
     /**
-     * Sync history of a data source, most recent first. Always empty for
-     * message queue sources (continuous streaming has no poll history).
+     * Paginated sync history of a data source, ordered with latest update first.
+     * Always empty for message queue sources (continuous streaming has no poll history).
      */
     @GetMapping("/{id}/sync-history")
-    ResponseEntity<List<SyncRunSummary>> getSyncHistory(@PathVariable String id);
+    ResponseEntity<SyncHistoryPage> getSyncHistory(
+            @PathVariable String id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    );
 }

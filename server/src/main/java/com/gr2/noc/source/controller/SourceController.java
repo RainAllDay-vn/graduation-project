@@ -3,6 +3,7 @@ package com.gr2.noc.source.controller;
 import com.gr2.noc.source.dto.create.CreateExternalSourceRequest;
 import com.gr2.noc.source.dto.get.ExternalSourceDetails;
 import com.gr2.noc.source.dto.get.ExternalSourceSummary;
+import com.gr2.noc.source.dto.get.SyncHistoryPage;
 import com.gr2.noc.source.dto.get.SyncRunSummary;
 import com.gr2.noc.source.dto.get.TestConnectionResult;
 import com.gr2.noc.source.dto.update.UpdateExternalSourceRequest;
@@ -62,7 +63,7 @@ public class SourceController implements SourceApi {
     }
 
     @Override
-    public ResponseEntity<List<SyncRunSummary>> getSyncHistory(String id) {
-        return ResponseEntity.ok(sourceSyncService.getSyncHistory(id));
+    public ResponseEntity<SyncHistoryPage> getSyncHistory(String id, int page, int size) {
+        return ResponseEntity.ok(sourceSyncService.getSyncHistory(id, page, size));
     }
 }
