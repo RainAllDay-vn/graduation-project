@@ -155,9 +155,14 @@ public class RestSourceConnector implements SourceConnector {
     }
 
     private HttpResponse<String> sendGet(ExternalSource source, Instant since) throws Exception {
-        HttpRequest.Builder builder = HttpRequest.newBuilder(buildUri(source, since))
+        URI uri = buildUri(source, since);
+        HttpRequest.Builder builder = HttpRequest.newBuilder(uri)
                 .timeout(Duration.ofSeconds(connectTimeoutSeconds))
                 .GET();
+        if ("http".equalsIgnoreCase(uri.getScheme())) {
+            // Avoid h2c upgrade headers on plaintext HTTP/1.1 servers (e.g. Uvicorn mock-source)
+            builder.version(HttpClient.Version.HTTP_1_1);
+        }
         if (source.getAuthType() == SourceAuthType.BEARER_TOKEN && source.getAuthToken() != null) {
             builder.header("Authorization", "Bearer " + source.getAuthToken());
         } else if (source.getAuthType() == SourceAuthType.API_KEY && source.getAuthToken() != null) {

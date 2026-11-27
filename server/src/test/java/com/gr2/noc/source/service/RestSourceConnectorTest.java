@@ -12,6 +12,7 @@ import com.gr2.noc.source.enums.SourceType;
 import com.gr2.noc.source.ingest.SourceIngestionService;
 import com.gr2.noc.source.model.ExternalSource;
 import com.gr2.noc.telemetry.service.TelemetryService;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +61,8 @@ class RestSourceConnectorTest {
     private RestSourceConnector connector;
     private HttpServer server;
     private final AtomicReference<URI> lastRequestUri = new AtomicReference<>();
+    private final AtomicReference<Headers> lastRequestHeaders = new AtomicReference<>();
+    private final AtomicReference<String> lastRequestProtocol = new AtomicReference<>();
     private volatile String responseBody = "[]";
     private volatile int responseStatus = 200;
 
@@ -77,6 +80,10 @@ class RestSourceConnectorTest {
         server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/", exchange -> {
             lastRequestUri.set(exchange.getRequestURI());
+            Headers headers = new Headers();
+            headers.putAll(exchange.getRequestHeaders());
+            lastRequestHeaders.set(headers);
+            lastRequestProtocol.set(exchange.getProtocol());
             byte[] body = responseBody.getBytes(StandardCharsets.UTF_8);
             exchange.getResponseHeaders().set("Content-Type", "application/json");
             exchange.sendResponseHeaders(responseStatus, body.length == 0 ? -1 : body.length);
@@ -201,5 +208,19 @@ class RestSourceConnectorTest {
 
         assertFalse(result.success());
         assertTrue(result.message().contains("500"));
+    }
+
+    @Test
+    @DisplayName("Should use HTTP/1.1 without h2c upgrade headers for plaintext http endpoints")
+    void shouldUseHttp11WithoutH2cUpgradeForPlaintextHttp() {
+        responseBody = "[]";
+
+        SyncFetchResult result = connector.fetch(restSource(), null);
+
+        assertTrue(result.success());
+        assertEquals("HTTP/1.1", lastRequestProtocol.get());
+        Headers headers = lastRequestHeaders.get();
+        assertFalse(headers.containsKey("Upgrade"));
+        assertFalse(headers.containsKey("HTTP2-Settings"));
     }
 }
