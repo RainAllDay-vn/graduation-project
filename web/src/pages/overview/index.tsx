@@ -74,7 +74,7 @@ export default function OverviewPage() {
           : isEn
           ? 'All systems nominal'
           : 'Tất cả bình thường',
-        onClick: () => topIncident && navigate(`/dashboard?incidentId=${topIncident.id}`),
+        onClick: () => topIncident && navigate(`/incident?incidentId=${topIncident.id}`),
       },
       {
         id: 'kpi-incidents',
@@ -86,7 +86,7 @@ export default function OverviewPage() {
           : isEn
           ? 'All systems normal'
           : 'Mọi hệ thống bình thường',
-        onClick: () => topIncident && navigate(`/dashboard?incidentId=${topIncident.id}`),
+        onClick: () => topIncident && navigate(`/incident?incidentId=${topIncident.id}`),
       },
       {
         id: 'kpi-links',
@@ -124,7 +124,7 @@ export default function OverviewPage() {
             incidentId={activeInvestigation.id}
             regionOrSite={activeInvestigation.region || activeInvestigation.primaryDeviceId}
             locale={locale}
-            onResume={() => navigate(`/dashboard?incidentId=${activeInvestigation.id}`)}
+            onResume={() => navigate(`/incident?incidentId=${activeInvestigation.id}`)}
             onDismiss={() => setDismissResumeBanner(true)}
           />
         )}
@@ -146,7 +146,7 @@ export default function OverviewPage() {
           recentIncidents={recentIncidents}
           isLoading={isLoading}
           locale={locale}
-          onOpenDashboard={(incidentId) => navigate(`/dashboard?incidentId=${incidentId}`)}
+          onOpenDashboard={(incidentId) => navigate(`/incident?incidentId=${incidentId}`)}
         />
       </div>
 

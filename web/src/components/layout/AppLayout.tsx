@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate, Navigate, useLocation } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import { useAuth, useTheme } from '@/context'
-import { getIncidents } from '@/api/incidents'
 import { getMe } from '@/api/auth'
 import { useSessionTimeout } from '@/hooks/useSessionTimeout'
 import { SessionExpiryWarningModal } from '@/components/auth/SessionExpiryWarningModal'
@@ -19,7 +17,6 @@ const TABS = {
   vi: [
     { to: '/overview', label: 'Tổng quan' },
     { to: '/topology', label: 'Bản đồ mạng' },
-    { to: '/dashboard', label: 'Điều tra', hasDot: true },
     { to: '/lookup', label: 'Tra cứu' },
     { to: '/documents', label: 'Tài liệu' },
     { to: '/sources', label: 'Nguồn dữ liệu' },
@@ -28,7 +25,6 @@ const TABS = {
   en: [
     { to: '/overview', label: 'Overview' },
     { to: '/topology', label: 'Topology' },
-    { to: '/dashboard', label: 'Investigation', hasDot: true },
     { to: '/lookup', label: 'Lookup' },
     { to: '/documents', label: 'Documents' },
     { to: '/sources', label: 'Sources' },
@@ -54,18 +50,7 @@ export default function AppLayout() {
   // Topology and Investigation pages use a strict fixed-viewport canvas (no window scrolling)
   const isFixedViewport =
     location.pathname.startsWith('/topology') ||
-    location.pathname.startsWith('/dashboard')
-
-  // Query open incidents to dynamically light up the red notification dot
-  const { data: incidents } = useQuery({
-    queryKey: ['incidents', 'badge'],
-    queryFn: () => getIncidents(),
-    refetchInterval: 30000,
-    enabled: isAuthenticated,
-  })
-
-  const hasActiveIncidents =
-    incidents?.some((inc) => inc.status !== 'RESOLVED') ?? true
+    location.pathname.startsWith('/incident')
 
   const tabs = TABS[locale] || TABS.vi
 
@@ -126,9 +111,6 @@ export default function AppLayout() {
               }
             >
               <span>{tab.label}</span>
-              {tab.hasDot && hasActiveIncidents && (
-                <span className="w-[7px] h-[7px] rounded-full bg-[#ef4444] inline-block" />
-              )}
             </NavLink>
           ))}
         </nav>

@@ -428,7 +428,7 @@ export default function LookupPage() {
     nodeId?: string
   }) => {
     const focus = target.nodeId || target.id
-    navigate(`/dashboard?focusNodeId=${encodeURIComponent(focus)}`)
+    navigate(`/topology?focusNodeId=${encodeURIComponent(focus)}`)
   }
 
   // Handle clicking dependent device chip inside service inspector

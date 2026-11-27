@@ -46,7 +46,7 @@ export default function App() {
               <Route element={<AppLayout />}>
                 <Route path="/overview" element={<OverviewPage />} />
                 <Route path="/topology" element={<TopologyPage />} />
-                <Route path="/dashboard" element={<TopologyPage />} />
+                <Route path="/incident" element={<TopologyPage />} />
                 <Route path="/lookup" element={<LookupPage />} />
                 <Route path="/documents" element={<DocumentsPage />} />
                 <Route path="/sources" element={<SourcesPage />} />
