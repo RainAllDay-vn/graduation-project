@@ -29,6 +29,7 @@ public class SourceServiceImpl implements SourceService {
     private final ExternalSourceRepository sourceRepository;
     private final SourceSyncRecordRepository syncRecordRepository;
     private final MqConsumerRegistry mqConsumerRegistry;
+    private final SyncHistoryStreamService syncHistoryStreamService;
 
     @Override
     public List<ExternalSourceSummary> getSources(SourceType type, SourceStatus status, String q) {
@@ -135,6 +136,7 @@ public class SourceServiceImpl implements SourceService {
         }
         syncRecordRepository.deleteBySourceId(source.getId());
         sourceRepository.delete(source);
+        syncHistoryStreamService.closeEmitters(source.getId());
         mqConsumerRegistry.refresh();
     }
 

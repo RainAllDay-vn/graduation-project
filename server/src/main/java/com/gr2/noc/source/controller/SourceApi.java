@@ -10,8 +10,10 @@ import com.gr2.noc.source.dto.update.UpdateExternalSourceRequest;
 import com.gr2.noc.source.enums.SourceStatus;
 import com.gr2.noc.source.enums.SourceType;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -89,4 +91,10 @@ public interface SourceApi {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     );
+
+    /**
+     * Real-time Server-Sent Events (SSE) stream of sync record updates for a data source.
+     */
+    @GetMapping(value = "/{id}/sync-history/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    SseEmitter streamSyncHistory(@PathVariable String id);
 }

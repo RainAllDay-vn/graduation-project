@@ -4,12 +4,14 @@ import com.gr2.noc.source.enums.SyncStatus;
 import com.gr2.noc.source.enums.SyncTriggerType;
 import com.gr2.noc.source.model.SourceSyncRecord;
 import com.gr2.noc.source.repository.SourceSyncRecordRepository;
+import com.gr2.noc.source.service.SyncHistoryStreamService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -39,6 +41,9 @@ class SourceControllerIntegrationTest {
 
     @Autowired
     private SourceSyncRecordRepository syncRecordRepository;
+
+    @Autowired
+    private SyncHistoryStreamService syncHistoryStreamService;
 
     @NonNull
     private String uniqueName(@NonNull String prefix) {
@@ -88,6 +93,14 @@ class SourceControllerIntegrationTest {
             mockMvc.perform(post("/api/sources")
                             .contentType("application/json")
                             .content(restPayload("Anon " + System.nanoTime(), "https://anon.example.com/api")))
+                    .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        @WithAnonymousUser
+        @DisplayName("Anonymous user should not subscribe to sync history stream")
+        void shouldRejectAnonymousStream() throws Exception {
+            mockMvc.perform(get("/api/sources/DS-MOCK-01/sync-history/stream"))
                     .andExpect(status().isUnauthorized());
         }
     }
@@ -538,6 +551,29 @@ class SourceControllerIntegrationTest {
         void shouldReturn404() throws Exception {
             mockMvc.perform(get("/api/sources/DS-UNKNOWN/sync-history"))
                     .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("Should return 404 when streaming unknown source")
+        void shouldReturn404OnStream() throws Exception {
+            mockMvc.perform(get("/api/sources/DS-UNKNOWN/sync-history/stream"))
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("Should open SSE stream with connected event for valid source")
+        void shouldOpenSseStream() throws Exception {
+            MvcResult streamResult = mockMvc.perform(get("/api/sources/DS-MOCK-01/sync-history/stream"))
+                    .andExpect(request().asyncStarted())
+                    .andReturn();
+
+            syncHistoryStreamService.closeEmitters("DS-MOCK-01");
+
+            mockMvc.perform(asyncDispatch(streamResult))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM))
+                    .andExpect(content().string(containsString("event:connected")))
+                    .andExpect(content().string(containsString("\"sourceId\":\"DS-MOCK-01\"")));
         }
     }
 

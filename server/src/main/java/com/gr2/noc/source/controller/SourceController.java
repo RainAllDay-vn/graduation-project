@@ -12,10 +12,12 @@ import com.gr2.noc.source.enums.SourceType;
 import com.gr2.noc.source.enums.SyncTriggerType;
 import com.gr2.noc.source.service.SourceService;
 import com.gr2.noc.source.service.SourceSyncService;
+import com.gr2.noc.source.service.SyncHistoryStreamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class SourceController implements SourceApi {
 
     private final SourceService sourceService;
     private final SourceSyncService sourceSyncService;
+    private final SyncHistoryStreamService syncHistoryStreamService;
 
     @Override
     public ResponseEntity<List<ExternalSourceSummary>> getSources(SourceType type, SourceStatus status, String q) {
@@ -65,5 +68,11 @@ public class SourceController implements SourceApi {
     @Override
     public ResponseEntity<SyncHistoryPage> getSyncHistory(String id, int page, int size) {
         return ResponseEntity.ok(sourceSyncService.getSyncHistory(id, page, size));
+    }
+
+    @Override
+    public SseEmitter streamSyncHistory(String id) {
+        sourceSyncService.assertSourceExists(id);
+        return syncHistoryStreamService.subscribe(id);
     }
 }

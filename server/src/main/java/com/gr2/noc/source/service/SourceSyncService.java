@@ -1,6 +1,7 @@
 package com.gr2.noc.source.service;
 
 import com.gr2.noc.source.dto.get.SyncHistoryPage;
+import com.gr2.noc.source.dto.get.SyncHistoryStreamEvent;
 import com.gr2.noc.source.dto.get.SyncRunSummary;
 import com.gr2.noc.source.dto.get.TestConnectionResult;
 import com.gr2.noc.source.enums.SourceStatus;
@@ -12,6 +13,7 @@ import com.gr2.noc.source.model.SourceSyncRecord;
 import com.gr2.noc.source.repository.ExternalSourceRepository;
 import com.gr2.noc.source.repository.SourceSyncRecordRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,11 @@ public class SourceSyncService {
     private final ExternalSourceRepository sourceRepository;
     private final SourceSyncRecordRepository syncRecordRepository;
     private final SourceConnector connector;
+    private final ApplicationEventPublisher eventPublisher;
+
+    public void assertSourceExists(String id) {
+        findSource(id);
+    }
 
     public TestConnectionResult testConnection(String id) {
         ExternalSource source = findSource(id);
@@ -110,7 +117,18 @@ public class SourceSyncService {
         run.setUpdatedAt(finishedAt);
         syncRecordRepository.save(run);
         sourceRepository.save(source);
-        return SyncRunSummary.from(run);
+        SyncRunSummary summary = SyncRunSummary.from(run);
+        eventPublisher.publishEvent(new SourceSyncRecordEvent(
+                SyncHistoryStreamEvent.builder()
+                        .sourceId(source.getId())
+                        .record(summary)
+                        .sourceStatus(source.getStatus())
+                        .lastSyncAt(source.getLastSyncAt())
+                        .lastSyncStatus(source.getLastSyncStatus())
+                        .lastSyncMessage(source.getLastSyncMessage())
+                        .build()
+        ));
+        return summary;
     }
 
     private ExternalSource findSource(String id) {
