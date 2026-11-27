@@ -8,12 +8,14 @@ import com.gr2.noc.incident.service.IncidentService;
 import com.gr2.noc.service.dto.create.CreateNetworkServiceRequest;
 import com.gr2.noc.service.enums.ServiceStatus;
 import com.gr2.noc.service.enums.ServiceType;
+import com.gr2.noc.service.service.NetworkServiceService;
 import com.gr2.noc.telemetry.service.TelemetryService;
 import com.gr2.noc.topology.dto.create.CreateDeviceRequest;
 import com.gr2.noc.topology.dto.create.CreateLinkRequest;
 import com.gr2.noc.topology.enums.DeviceLayer;
 import com.gr2.noc.topology.enums.DeviceStatus;
 import com.gr2.noc.topology.enums.LinkType;
+import com.gr2.noc.topology.service.TopologyService;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -22,7 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class TopologyIngestPayloadsTest {
 
@@ -178,12 +182,16 @@ class TopologyIngestPayloadsTest {
     }
 
     @Test
-    void shouldValidateNewTypesInSourceIngestionServiceUntilPersistenceHandlersAreWired() {
+    void shouldValidateAndRouteNewTypesInSourceIngestionService() {
+        TopologyService topologyService = mock(TopologyService.class);
+        NetworkServiceService networkServiceService = mock(NetworkServiceService.class);
         SourceIngestionService service = new SourceIngestionService(
                 mock(TelemetryService.class),
                 mock(IncidentService.class),
                 mock(IncidentRepository.class),
                 mock(AlarmRepository.class),
+                topologyService,
+                networkServiceService,
                 mapper
         );
 
@@ -193,10 +201,11 @@ class TopologyIngestPayloadsTest {
         assertFalse(invalidNode.success());
         assertTrue(invalidNode.message().contains("payload.name"));
 
-        IngestResult validNotYetWired = service.ingest("""
+        IngestResult validNode = service.ingest("""
                 {"type":"node.discovered","payload":{"id":"CORE-09","name":"Core 09","layer":"CORE"}}
                 """);
-        assertFalse(validNotYetWired.success());
-        assertTrue(validNotYetWired.message().contains("node.discovered"));
+        assertTrue(validNode.success());
+        assertEquals(1, validNode.recordsIngested());
+        verify(topologyService).upsertDevice(any());
     }
 }

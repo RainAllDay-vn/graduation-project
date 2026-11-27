@@ -12,16 +12,19 @@ import com.gr2.noc.incident.model.Incident;
 import com.gr2.noc.incident.repository.AlarmRepository;
 import com.gr2.noc.incident.repository.IncidentRepository;
 import com.gr2.noc.incident.service.IncidentService;
+import com.gr2.noc.service.service.NetworkServiceService;
 import com.gr2.noc.telemetry.dto.create.RecordDeviceTelemetrySnapshotRequest;
 import com.gr2.noc.telemetry.dto.create.RecordTelemetryPointRequest;
 import com.gr2.noc.telemetry.enums.OperStatus;
 import com.gr2.noc.telemetry.service.TelemetryService;
+import com.gr2.noc.topology.service.TopologyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -38,6 +41,8 @@ public class SourceIngestionService {
     private final IncidentService incidentService;
     private final IncidentRepository incidentRepository;
     private final AlarmRepository alarmRepository;
+    private final TopologyService topologyService;
+    private final NetworkServiceService networkServiceService;
     private final ObjectMapper objectMapper;
 
     public IngestResult ingest(String rawJson) {
@@ -54,6 +59,25 @@ public class SourceIngestionService {
         return ingest(root);
     }
 
+    /**
+     * Ingest a batch of messages in dependency order (nodes before links/services,
+     * discovery before status/telemetry, and link removals before node removals)
+     * while preserving arrival order within each tier.
+     */
+    public List<IngestResult> ingestBatch(List<JsonNode> messages) {
+        if (messages == null || messages.isEmpty()) {
+            return List.of();
+        }
+        List<JsonNode> ordered = messages.stream()
+                .sorted(Comparator.comparingInt(this::batchPriority))
+                .toList();
+        List<IngestResult> results = new ArrayList<>(ordered.size());
+        for (JsonNode message : ordered) {
+            results.add(ingest(message));
+        }
+        return results;
+    }
+
     public IngestResult ingest(JsonNode root) {
         if (root == null || !root.isObject()) {
             return IngestResult.failed("Lỗi xử lý thông điệp: Thông điệp phải là một JSON object");
@@ -65,40 +89,53 @@ public class SourceIngestionService {
                 case TELEMETRY_POINTS -> handleTelemetryPoints(message.payload());
                 case ALARM -> handleAlarm(message.payload());
                 case NODE_DISCOVERED -> {
-                    TopologyIngestPayloads.parseNodeDiscovered(message.payload());
-                    yield pendingSyncResult(message.type());
+                    topologyService.upsertDevice(TopologyIngestPayloads.parseNodeDiscovered(message.payload()));
+                    yield IngestResult.success(1);
                 }
                 case NODE_STATUS -> {
-                    TopologyIngestPayloads.parseNodeStatus(message.payload());
-                    yield pendingSyncResult(message.type());
+                    TopologyIngestPayloads.NodeStatusPayload parsed =
+                            TopologyIngestPayloads.parseNodeStatus(message.payload());
+                    topologyService.updateDeviceStatus(parsed.id(), parsed.request());
+                    yield IngestResult.success(1);
                 }
                 case NODE_REMOVED -> {
-                    TopologyIngestPayloads.parseNodeRemoved(message.payload());
-                    yield pendingSyncResult(message.type());
+                    TopologyIngestPayloads.NodeRemovedPayload parsed =
+                            TopologyIngestPayloads.parseNodeRemoved(message.payload());
+                    topologyService.removeDevice(parsed.id(), parsed.hardDelete());
+                    yield IngestResult.success(1);
                 }
                 case LINK_DISCOVERED -> {
-                    TopologyIngestPayloads.parseLinkDiscovered(message.payload());
-                    yield pendingSyncResult(message.type());
+                    topologyService.upsertLink(TopologyIngestPayloads.parseLinkDiscovered(message.payload()));
+                    yield IngestResult.success(1);
                 }
                 case LINK_STATUS -> {
-                    TopologyIngestPayloads.parseLinkStatus(message.payload());
-                    yield pendingSyncResult(message.type());
+                    TopologyIngestPayloads.LinkStatusPayload parsed =
+                            TopologyIngestPayloads.parseLinkStatus(message.payload());
+                    topologyService.updateLinkStatus(parsed.linkId(), parsed.request());
+                    yield IngestResult.success(1);
                 }
                 case LINK_REMOVED -> {
-                    TopologyIngestPayloads.parseLinkRemoved(message.payload());
-                    yield pendingSyncResult(message.type());
+                    TopologyIngestPayloads.LinkRemovedPayload parsed =
+                            TopologyIngestPayloads.parseLinkRemoved(message.payload());
+                    topologyService.removeLink(parsed.linkId(), parsed.hardDelete());
+                    yield IngestResult.success(1);
                 }
                 case SERVICE_DISCOVERED -> {
-                    TopologyIngestPayloads.parseServiceDiscovered(message.payload());
-                    yield pendingSyncResult(message.type());
+                    networkServiceService.upsertService(
+                            TopologyIngestPayloads.parseServiceDiscovered(message.payload()));
+                    yield IngestResult.success(1);
                 }
                 case SERVICE_STATUS -> {
-                    TopologyIngestPayloads.parseServiceStatus(message.payload());
-                    yield pendingSyncResult(message.type());
+                    TopologyIngestPayloads.ServiceStatusPayload parsed =
+                            TopologyIngestPayloads.parseServiceStatus(message.payload());
+                    networkServiceService.updateServiceStatus(parsed.id(), parsed.status());
+                    yield IngestResult.success(1);
                 }
                 case SERVICE_DEPENDENCY -> {
-                    TopologyIngestPayloads.parseServiceDependency(message.payload());
-                    yield pendingSyncResult(message.type());
+                    TopologyIngestPayloads.ServiceDependencyPayload parsed =
+                            TopologyIngestPayloads.parseServiceDependency(message.payload());
+                    networkServiceService.syncDependencies(parsed.id(), parsed.dependentDeviceIds());
+                    yield IngestResult.success(1);
                 }
             };
         } catch (Exception e) {
@@ -107,8 +144,27 @@ public class SourceIngestionService {
         }
     }
 
-    private IngestResult pendingSyncResult(IngestPayloadType type) {
-        return IngestResult.failed("Chưa kích hoạt xử lý đồng bộ cho loại thông điệp: " + type.wire());
+    private int batchPriority(JsonNode node) {
+        if (node == null || !node.isObject()) {
+            return Integer.MAX_VALUE;
+        }
+        String typeWire = node.path("type").asText(null);
+        if (typeWire == null || typeWire.isBlank()) {
+            return Integer.MAX_VALUE;
+        }
+        try {
+            return switch (IngestPayloadType.fromWire(typeWire)) {
+                case NODE_DISCOVERED -> 0;
+                case NODE_STATUS -> 1;
+                case LINK_DISCOVERED, SERVICE_DISCOVERED -> 2;
+                case LINK_STATUS, SERVICE_STATUS, SERVICE_DEPENDENCY -> 3;
+                case TELEMETRY_SNAPSHOT, TELEMETRY_POINTS, ALARM -> 4;
+                case LINK_REMOVED -> 5;
+                case NODE_REMOVED -> 6;
+            };
+        } catch (IllegalArgumentException e) {
+            return Integer.MAX_VALUE;
+        }
     }
 
     private IngestResult handleTelemetrySnapshot(JsonNode payload) {

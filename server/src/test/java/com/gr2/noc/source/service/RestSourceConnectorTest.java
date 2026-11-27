@@ -7,11 +7,13 @@ import com.gr2.noc.incident.model.Incident;
 import com.gr2.noc.incident.repository.AlarmRepository;
 import com.gr2.noc.incident.repository.IncidentRepository;
 import com.gr2.noc.incident.service.IncidentService;
+import com.gr2.noc.service.service.NetworkServiceService;
 import com.gr2.noc.source.enums.SourceAuthType;
 import com.gr2.noc.source.enums.SourceType;
 import com.gr2.noc.source.ingest.SourceIngestionService;
 import com.gr2.noc.source.model.ExternalSource;
 import com.gr2.noc.telemetry.service.TelemetryService;
+import com.gr2.noc.topology.service.TopologyService;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterEach;
@@ -74,7 +76,14 @@ class RestSourceConnectorTest {
         alarmRepository = mock(AlarmRepository.class);
         ObjectMapper objectMapper = new ObjectMapper();
         SourceIngestionService ingestionService = new SourceIngestionService(
-                telemetryService, incidentService, incidentRepository, alarmRepository, objectMapper);
+                telemetryService,
+                incidentService,
+                incidentRepository,
+                alarmRepository,
+                mock(TopologyService.class),
+                mock(NetworkServiceService.class),
+                objectMapper
+        );
         connector = new RestSourceConnector(2, objectMapper, ingestionService);
 
         server = HttpServer.create(new InetSocketAddress(0), 0);

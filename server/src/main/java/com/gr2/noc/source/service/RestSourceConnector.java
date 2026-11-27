@@ -126,8 +126,7 @@ public class RestSourceConnector implements SourceConnector {
         int skipped = 0;
         int failedMessages = 0;
         String firstError = null;
-        for (JsonNode message : messages) {
-            IngestResult result = ingestionService.ingest(message);
+        for (IngestResult result : ingestionService.ingestBatch(messages)) {
             if (result.success()) {
                 ingested += result.recordsIngested();
                 skipped += result.recordsFailed();
