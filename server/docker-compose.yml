@@ -73,6 +73,30 @@ services:
       MOCK_ALARM_EVERY: ${MOCK_ALARM_EVERY:-3}
       MOCK_API_KEY: ${MOCK_API_KEY:-noc-mock-dev-key}
 
+  mock-mq-source:
+    build:
+      context: ../mock-mq-source
+    container_name: noc_mock_mq_source
+    restart: unless-stopped
+    mem_limit: 128m
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      MQ_HOST: rabbitmq
+      MQ_PORT: 5672
+      MQ_USER: guest
+      MQ_PASS: guest
+      MQ_EXCHANGE: noc.sources
+      MQ_ROUTING_KEY: ${MQ_ROUTING_KEY:-mock.mq.events}
+      MQ_PUBLISH_INTERVAL_SECONDS: ${MQ_PUBLISH_INTERVAL_SECONDS:-5}
+      MQ_DEVICE_ID: ${MQ_DEVICE_ID:-CORE-02}
+      MQ_EDGE_DEVICE_ID: ${MQ_EDGE_DEVICE_ID:-EDGE-MQ-01}
+      MQ_LINK_ID: ${MQ_LINK_ID:-LINK-MOCK-MQ-CORE-02}
+      MQ_SERVICE_ID: ${MQ_SERVICE_ID:-SVC-MOCK-MQ-01}
+      MQ_ALARM_EVERY: ${MQ_ALARM_EVERY:-3}
+      MQ_TOPOLOGY_EVERY: ${MQ_TOPOLOGY_EVERY:-3}
+
 volumes:
   postgres_data:
   neo4j_data:
