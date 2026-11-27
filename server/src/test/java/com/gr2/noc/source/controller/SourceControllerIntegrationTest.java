@@ -87,49 +87,56 @@ class SourceControllerIntegrationTest {
     class GetSourcesTests {
 
         @Test
-        @DisplayName("Should list the seeded data sources")
+        @DisplayName("Should list the seeded mock data source")
         void shouldListSeededSources() throws Exception {
             mockMvc.perform(get("/api/sources"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(4))));
+                    .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
+                    .andExpect(jsonPath("$[0].id", is("DS-MOCK-01")));
         }
 
         @Test
         @DisplayName("Should filter sources by free-text query")
         void shouldFilterByQuery() throws Exception {
-            mockMvc.perform(get("/api/sources").param("q", "Zabbix"))
+            mockMvc.perform(get("/api/sources").param("q", "Mock"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(1)))
-                    .andExpect(jsonPath("$[0].id", is("DS-ZABBIX-01")))
+                    .andExpect(jsonPath("$[0].id", is("DS-MOCK-01")))
                     .andExpect(jsonPath("$[0].type", is("REST")))
-                    .andExpect(jsonPath("$[0].pollIntervalSeconds", is(60)))
-                    .andExpect(jsonPath("$[0].lastSyncStatus", is("SUCCESS")));
+                    .andExpect(jsonPath("$[0].pollIntervalSeconds", is(5)))
+                    .andExpect(jsonPath("$[0].status", is("PENDING_FIRST_SYNC")));
         }
 
         @Test
         @DisplayName("Should filter sources by type and status")
         void shouldFilterByTypeAndStatus() throws Exception {
+            String mqId = createSource(mqPayload(uniqueName("MQ Filter")));
+            String failingRestId = createSource("""
+                    {"name":"%s","type":"REST","endpointUrl":"https://err.example.com/api","authType":"BEARER_TOKEN"}
+                    """.formatted(uniqueName("Err Filter")));
+            mockMvc.perform(post("/api/sources/" + failingRestId + "/resync"))
+                    .andExpect(status().isOk());
+
             mockMvc.perform(get("/api/sources").param("type", "MQ"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(2)))
-                    .andExpect(jsonPath("$[*].id", hasItems("DS-NETFLOW-01", "DS-SYSLOG-01")));
+                    .andExpect(jsonPath("$[*].id", hasItem(mqId)));
 
             mockMvc.perform(get("/api/sources").param("status", "ERROR"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(1)))
-                    .andExpect(jsonPath("$[0].id", is("DS-CRM-01")))
-                    .andExpect(jsonPath("$[0].lastSyncMessage", containsString("token")));
+                    .andExpect(jsonPath("$[*].id", hasItem(failingRestId)));
         }
 
         @Test
-        @DisplayName("Should expose stream latency for message queue sources")
-        void shouldExposeStreamLatencyForMq() throws Exception {
-            mockMvc.perform(get("/api/sources").param("q", "NetFlow"))
+        @DisplayName("Should expose broker metadata for message queue sources")
+        void shouldExposeBrokerMetadataForMq() throws Exception {
+            String name = uniqueName("NetFlow Filter");
+            createSource(mqPayload(name));
+
+            mockMvc.perform(get("/api/sources").param("q", name))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(1)))
-                    .andExpect(jsonPath("$[0].brokerAddress", is("localhost:5672")))
-                    .andExpect(jsonPath("$[0].topic", is("netflow.events")))
-                    .andExpect(jsonPath("$[0].streamLatencyMs", lessThan(2000)));
+                    .andExpect(jsonPath("$[0].brokerAddress", is("kafka-test.internal:9092")))
+                    .andExpect(jsonPath("$[0].topic", is("test.events")));
         }
     }
 
@@ -138,19 +145,16 @@ class SourceControllerIntegrationTest {
     class GetSourceByIdTests {
 
         @Test
-        @DisplayName("Should return full configuration with field mappings")
-        void shouldReturnDetailsWithMappings() throws Exception {
-            mockMvc.perform(get("/api/sources/DS-ZABBIX-01"))
+        @DisplayName("Should return full configuration for seeded mock source")
+        void shouldReturnDetailsWithMaskedApiKey() throws Exception {
+            mockMvc.perform(get("/api/sources/DS-MOCK-01"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.name", is("Zabbix NOC")))
-                    .andExpect(jsonPath("$.endpointUrl", containsString("zabbix.noc.internal")))
-                    .andExpect(jsonPath("$.fieldMappings", hasSize(4)))
-                    .andExpect(jsonPath("$.fieldMappings[0].sourceField", is("host.name")))
-                    .andExpect(jsonPath("$.fieldMappings[0].targetField", containsString("Thiết bị")))
-                    .andExpect(jsonPath("$.fieldMappings[3].sourceField", is("snmp.temp_c")))
-                    .andExpect(jsonPath("$.fieldMappings[3].targetField").value(nullValue()))
-                    .andExpect(jsonPath("$.authTokenMasked").value(nullValue()))
-                    .andExpect(jsonPath("$.status", is("ACTIVE")));
+                    .andExpect(jsonPath("$.name", is("Mock FastAPI Source")))
+                    .andExpect(jsonPath("$.endpointUrl", is("http://localhost:8001/events")))
+                    .andExpect(jsonPath("$.pollIntervalSeconds", is(5)))
+                    .andExpect(jsonPath("$.authType", is("API_KEY")))
+                    .andExpect(jsonPath("$.authTokenMasked", is("••••-key")))
+                    .andExpect(jsonPath("$.status", is("PENDING_FIRST_SYNC")));
         }
 
         @Test
@@ -369,7 +373,7 @@ class SourceControllerIntegrationTest {
         @Test
         @DisplayName("Should resync a REST source from scratch and activate it")
         void shouldResyncRestSource() throws Exception {
-            MvcResult result = mockMvc.perform(post("/api/sources/DS-ZABBIX-01/resync"))
+            MvcResult result = mockMvc.perform(post("/api/sources/DS-MOCK-01/resync"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status", is("SUCCESS")))
                     .andExpect(jsonPath("$.triggerType", is("MANUAL")))
@@ -379,38 +383,43 @@ class SourceControllerIntegrationTest {
                     .andReturn();
             String runId = JsonPath.read(result.getResponse().getContentAsString(), "$.id");
 
-            mockMvc.perform(get("/api/sources/DS-ZABBIX-01"))
+            mockMvc.perform(get("/api/sources/DS-MOCK-01"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status", is("ACTIVE")))
                     .andExpect(jsonPath("$.lastSyncStatus", is("SUCCESS")))
                     .andExpect(jsonPath("$.retryAttempts", is(0)));
 
-            mockMvc.perform(get("/api/sources/DS-ZABBIX-01/sync-history"))
+            mockMvc.perform(get("/api/sources/DS-MOCK-01/sync-history"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(4))))
+                    .andExpect(jsonPath("$", hasSize(1)))
                     .andExpect(jsonPath("$[0].id", is(runId)));
         }
 
         @Test
         @DisplayName("Should record failed resync for source with missing token")
         void shouldRecordFailedResync() throws Exception {
-            mockMvc.perform(post("/api/sources/DS-CRM-01/resync"))
+            String id = createSource("""
+                    {"name":"%s","type":"REST","endpointUrl":"https://missing-tok.example.com/api","authType":"BEARER_TOKEN"}
+                    """.formatted(uniqueName("Src Fail")));
+
+            mockMvc.perform(post("/api/sources/" + id + "/resync"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status", is("FAILED")))
                     .andExpect(jsonPath("$.message", containsString("Token")))
                     .andExpect(jsonPath("$.recordsFetched", is(0)));
 
-            mockMvc.perform(get("/api/sources/DS-CRM-01"))
+            mockMvc.perform(get("/api/sources/" + id))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status", is("ERROR")))
                     .andExpect(jsonPath("$.lastSyncMessage", containsString("Token")))
-                    .andExpect(jsonPath("$.retryAttempts", is(4)));
+                    .andExpect(jsonPath("$.retryAttempts", is(1)));
         }
 
         @Test
         @DisplayName("Should reject resync for message queue source")
         void shouldRejectMqResync() throws Exception {
-            mockMvc.perform(post("/api/sources/DS-NETFLOW-01/resync"))
+            String mqId = createSource(mqPayload(uniqueName("MQ NoResync")));
+            mockMvc.perform(post("/api/sources/" + mqId + "/resync"))
                     .andExpect(status().isBadRequest());
         }
 
@@ -429,19 +438,28 @@ class SourceControllerIntegrationTest {
         @Test
         @DisplayName("Should return sync history most recent first")
         void shouldReturnHistoryDesc() throws Exception {
-            mockMvc.perform(get("/api/sources/DS-ZABBIX-01/sync-history"))
+            MvcResult first = mockMvc.perform(post("/api/sources/DS-MOCK-01/resync"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(3)))
-                    .andExpect(jsonPath("$[0].id", is("SYNC-ZBX-01")))
-                    .andExpect(jsonPath("$[0].recordsFetched", is(12480)))
-                    .andExpect(jsonPath("$[2].recordsFetched", is(12455)))
-                    .andExpect(jsonPath("$[0].triggerType", is("SCHEDULED")));
+                    .andReturn();
+            MvcResult second = mockMvc.perform(post("/api/sources/DS-MOCK-01/resync"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+            String firstRunId = JsonPath.read(first.getResponse().getContentAsString(), "$.id");
+            String secondRunId = JsonPath.read(second.getResponse().getContentAsString(), "$.id");
+
+            mockMvc.perform(get("/api/sources/DS-MOCK-01/sync-history"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$", hasSize(2)))
+                    .andExpect(jsonPath("$[0].id", is(secondRunId)))
+                    .andExpect(jsonPath("$[1].id", is(firstRunId)))
+                    .andExpect(jsonPath("$[0].triggerType", is("MANUAL")));
         }
 
         @Test
         @DisplayName("Should return empty history for message queue source")
         void shouldReturnEmptyHistoryForMq() throws Exception {
-            mockMvc.perform(get("/api/sources/DS-NETFLOW-01/sync-history"))
+            String mqId = createSource(mqPayload(uniqueName("MQ EmptyHist")));
+            mockMvc.perform(get("/api/sources/" + mqId + "/sync-history"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(0)));
         }

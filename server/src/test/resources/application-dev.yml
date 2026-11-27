@@ -1,0 +1,16 @@
+# Test overrides when running under the dev profile
+spring:
+  ai:
+    model:
+      embedding: none
+    vectorstore:
+      type: none
+
+app:
+  rag:
+    indexing-enabled: false
+  sources:
+    sync:
+      simulated: true
+    scheduler:
+      enabled: false

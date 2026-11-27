@@ -30,7 +30,10 @@ public class RestPollingScheduler {
     private final ExternalSourceRepository sourceRepository;
     private final SourceSyncService sourceSyncService;
 
-    @Scheduled(fixedDelayString = "${app.sources.scheduler.scan-interval-ms:1000}")
+    @Scheduled(
+            initialDelayString = "${app.sources.scheduler.initial-delay-ms:1000}",
+            fixedDelayString = "${app.sources.scheduler.scan-interval-ms:1000}"
+    )
     public void pollDueSources() {
         pollDueSources(Instant.now());
     }

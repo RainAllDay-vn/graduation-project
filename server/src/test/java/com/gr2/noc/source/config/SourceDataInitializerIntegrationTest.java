@@ -1,9 +1,9 @@
 package com.gr2.noc.source.config;
 
+import com.gr2.noc.source.enums.SourceAuthType;
 import com.gr2.noc.source.enums.SourceStatus;
-import com.gr2.noc.source.enums.SyncStatus;
+import com.gr2.noc.source.enums.SourceType;
 import com.gr2.noc.source.model.ExternalSource;
-import com.gr2.noc.source.model.SourceSyncRecord;
 import com.gr2.noc.source.repository.ExternalSourceRepository;
 import com.gr2.noc.source.repository.SourceSyncRecordRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -31,44 +31,21 @@ class SourceDataInitializerIntegrationTest {
     private SourceSyncRecordRepository syncRecordRepository;
 
     @Test
-    @DisplayName("Should seed the four design data sources with mappings and sync history when dev profile is active")
+    @DisplayName("Should seed only the mock REST data source with API key auth when dev profile is active")
     void shouldSeedSourcesWhenDevProfileActive() {
         List<ExternalSource> sources = sourceRepository.findAllByOrderByCreatedAtAsc();
-        assertThat(sources).hasSizeGreaterThanOrEqualTo(4);
+        assertThat(sources).hasSize(1);
 
-        ExternalSource zabbix = sourceRepository.findById("DS-ZABBIX-01").orElseThrow();
-        assertThat(zabbix.getType().name()).isEqualTo("REST");
-        assertThat(zabbix.getStatus()).isEqualTo(SourceStatus.ACTIVE);
-        assertThat(zabbix.getPollIntervalSeconds()).isEqualTo(60);
-        assertThat(zabbix.getFieldMappings()).hasSize(4);
-        assertThat(zabbix.getFieldMappings().get(3).getTargetField()).isNull();
+        ExternalSource mockSource = sourceRepository.findById("DS-MOCK-01").orElseThrow();
+        assertThat(mockSource.getName()).isEqualTo("Mock FastAPI Source");
+        assertThat(mockSource.getType()).isEqualTo(SourceType.REST);
+        assertThat(mockSource.getEndpointUrl()).isEqualTo("http://localhost:8001/events");
+        assertThat(mockSource.getPollIntervalSeconds()).isEqualTo(5);
+        assertThat(mockSource.getStatus()).isEqualTo(SourceStatus.PENDING_FIRST_SYNC);
+        assertThat(mockSource.getAuthType()).isEqualTo(SourceAuthType.API_KEY);
+        assertThat(mockSource.getAuthToken()).isEqualTo("noc-mock-dev-key");
+        assertThat(mockSource.getLastSyncAt()).isNull();
 
-        List<SourceSyncRecord> zabbixHistory =
-                syncRecordRepository.findBySourceIdOrderByStartedAtDesc(zabbix.getId());
-        assertThat(zabbixHistory).hasSize(3);
-        assertThat(zabbixHistory.get(0).getStatus()).isEqualTo(SyncStatus.SUCCESS);
-        assertThat(zabbixHistory.get(0).getRecordsFetched()).isEqualTo(12480);
-
-        ExternalSource netflow = sourceRepository.findById("DS-NETFLOW-01").orElseThrow();
-        assertThat(netflow.getType().name()).isEqualTo("MQ");
-        assertThat(netflow.getTopic()).isEqualTo("netflow.events");
-        assertThat(netflow.getConsumerGroup()).isEqualTo("noc-topology-prod");
-        assertThat(netflow.getStreamLatencyMs()).isLessThan(2000);
-        assertThat(syncRecordRepository.findBySourceIdOrderByStartedAtDesc(netflow.getId())).isEmpty();
-
-        ExternalSource crm = sourceRepository.findById("DS-CRM-01").orElseThrow();
-        assertThat(crm.getStatus()).isEqualTo(SourceStatus.ERROR);
-        assertThat(crm.getRetryAttempts()).isEqualTo(3);
-        assertThat(crm.getLastSyncMessage()).contains("token");
-        List<SourceSyncRecord> crmHistory =
-                syncRecordRepository.findBySourceIdOrderByStartedAtDesc(crm.getId());
-        assertThat(crmHistory).hasSize(3);
-        assertThat(crmHistory.get(0).getStatus()).isEqualTo(SyncStatus.FAILED);
-        assertThat(crmHistory.get(0).getMessage()).contains("token");
-        assertThat(crmHistory.get(1).getStatus()).isEqualTo(SyncStatus.SUCCESS);
-
-        ExternalSource syslog = sourceRepository.findById("DS-SYSLOG-01").orElseThrow();
-        assertThat(syslog.getTopic()).isEqualTo("syslog.raw");
-        assertThat(syslog.getStatus()).isEqualTo(SourceStatus.ACTIVE);
+        assertThat(syncRecordRepository.findBySourceIdOrderByStartedAtDesc(mockSource.getId())).isEmpty();
     }
 }

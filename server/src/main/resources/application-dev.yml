@@ -9,6 +9,12 @@ spring:
 app:
   rag:
     indexing-enabled: false
+  sources:
+    sync:
+      simulated: false
+    scheduler:
+      enabled: true
+      scan-interval-ms: 1000
 
 logging:
   level:
