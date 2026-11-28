@@ -8,6 +8,7 @@ import {
   updateIncidentStatus,
   type AlarmSummary,
   type IncidentDetails,
+  type IncidentStatus,
 } from '@/api/incidents'
 import {
   getHypotheses,
@@ -19,6 +20,7 @@ import {
 } from '@/api/hypotheses'
 import { useTheme } from '@/context'
 import {
+  FaultDocDrawer,
   TopologyCanvas,
   type TopologyCanvasHandle,
   TopologyHeader,
@@ -201,6 +203,23 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
         queryClient.invalidateQueries({ queryKey: ['overview'] })
         queryClient.invalidateQueries({ queryKey: ['incidents', 'badge'] })
       }
+    },
+  })
+
+  const updateIncidentStatusMutation = useMutation({
+    mutationFn: ({
+      status,
+      resolutionNote,
+    }: {
+      status: IncidentStatus
+      resolutionNote?: string
+    }) => updateIncidentStatus(incidentId as string, status, resolutionNote),
+    onSuccess: (updatedIncident) => {
+      if (!incidentId) return
+      queryClient.setQueryData(['incident', 'detail', incidentId], updatedIncident)
+      queryClient.invalidateQueries({ queryKey: ['incident', 'detail', incidentId] })
+      queryClient.invalidateQueries({ queryKey: ['overview'] })
+      queryClient.invalidateQueries({ queryKey: ['incidents', 'badge'] })
     },
   })
 
@@ -409,10 +428,23 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
     canvasRef.current?.panToNode(alarm.deviceId)
   }
 
-  // Fault code badge click (§4.2 -> connects to FaultDocDrawer in Step 3.4b)
+  // Fault code badge click (§4.2 -> FaultDocDrawer)
   const handleSelectFaultCode = (faultCode: string, alarm: AlarmSummary) => {
     setSelectedFaultCode(faultCode)
     handleSelectAlarmFromTimeline(alarm)
+  }
+
+  // Right Inspector Alerts tab fault code lookup (opens FaultDocDrawer without changing inspector selection)
+  const handleOpenFaultDoc = (faultCode: string) => {
+    setSelectedFaultCode(faultCode)
+  }
+
+  const handleUpdateIncidentLifecycleStatus = async (
+    status: IncidentStatus,
+    resolutionNote?: string
+  ) => {
+    if (!incidentId) return
+    await updateIncidentStatusMutation.mutateAsync({ status, resolutionNote })
   }
 
   // Double click: Toggles beacon focus on / off (Stylebook §3.5: "Bấm đúp một node → beacon... Bấm đúp lại → biến mất")
@@ -590,6 +622,14 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
               showKHopControls={true}
             />
           )}
+
+          {/* Sliding Fault Knowledge Drawer anchored to left edge of canvas (§Step 3.4b) */}
+          <FaultDocDrawer
+            key={selectedFaultCode ?? 'closed'}
+            faultCode={selectedFaultCode}
+            onClose={() => setSelectedFaultCode(null)}
+            locale={locale}
+          />
         </main>
 
         {/* Right Sidebar: Network Health Overview & Inspector */}
@@ -599,6 +639,14 @@ export const TopologyPage: React.FC<TopologyPageProps> = ({
           selectedNode={selectedNode}
           selectedLink={selectedLink}
           incidentId={incidentId}
+          incidentStatus={incidentData?.status ?? null}
+          incidentAlarms={incidentAlarms}
+          isLoadingAlarms={Boolean(incidentId && !mockData && !mockIncident && incidentQuery.isLoading)}
+          isUpdatingIncidentStatus={updateIncidentStatusMutation.isPending}
+          onUpdateIncidentStatus={
+            incidentId && !mockData ? handleUpdateIncidentLifecycleStatus : undefined
+          }
+          onSelectFaultCode={handleOpenFaultDoc}
           onSelectNode={handleSelectDeviceFromSidebar}
           onSelectLink={handleSelectLink}
           onCloseInspect={handleCloseInspect}

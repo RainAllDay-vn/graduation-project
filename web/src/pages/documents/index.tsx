@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { useTheme } from '@/context'
 import {
@@ -298,6 +299,7 @@ export function DocumentsView({
 }
 
 export default function DocumentsPage() {
+  const [searchParams] = useSearchParams()
   const queryClient = useQueryClient()
   const { locale } = useTheme()
 
@@ -307,7 +309,7 @@ export default function DocumentsPage() {
   const [selectedSource, setSelectedSource] = useState<DocumentSource | 'ALL'>('ALL')
 
   // Selection & UI States
-  const [selectedDocId, setSelectedDocId] = useState<string | null>(null)
+  const [selectedDocId, setSelectedDocId] = useState<string | null>(() => searchParams.get('docId'))
   const [newlyUploadedId, setNewlyUploadedId] = useState<string | null>(null)
   const [showToast, setShowToast] = useState(false)
 

@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -49,15 +50,28 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public List<DocumentSummary> getDocuments(String query, DocType docType, IndexingStatus indexingStatus, DocumentSource source) {
-        List<TechnicalDocument> documents = (query != null && !query.isBlank())
-                ? documentRepository.findByTitleContainingIgnoreCaseOrderByCreatedAtDesc(query.trim())
-                : documentRepository.findAllByOrderByCreatedAtDesc();
+        String normalizedQuery = (query != null && !query.isBlank())
+                ? query.trim().toLowerCase(Locale.ROOT)
+                : null;
+        List<TechnicalDocument> documents = documentRepository.findAllByOrderByCreatedAtDesc();
         return documents.stream()
+                .filter(d -> normalizedQuery == null || matchesQuery(d, normalizedQuery))
                 .filter(d -> docType == null || d.getDocType() == docType)
                 .filter(d -> indexingStatus == null || d.getIndexingStatus() == indexingStatus)
                 .filter(d -> source == null || d.getSource() == source)
                 .map(DocumentSummary::from)
                 .toList();
+    }
+
+    private boolean matchesQuery(TechnicalDocument doc, String normalizedQuery) {
+        if (doc.getTitle() != null && doc.getTitle().toLowerCase(Locale.ROOT).contains(normalizedQuery)) {
+            return true;
+        }
+        if (doc.getFileName() != null && doc.getFileName().toLowerCase(Locale.ROOT).contains(normalizedQuery)) {
+            return true;
+        }
+        return doc.getTargetFaultCodes() != null && doc.getTargetFaultCodes().stream()
+                .anyMatch(code -> code != null && code.toLowerCase(Locale.ROOT).contains(normalizedQuery));
     }
 
     @Override

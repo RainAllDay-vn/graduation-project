@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import type { AlarmSummary } from '@/api/incidents'
 import type { DeviceSummary, LinkSummary } from '@/api/topology'
 import type { TelemetryMockData } from './inspector'
 import { TopologyRightSidebar } from './TopologyRightSidebar'
@@ -313,6 +314,59 @@ export const UnselectedEmptyNetworkDark: Story = {
     locale: 'en',
     nodes: [],
     links: [],
+  },
+  render: (args) => (
+    <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">
+      <div className="h-[620px] rounded-lg overflow-hidden border border-slate-800 shadow-xl flex">
+        <TopologyRightSidebar {...args} />
+      </div>
+    </div>
+  ),
+}
+
+const mockIncidentAlarms: AlarmSummary[] = [
+  {
+    id: 'ALM-2036',
+    deviceId: 'CORE-02',
+    timestamp: '2026-11-27T11:13:00Z',
+    severity: 'CRITICAL',
+    alarmType: 'FAULT_CODE',
+    faultCode: 'OPTICS_RX_POWER_LOW',
+    message: 'Cường độ tín hiệu RX quang giảm xuống -24.2 dBm (ngưỡng an toàn -22.0 dBm)',
+    isCurrentIncident: true,
+  },
+  {
+    id: 'ALM-2037',
+    deviceId: 'CORE-02',
+    timestamp: '2026-11-27T11:20:00Z',
+    severity: 'WARNING',
+    alarmType: 'RULE_BASED',
+    faultCode: 'BGP_FLAP',
+    message: 'BGP session với peer 10.100.1.2 đã flap 3 lần trong 10 phút gần nhất',
+    isCurrentIncident: true,
+  },
+  {
+    id: 'ALM-1990',
+    deviceId: 'CORE-02',
+    timestamp: '2026-11-27T08:10:00Z',
+    severity: 'INFO',
+    alarmType: 'RULE_BASED',
+    faultCode: 'PSU_INPUT_LOST',
+    message: 'Nguồn dự phòng PSU-2 từng chuyển mạch trước phiên sự cố hiện tại',
+    isCurrentIncident: false,
+  },
+]
+
+/** Story 8: Node Alerts Tab & Incident Session Lifecycle (§5.2) */
+export const InspectingNodeAlertsTabDark: Story = {
+  args: {
+    selectedNode: mockCoreNode,
+    incidentId: 'INC-2026-0915',
+    incidentStatus: 'INVESTIGATING',
+    incidentAlarms: mockIncidentAlarms,
+    initialNodeTab: 'alerts',
+    onUpdateIncidentStatus: async () => {},
+    locale: 'vi',
   },
   render: (args) => (
     <div className="dark bg-[#070a10] p-6 rounded-xl border border-slate-800 flex items-center justify-center">

@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
+import type { AlarmSummary, IncidentStatus } from '@/api/incidents'
 import type { DeviceSummary, LinkSummary } from '@/api/topology'
 import { cn } from '@/lib/utils'
 import {
+  IncidentLifecycleCard,
   NetworkOverviewPanel,
+  NodeAlertsTab,
   NodeIdentityTab,
   NodeInspectorHeader,
   NodeTelemetryTab,
@@ -19,8 +22,20 @@ export interface TopologyRightSidebarProps {
   selectedNode?: DeviceSummary | null
   /** Currently selected link (if any) */
   selectedLink?: LinkSummary | null
-  /** Optional active incident ID (unlocks Cảnh báo tab in Node Inspector) */
+  /** Optional active incident ID (unlocks Cảnh báo tab in Node Inspector & session controls) */
   incidentId?: string | null
+  /** Active incident lifecycle status */
+  incidentStatus?: IncidentStatus | null
+  /** Alarms linked to active incident for NodeAlertsTab (§5.2) */
+  incidentAlarms?: AlarmSummary[]
+  /** Loading flag for incident alarms */
+  isLoadingAlarms?: boolean
+  /** Pending flag for incident status mutation */
+  isUpdatingIncidentStatus?: boolean
+  /** Callback to transition incident status (INVESTIGATING -> MITIGATED / RESOLVED) */
+  onUpdateIncidentStatus?: (status: IncidentStatus, resolutionNote?: string) => Promise<void> | void
+  /** Callback fired when user clicks a faultCode inside NodeAlertsTab */
+  onSelectFaultCode?: (faultCode: string, alarm: AlarmSummary) => void
   /** Optional initial node tab override (primarily for Storybook/tests) */
   initialNodeTab?: NodeInspectorTab
   /** Optional initial selected timeseries metric in Telemetry tab (Storybook/tests) */
@@ -53,6 +68,12 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
   selectedNode,
   selectedLink,
   incidentId,
+  incidentStatus = 'INVESTIGATING',
+  incidentAlarms = [],
+  isLoadingAlarms = false,
+  isUpdatingIncidentStatus = false,
+  onUpdateIncidentStatus,
+  onSelectFaultCode,
   initialNodeTab = 'identity',
   initialTelemetryMetric = null,
   mockTelemetry,
@@ -102,6 +123,17 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
         )}
       </div>
 
+      {/* 1b. Incident Lifecycle Controls (§Step 3.4) */}
+      {incidentId && onUpdateIncidentStatus && (
+        <IncidentLifecycleCard
+          incidentId={incidentId}
+          status={incidentStatus}
+          isUpdating={isUpdatingIncidentStatus}
+          onUpdateStatus={onUpdateIncidentStatus}
+          locale={locale}
+        />
+      )}
+
       {/* 2. Content Area */}
       {selectedNode ? (
         /* Inspecting a Selected Node (Stylebook §5.0: Common Header Strip + Tab Ribbon) */
@@ -118,22 +150,15 @@ export const TopologyRightSidebar: React.FC<TopologyRightSidebarProps> = ({
           {effectiveNodeTab === 'identity' ? (
             <NodeIdentityTab node={selectedNode} locale={locale} />
           ) : effectiveNodeTab === 'alerts' ? (
-            <div
-              className="flex-1 flex flex-col gap-2.5"
-              role="tabpanel"
-              data-testid="inspector-panel-alerts"
-            >
-              <div className="p-3 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-2">
-                <div className="font-mono text-[9px] font-extrabold tracking-widest text-slate-400 dark:text-[#64748b] uppercase">
-                  {isEn ? 'DEVICE ALERTS · §5.2 INCIDENT' : 'CẢNH BÁO THIẾT BỊ · MỤC 5.2'}
-                </div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-sans">
-                  {isEn
-                    ? `Active and historical alarms scoped to ${selectedNode.id} (${incidentId}) will be rendered here.`
-                    : `Danh sách cảnh báo của ${selectedNode.id} (thuộc sự cố ${incidentId}) sẽ hiển thị tại tab này.`}
-                </p>
-              </div>
-            </div>
+            <NodeAlertsTab
+              key={selectedNode.id}
+              node={selectedNode}
+              incidentId={incidentId}
+              alarms={incidentAlarms}
+              isLoading={isLoadingAlarms}
+              onSelectFaultCode={onSelectFaultCode}
+              locale={locale}
+            />
           ) : (
             <NodeTelemetryTab
               key={selectedNode.id}

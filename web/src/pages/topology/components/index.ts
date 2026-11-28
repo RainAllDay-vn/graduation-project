@@ -1,5 +1,6 @@
 export * from './canvas'
 export * from './sidebar'
+export * from './FaultDocDrawer'
 export * from './TopologyHeader'
 export * from './TopologyLeftSidebar'
 export * from './TopologyRightSidebar'
